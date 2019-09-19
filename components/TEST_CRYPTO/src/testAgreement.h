@@ -5,7 +5,4 @@
 #include "SeosCryptoCtx.h"
 
 void
-testAgreementDH(SeosCryptoCtx* cryptoCtx);
-
-void
-testAgreementECDH(SeosCryptoCtx* cryptoCtx);
+testAgreement(SeosCryptoCtx* cryptoCtx);
