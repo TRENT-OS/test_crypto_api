@@ -10,7 +10,7 @@ procedure CryptoRpcInf {
     include "seos_err.h";
     include "SeosCryptoRpc.h";
 
-    seos_err_t      rngGetBytes             (in SeosCryptoRpc_Handle handle, in size_t bufSize);
+    seos_err_t      rngGetBytes             (in SeosCryptoRpc_Handle handle, in unsigned int flags, in size_t bufSize);
     seos_err_t      rngReSeed               (in SeosCryptoRpc_Handle handle, in size_t seedLen);
     seos_err_t      digestInit              (in SeosCryptoRpc_Handle handle, out SeosCrypto_DigestHandle pDigestHandle, in unsigned int algorithm);
     seos_err_t      digestFree              (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle digestHandle);

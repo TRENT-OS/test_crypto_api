@@ -12,9 +12,8 @@ static void testRng_getBytes_ok(SeosCryptoCtx* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char data[16];
-    void* rnd = data;
 
-    err = SeosCryptoApi_rngGetBytes(ctx, &rnd, sizeof(data));
+    err = SeosCryptoApi_rngGetBytes(ctx,  0, data, sizeof(data));
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -24,15 +23,21 @@ static void testRng_getBytes_fail(SeosCryptoCtx* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char data[16];
-    void* rnd = data;
 
-    err = SeosCryptoApi_rngGetBytes(NULL, &rnd, sizeof(data));
+    // Empty context
+    err = SeosCryptoApi_rngGetBytes(NULL, 0, data, sizeof(data));
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
 
-    err = SeosCryptoApi_rngGetBytes(ctx, NULL, sizeof(data));
+    // Invalid flag
+    err = SeosCryptoApi_rngGetBytes(ctx, 666, data, sizeof(data));
+    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_SUPPORTED, "err %d", err);
+
+    // Empty buffer
+    err = SeosCryptoApi_rngGetBytes(ctx, 0, NULL, sizeof(data));
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
 
-    err = SeosCryptoApi_rngGetBytes(ctx, &rnd, 0);
+    // Zero-length buffer
+    err = SeosCryptoApi_rngGetBytes(ctx, 0, data, 0);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
