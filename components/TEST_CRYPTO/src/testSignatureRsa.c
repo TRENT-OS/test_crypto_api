@@ -95,17 +95,12 @@ static const SeosCryptoKey_RSAPub serverRSAPubData =
     },
     .eLen = 3,
 };
-static SeosCrypto_MemIf memIf =
-{
-    malloc,
-    free
-};
 
 void
 testSignatureRSA(SeosCryptoCtx* cryptoCtx)
 {
     SeosCrypto_KeyHandle pubHandle, prvHandle;
-    SeosCryptoSignature scSignature;
+    SeosCrypto_SignatureHandle sigHandle;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
     err = SeosCryptoApi_keyInit(cryptoCtx, &pubHandle,
@@ -123,9 +118,9 @@ testSignatureRSA(SeosCryptoCtx* cryptoCtx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // construct a signature object with the private and public key to sign + verify
-    err = SeosCryptoSignature_init(&memIf, &scSignature,
-                                   SeosCryptoSignature_Algorithm_RSA_PKCS1,
-                                   prvHandle, pubHandle);
+    err = SeosCryptoApi_signatureInit(cryptoCtx, &sigHandle,
+                                      SeosCryptoSignature_Algorithm_RSA_PKCS1,
+                                      prvHandle, pubHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
     char signature[128];
 
@@ -154,10 +149,8 @@ testSignatureRSA(SeosCryptoCtx* cryptoCtx)
     size_t signatureSize = sizeof(signature);
     char hash[] = "test";
 
-    // For now, sign is used directly (not through the API) so we do not
-    // pass a RNG here.
-    err = SeosCryptoSignature_sign(&scSignature, NULL, hash, strlen(hash),
-                                   signature, &signatureSize);
+    err = SeosCryptoApi_signatureSign(cryptoCtx, sigHandle, hash, strlen(hash),
+                                      signature, &signatureSize);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
     Debug_PRINTFLN("Printing out computed RSA signature:");
@@ -180,10 +173,8 @@ testSignatureRSA(SeosCryptoCtx* cryptoCtx)
         Debug_LOG_INFO("%s: RSA signature correctly generated", __func__);
     }
 
-    // For now, verify is used directly (not through the API) so we do not
-    // pass a RNG here.
-    err = SeosCryptoSignature_verify(&scSignature, NULL, hash, strlen(hash),
-                                     signature, signatureSize);
+    err = SeosCryptoApi_signatureVerify(cryptoCtx, sigHandle, hash, strlen(hash),
+                                        signature, signatureSize);
     if (SEOS_SUCCESS == err)
     {
         Debug_LOG_INFO("%s: RSA signature correctly verified", __func__);
@@ -193,7 +184,7 @@ testSignatureRSA(SeosCryptoCtx* cryptoCtx)
         Debug_LOG_ERROR("%s: RSA signature verification failed %d", __func__, err);
     }
 
-    SeosCryptoSignature_deInit(&memIf, &scSignature);
+    SeosCryptoApi_signatureDeInit(cryptoCtx, sigHandle);
 
     err = SeosCryptoApi_keyDeInit(cryptoCtx, pubHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);

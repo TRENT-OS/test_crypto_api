@@ -84,9 +84,13 @@ int run()
     testCipherAES_GCM(apiRpc);
 
     testSignatureRSA(apiLocal);
+    testSignatureRSA(apiRpc);
 
     testAgreementDH(apiLocal);
+    testAgreementDH(apiRpc);
+
     testAgreementECDH(apiLocal);
+    testAgreementECDH(apiRpc);
 
     return 0;
 }

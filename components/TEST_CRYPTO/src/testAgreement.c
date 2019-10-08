@@ -59,64 +59,60 @@ static const unsigned char ecdhSharedResult[] =
     0xd6, 0x84, 0x0f, 0x6b, 0x42, 0xf6, 0xed, 0xaf, 0xd1, 0x31, 0x16, 0xe0, 0xe1, 0x25, 0x65, 0x20,
     0x2f, 0xef, 0x8e, 0x9e, 0xce, 0x7d, 0xce, 0x03, 0x81, 0x24, 0x64, 0xd0, 0x4b, 0x94, 0x42, 0xde
 };
-// Temporary use of the memIf, until we can use agreement through the API
-static SeosCrypto_MemIf memIf =
-{
-    malloc,
-    free
-};
 
 static void
-agreeOnKey(SeosCryptoKey* private,
-           SeosCryptoKey* public,
-           unsigned int   algo,
-           unsigned char* buf,
-           size_t*        bufSize)
+agreeOnKey(SeosCryptoCtx*       ctx,
+           SeosCrypto_KeyHandle prvHandle,
+           SeosCrypto_KeyHandle pubHandle,
+           unsigned int         algo,
+           unsigned char*       buf,
+           size_t*              bufSize)
 {
-    SeosCryptoAgreement ctx;
+    SeosCrypto_AgreementHandle agrHandle;
     seos_err_t err;
 
     memset(buf, 0, *bufSize);
 
-    // We have a private key (and a public one) and want to use to to agree on a shared
+    // We have a prvHandle key (and a pubHandle one) and want to use to to agree on a shared
     // secret to perform symmetric cryptography
-    err = SeosCryptoAgreement_init(&memIf, &ctx, algo, private);
+    err = SeosCryptoApi_agreementInit(ctx, &agrHandle, algo, prvHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    // We have received a public key (e.g., from a server) and use this to derive a secret
+    // We have received a pubHandle key (e.g., from a server) and use this to derive a secret
     // key of a given length; for now, don't pass a RNG
-    err = SeosCryptoAgreement_computeShared(&ctx, NULL, public, buf, bufSize);
+    err = SeosCryptoApi_agreementComputeShared(ctx, agrHandle, pubHandle, buf,
+                                               bufSize);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    SeosCryptoAgreement_deInit(&memIf, &ctx);
+    SeosCryptoApi_agreementDeInit(ctx, agrHandle);
 }
 
 void
-testAgreementDH(SeosCryptoCtx* cryptoCtx)
+testAgreementDH(SeosCryptoCtx* ctx)
 {
     SeosCrypto_KeyHandle pubHandle, prvHandle;
     unsigned char clientShared[64];
     seos_err_t err;
     size_t i, n;
 
-    err = SeosCryptoApi_keyInit(cryptoCtx, &pubHandle, SeosCryptoKey_Type_DH_PUB,
+    err = SeosCryptoApi_keyInit(ctx, &pubHandle, SeosCryptoKey_Type_DH_PUB,
                                 0, 101);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyInit(cryptoCtx, &prvHandle,
+    err = SeosCryptoApi_keyInit(ctx, &prvHandle,
                                 SeosCryptoKey_Type_DH_PRV, 0, 101);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_keyImport(cryptoCtx, pubHandle, NULL, &serverDHPubData,
+    err = SeosCryptoApi_keyImport(ctx, pubHandle, NULL, &serverDHPubData,
                                   sizeof(serverDHPubData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(cryptoCtx, prvHandle, NULL, &clientDHPrvData,
+    err = SeosCryptoApi_keyImport(ctx, prvHandle, NULL, &clientDHPrvData,
                                   sizeof(clientDHPrvData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Compute the side of the CLIENT
     n = sizeof(clientShared);
-    agreeOnKey((SeosCryptoKey*) prvHandle, (SeosCryptoKey*) pubHandle,
-               SeosCryptoAgreement_Algorithm_DH, clientShared, &n);
+    agreeOnKey(ctx, prvHandle, pubHandle, SeosCryptoAgreement_Algorithm_DH,
+               clientShared, &n);
     Debug_PRINTF("Computed DH-shared secret for CLIENT:");
     for (i = 0; i < n; i++)
     {
@@ -129,38 +125,38 @@ testAgreementDH(SeosCryptoCtx* cryptoCtx)
                                   sizeof(dhSharedResult)), "Shared key mismatch");
     Debug_PRINTF("Client and server agreed on the expected key via DH.\n");
 
-    err = SeosCryptoApi_keyDeInit(cryptoCtx, pubHandle);
+    err = SeosCryptoApi_keyDeInit(ctx, pubHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyDeInit(cryptoCtx, prvHandle);
+    err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 }
 
 void
-testAgreementECDH(SeosCryptoCtx* cryptoCtx)
+testAgreementECDH(SeosCryptoCtx* ctx)
 {
     SeosCrypto_KeyHandle pubHandle, prvHandle;
     unsigned char clientShared[64];
     seos_err_t err;
     size_t i, n;
 
-    err = SeosCryptoApi_keyInit(cryptoCtx, &pubHandle,
+    err = SeosCryptoApi_keyInit(ctx, &pubHandle,
                                 SeosCryptoKey_Type_SECP256R1_PUB, 0, 256);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyInit(cryptoCtx, &prvHandle,
+    err = SeosCryptoApi_keyInit(ctx, &prvHandle,
                                 SeosCryptoKey_Type_SECP256R1_PRV, 0, 256);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_keyImport(cryptoCtx, pubHandle, NULL, &serverEcPubData,
+    err = SeosCryptoApi_keyImport(ctx, pubHandle, NULL, &serverEcPubData,
                                   sizeof(serverEcPubData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(cryptoCtx, prvHandle, NULL, &clientEcPrvData,
+    err = SeosCryptoApi_keyImport(ctx, prvHandle, NULL, &clientEcPrvData,
                                   sizeof(clientEcPrvData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Compute the side of the CLIENT
     n = sizeof(clientShared);
-    agreeOnKey((SeosCryptoKey*) prvHandle, (SeosCryptoKey*) pubHandle,
-               SeosCryptoAgreement_Algorithm_ECDH, clientShared, &n);
+    agreeOnKey(ctx, prvHandle, pubHandle, SeosCryptoAgreement_Algorithm_ECDH,
+               clientShared, &n);
     Debug_PRINTF("Computed ECDH-shared secret for CLIENT:");
     for (i = 0; i < n; i++)
     {
@@ -173,8 +169,8 @@ testAgreementECDH(SeosCryptoCtx* cryptoCtx)
                                   sizeof(ecdhSharedResult)), "Shared key mismatch");
     Debug_PRINTF("Client and server agreed on the expected key via ECDH.\n");
 
-    err = SeosCryptoApi_keyDeInit(cryptoCtx, pubHandle);
+    err = SeosCryptoApi_keyDeInit(ctx, pubHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyDeInit(cryptoCtx, prvHandle);
+    err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 }
