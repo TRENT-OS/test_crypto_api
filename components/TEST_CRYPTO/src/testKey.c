@@ -152,7 +152,6 @@ testKey_export_ok(SeosCryptoCtx* ctx)
     SeosCrypto_KeyHandle key;
     size_t readLen;
     SeosCryptoKey_AES aesKey;
-    void* pKey = &aesKey;
 
     // Export key that can be exported to our own buffer
     err = SeosCryptoApi_keyInit(ctx, &key, SeosCryptoKey_Type_AES,
@@ -161,7 +160,7 @@ testKey_export_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyImport(ctx, key, NULL, &aes128, sizeof(aes128));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     readLen = sizeof(aesKey);
-    err = SeosCryptoApi_keyExport(ctx, key, NULL, &pKey, &readLen);
+    err = SeosCryptoApi_keyExport(ctx, key, NULL, &aesKey, &readLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(memcmp(aesKey.bytes, aes128.bytes, 16) == 0);
     SeosCryptoApi_keyDeInit(ctx, key);
@@ -172,9 +171,8 @@ testKey_export_ok(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyImport(ctx, key, NULL, &aes128, sizeof(aes128));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    readLen = 0;
-    pKey = NULL;
-    err = SeosCryptoApi_keyExport(ctx, key, NULL, &pKey, &readLen);
+    readLen = sizeof(aesKey);
+    err = SeosCryptoApi_keyExport(ctx, key, NULL, &aesKey, &readLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(readLen == sizeof(aesKey));
     Debug_ASSERT(memcmp(aesKey.bytes, aes128.bytes, 16) == 0);
@@ -190,7 +188,6 @@ testKey_export_fail(SeosCryptoCtx* ctx)
     SeosCrypto_KeyHandle key;
     size_t readLen;
     SeosCryptoKey_AES aesKey;
-    void* pKey = &aesKey;
 
     // Try non-exportable key
     err = SeosCryptoApi_keyInit(ctx, &key, SeosCryptoKey_Type_AES,
@@ -199,7 +196,7 @@ testKey_export_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyImport(ctx, key, NULL, &aes128, sizeof(aes128));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     readLen = sizeof(aesKey);
-    err = SeosCryptoApi_keyExport(ctx, key, NULL, &pKey, &readLen);
+    err = SeosCryptoApi_keyExport(ctx, key, NULL, &aesKey, &readLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ACCESS_DENIED == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
@@ -221,7 +218,7 @@ testKey_export_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyImport(ctx, key, NULL, &aes128, sizeof(aes128));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     readLen = sizeof(aesKey) - 5;
-    err = SeosCryptoApi_keyExport(ctx, key, NULL, &pKey, &readLen);
+    err = SeosCryptoApi_keyExport(ctx, key, NULL, &aesKey, &readLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
@@ -232,7 +229,7 @@ testKey_export_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyImport(ctx, key, NULL, &aes128, sizeof(aes128));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     readLen = sizeof(aesKey);
-    err = SeosCryptoApi_keyExport(ctx, NULL, NULL, &pKey, &readLen);
+    err = SeosCryptoApi_keyExport(ctx, NULL, NULL, &aesKey, &readLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
@@ -241,7 +238,7 @@ testKey_export_fail(SeosCryptoCtx* ctx)
                                 SeosCryptoKey_Flags_EXPORTABLE_RAW, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     readLen = sizeof(aesKey);
-    err = SeosCryptoApi_keyExport(ctx, key, NULL, &pKey, &readLen);
+    err = SeosCryptoApi_keyExport(ctx, key, NULL, &aesKey, &readLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_FOUND == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 

@@ -19,8 +19,8 @@ procedure CryptoRpcInf {
     seos_err_t      keyInit                 (in SeosCryptoRpc_Handle handle, out SeosCrypto_KeyHandle pKeyHandle, in unsigned int type, in unsigned int flags, in size_t keySize);
     seos_err_t      keyGenerate             (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle);
     seos_err_t      keyGeneratePair         (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle privKeyHandle, in SeosCrypto_KeyHandle pPubKeyHandle);
-    seos_err_t      keyImport               (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle, in SeosCrypto_KeyHandle wrapKeyHandle, in size_t len);
-    seos_err_t      keyExport               (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle, in SeosCrypto_KeyHandle wrapKeyHandle);
+    seos_err_t      keyImport               (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle, in SeosCrypto_KeyHandle wrapKeyHandle, in size_t keySize);
+    seos_err_t      keyExport               (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle, in SeosCrypto_KeyHandle wrapKeyHandle, in size_t bufSize);
     seos_err_t      keyDeInit               (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle);
     seos_err_t      signatureInit           (in SeosCryptoRpc_Handle handle, out SeosCrypto_SignatureHandle pSigHandle, in unsigned int algorithm, in SeosCrypto_KeyHandle prvHandle, in SeosCrypto_KeyHandle pubHandle);
     seos_err_t      signatureVerify         (in SeosCryptoRpc_Handle handle, in SeosCrypto_SignatureHandle sigHandle, in size_t hashSize, in size_t signatureSize);
