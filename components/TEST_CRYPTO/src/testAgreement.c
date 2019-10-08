@@ -97,7 +97,7 @@ testAgreement_init_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -160,7 +160,7 @@ testAgreement_init_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, dhHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -225,7 +225,7 @@ testAgreement_compute_DH_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -263,7 +263,7 @@ testAgreement_compute_ECDH_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -332,7 +332,7 @@ testAgreement_compute_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -356,7 +356,7 @@ testAgreement_deInit_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -370,7 +370,7 @@ testAgreement_deInit_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_agreementDeInit(ctx, agrHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_HANDLE, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 void

@@ -243,7 +243,7 @@ testCipher_encrypt_AES_ECB(SeosCryptoCtx* ctx)
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -269,7 +269,7 @@ testCipher_decrypt_AES_ECB(SeosCryptoCtx* ctx)
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static seos_err_t
@@ -323,7 +323,7 @@ testCipher_encrypt_AES_CBC(SeosCryptoCtx* ctx)
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -350,7 +350,7 @@ testCipher_decrypt_AES_CBC(SeosCryptoCtx* ctx)
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static seos_err_t
@@ -439,7 +439,7 @@ testCipher_encrypt_AES_GCM(SeosCryptoCtx* ctx)
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -468,7 +468,7 @@ testCipher_decrypt_AES_GCM_ok(SeosCryptoCtx* ctx)
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -500,7 +500,7 @@ testCipher_decrypt_AES_GCM_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, keyHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -563,7 +563,7 @@ testCipher_init_ok(SeosCryptoCtx*  ctx)
     err = SeosCryptoApi_keyDeInit(ctx, keyHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -650,7 +650,7 @@ testCipher_init_fail(SeosCryptoCtx*  ctx)
     err = SeosCryptoApi_keyDeInit(ctx, tmpHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -674,7 +674,7 @@ testCipher_deInit_ok(SeosCryptoCtx*  ctx)
     err = SeosCryptoApi_keyDeInit(ctx, keyHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -705,7 +705,7 @@ testCipher_deInit_fail(SeosCryptoCtx*  ctx)
     err = SeosCryptoApi_keyDeInit(ctx, keyHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 
@@ -757,7 +757,7 @@ testCipher_start_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, keyHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -847,7 +847,7 @@ testCipher_update_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, keyHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -937,7 +937,7 @@ testCipher_finalize_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, keyHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 void

@@ -17,7 +17,7 @@ static void testRng_getBytes_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_rngGetBytes(ctx, &rnd, sizeof(data));
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void testRng_getBytes_fail(SeosCryptoCtx* ctx)
@@ -35,7 +35,7 @@ static void testRng_getBytes_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_rngGetBytes(ctx, &rnd, 0);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void testRng_reSeed_ok(SeosCryptoCtx* ctx)
@@ -46,7 +46,7 @@ static void testRng_reSeed_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_rngReSeed(ctx, seed, sizeof(seed));
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void testRng_reSeed_fail(SeosCryptoCtx* ctx)
@@ -63,7 +63,7 @@ static void testRng_reSeed_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_rngReSeed(ctx, seed, 0);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 void testRng(SeosCryptoCtx* ctx)

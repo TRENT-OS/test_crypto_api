@@ -138,7 +138,7 @@ testSignature_sign_RSA_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -222,7 +222,7 @@ testSignature_sign_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, pubHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -254,7 +254,7 @@ testSignature_verify_RSA_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, pubHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -329,7 +329,7 @@ testSignature_verify_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -378,7 +378,7 @@ testSignature_init_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -433,7 +433,7 @@ testSignature_init_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyDeInit(ctx, prvHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void

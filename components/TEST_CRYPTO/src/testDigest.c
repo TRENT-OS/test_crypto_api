@@ -163,7 +163,7 @@ testDigest_hash_MD5(SeosCryptoCtx* ctx)
         do_hash(ctx, SeosCryptoDigest_Algorithm_MD5, &md5Vectors[i]);
     }
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -176,7 +176,7 @@ testDigest_hash_SHA256(SeosCryptoCtx* ctx)
         do_hash(ctx, SeosCryptoDigest_Algorithm_SHA256, &sha256Vectors[i]);
     }
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -198,7 +198,7 @@ testDigest_init_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_digestClose(ctx, digHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -220,7 +220,7 @@ testDigest_init_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_digestInit(ctx, &digHandle, 666);
     Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_SUPPORTED, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -234,7 +234,7 @@ testDigest_deInit_ok(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_digestClose(ctx, digHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -258,7 +258,7 @@ testDigest_deInit_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_digestClose(ctx, digHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -301,7 +301,7 @@ testDigest_update_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_digestClose(ctx, digHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -350,7 +350,7 @@ testDigest_finalize_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_digestClose(ctx, digHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 void

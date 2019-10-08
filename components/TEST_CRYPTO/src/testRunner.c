@@ -13,9 +13,12 @@
 
 #include "SeosCrypto.h"
 
-#include "testSignatureRsa.h"
+#include "testSignature.h"
 #include "testAgreement.h"
-#include "testCrypto.h"
+#include "testCipher.h"
+#include "testRng.h"
+#include "testDigest.h"
+#include "testKeyStore.h"
 #include "testKey.h"
 
 #include <camkes.h>
@@ -65,32 +68,28 @@ int run()
     apiLocal    = SeosCrypto_TO_SEOS_CRYPTO_CTX(&cryptoCtx);
     apiRpc      = SeosCryptoClient_TO_SEOS_CRYPTO_CTX(&client);
 
-    testRNG(apiLocal);
-    testRNG(apiRpc);
+    Debug_PRINTF("Starting tests of SeosCryptoApi:\n");
+
+    testAgreement(apiLocal);
+    testAgreement(apiRpc);
+
+    testCipher(apiLocal);
+    testCipher(apiRpc);
+
+    testDigest(apiLocal);
+    testDigest(apiRpc);
 
     testKey(apiLocal);
     testKey(apiRpc);
 
-    testDigestMD5(apiLocal);
-    testDigestMD5(apiRpc);
+    testRng(apiLocal);
+    testRng(apiRpc);
 
-    testDigestSHA256(apiLocal);
-    testDigestSHA256(apiRpc);
+    testSignature(apiLocal);
+    testSignature(apiRpc);
 
-    testCipherAES_ECB(apiLocal);
-    testCipherAES_ECB(apiRpc);
+    Debug_PRINTF("All tests completed.\n");
 
-    testCipherAES_GCM(apiLocal);
-    testCipherAES_GCM(apiRpc);
-
-    testSignatureRSA(apiLocal);
-    testSignatureRSA(apiRpc);
-
-    testAgreementDH(apiLocal);
-    testAgreementDH(apiRpc);
-
-    testAgreementECDH(apiLocal);
-    testAgreementECDH(apiRpc);
 
     return 0;
 }

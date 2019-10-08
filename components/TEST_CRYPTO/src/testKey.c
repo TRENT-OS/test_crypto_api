@@ -111,7 +111,7 @@ testKey_init_ok(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -142,7 +142,7 @@ testKey_init_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyInit(ctx, NULL, SeosCryptoKey_Type_RSA_PUB, 0, 1024);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -180,7 +180,7 @@ testKey_export_ok(SeosCryptoCtx* ctx)
     Debug_ASSERT(memcmp(aesKey.bytes, aes128.bytes, 16) == 0);
     SeosCryptoApi_keyDeInit(ctx, key);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -245,7 +245,7 @@ testKey_export_fail(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_FOUND == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -286,7 +286,7 @@ testKey_import_ok(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -345,7 +345,7 @@ testKey_import_fail(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -361,7 +361,7 @@ testKey_generate_ok(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -396,7 +396,7 @@ testKey_generate_fail(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, key);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -407,10 +407,10 @@ testKey_generatePair_ok(SeosCryptoCtx* ctx)
 
     // Generate RSA keypair
     err = SeosCryptoApi_keyInit(ctx, &prvKey, SeosCryptoKey_Type_RSA_PRV,
-                                SeosCryptoKey_Flags_NONE, 1024);
+                                SeosCryptoKey_Flags_NONE, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyInit(ctx, &pubKey, SeosCryptoKey_Type_RSA_PUB,
-                                SeosCryptoKey_Flags_NONE, 1024);
+                                SeosCryptoKey_Flags_NONE, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyGeneratePair(ctx, prvKey, pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -431,17 +431,17 @@ testKey_generatePair_ok(SeosCryptoCtx* ctx)
 
     // Generate DH keypair
     err = SeosCryptoApi_keyInit(ctx, &prvKey, SeosCryptoKey_Type_DH_PRV,
-                                SeosCryptoKey_Flags_NONE, 256);
+                                SeosCryptoKey_Flags_NONE, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyInit(ctx, &pubKey, SeosCryptoKey_Type_DH_PUB,
-                                SeosCryptoKey_Flags_NONE, 256);
+                                SeosCryptoKey_Flags_NONE, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyGeneratePair(ctx, prvKey, pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     SeosCryptoApi_keyDeInit(ctx, prvKey);
     SeosCryptoApi_keyDeInit(ctx, pubKey);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -510,7 +510,7 @@ testKey_generatePair_fail(SeosCryptoCtx* ctx)
     SeosCryptoApi_keyDeInit(ctx, prvKey);
     SeosCryptoApi_keyDeInit(ctx, pubKey);
 
-    Debug_PRINTF("%s: OK\n", __func__);
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 void testKey(SeosCryptoCtx* ctx)
