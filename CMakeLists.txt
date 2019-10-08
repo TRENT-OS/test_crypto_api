@@ -18,7 +18,9 @@ DeclareCAmkESComponent(TEST_CRYPTO
     SOURCES
         components/TEST_CRYPTO/src/testRunner.c
         components/TEST_CRYPTO/src/testSignature.c
-        components/TEST_CRYPTO/src/testCrypto.c
+        components/TEST_CRYPTO/src/testCipher.c
+        components/TEST_CRYPTO/src/testRng.c
+        components/TEST_CRYPTO/src/testDigest.c
         components/TEST_CRYPTO/src/testAgreement.c
         components/TEST_CRYPTO/src/testKey.c
     C_FLAGS
