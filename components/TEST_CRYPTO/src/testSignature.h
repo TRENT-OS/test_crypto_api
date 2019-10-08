@@ -27,6 +27,6 @@
  */
 
 void
-testSignatureRSA(SeosCryptoCtx* cryptoCtx);
+testSignature(SeosCryptoCtx* cryptoCtx);
 
 ///@}
