@@ -18,7 +18,6 @@
 #include "testCipher.h"
 #include "testRng.h"
 #include "testDigest.h"
-#include "testKeyStore.h"
 #include "testKey.h"
 
 #include <camkes.h>
@@ -35,17 +34,6 @@ int entropyFunc(void*           ctx,
     return 0;
 }
 
-/**
- * @weakgroup CryptoApi_test_scenarios
- * @{
- *
- * @brief Top level test runner
- *
- * @test TestCrypto_scenario_1      Perform Crypto test cases for the local and remote version of the crypto api
- *
- *
- * @}
- */
 int run()
 {
     SeosCrypto cryptoCtx;
@@ -90,7 +78,7 @@ int run()
 
     Debug_PRINTF("All tests completed.\n");
 
-
     return 0;
 }
+
 ///@}

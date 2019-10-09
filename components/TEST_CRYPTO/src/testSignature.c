@@ -416,12 +416,12 @@ testSignature_init_fail(SeosCryptoCtx* ctx)
     // Use wrong type of key for prv
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, keyHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_SUPPORTED, "err %d", err);
+    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
 
     // Use wrong type of key for prv
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, keyHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_SUPPORTED, "err %d", err);
+    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
 
     // Use no keys
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,

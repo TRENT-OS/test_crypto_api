@@ -14,7 +14,7 @@ procedure CryptoRpcInf {
     seos_err_t      rngReSeed               (in SeosCryptoRpc_Handle handle, in size_t seedLen);
     seos_err_t      digestInit              (in SeosCryptoRpc_Handle handle, out SeosCrypto_DigestHandle pDigestHandle, in unsigned int algorithm);
     seos_err_t      digestFree              (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle digestHandle);
-    seos_err_t      digestUpdate            (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle digestHandle, in size_t inLen);
+    seos_err_t      digestProcess           (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle digestHandle, in size_t inLen);
     seos_err_t      digestFinalize          (in SeosCryptoRpc_Handle handle, in SeosCrypto_DigestHandle digestHandle, in size_t outSize);
     seos_err_t      keyInit                 (in SeosCryptoRpc_Handle handle, out SeosCrypto_KeyHandle pKeyHandle, in unsigned int type, in unsigned int flags, in size_t keySize);
     seos_err_t      keyGenerate             (in SeosCryptoRpc_Handle handle, in SeosCrypto_KeyHandle keyHandle);
@@ -31,7 +31,7 @@ procedure CryptoRpcInf {
     seos_err_t      agreementFree           (in SeosCryptoRpc_Handle handle, in SeosCrypto_AgreementHandle agrHandle);
     seos_err_t      cipherInit              (in SeosCryptoRpc_Handle handle, out SeosCrypto_CipherHandle pCipherHandle, in unsigned int algorithm, in SeosCrypto_KeyHandle keyHandle, in size_t ivLen);
     seos_err_t      cipherFree              (in SeosCryptoRpc_Handle handle, in SeosCrypto_CipherHandle cipherHandle);
-    seos_err_t      cipherUpdate            (in SeosCryptoRpc_Handle handle, in SeosCrypto_CipherHandle cipherHandle, in size_t inLen, in size_t outSize);
+    seos_err_t      cipherProcess           (in SeosCryptoRpc_Handle handle, in SeosCrypto_CipherHandle cipherHandle, in size_t inLen, in size_t outSize);
     seos_err_t      cipherStart             (in SeosCryptoRpc_Handle handle, in SeosCrypto_CipherHandle cipherHandle, in size_t len);
     seos_err_t      cipherFinalize          (in SeosCryptoRpc_Handle handle, in SeosCrypto_CipherHandle cipherHandle, in size_t len);
 };

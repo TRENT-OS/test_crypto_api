@@ -239,7 +239,7 @@ testKey_export_fail(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     readLen = sizeof(aesKey);
     err = SeosCryptoApi_keyExport(ctx, key, NULL, &aesKey, &readLen);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_FOUND == err, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
     SeosCryptoApi_keyFree(ctx, key);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -339,7 +339,7 @@ testKey_import_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyImport(ctx, key, NULL, &aes128, sizeof(aes128));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyImport(ctx, key, NULL, &aes128, sizeof(aes128));
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
     SeosCryptoApi_keyFree(ctx, key);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -390,7 +390,7 @@ testKey_generate_fail(SeosCryptoCtx* ctx)
     err = SeosCryptoApi_keyImport(ctx, key, NULL, &aes128, sizeof(aes128));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyGenerate(ctx, key);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
     SeosCryptoApi_keyFree(ctx, key);
 
     Debug_PRINTF("->%s: OK\n", __func__);
