@@ -349,12 +349,17 @@ static void
 testKey_generate_ok(SeosCryptoCtx* ctx)
 {
     seos_err_t err;
+    size_t sz;
     SeosCrypto_KeyHandle key;
+    SeosCryptoKey_AES aesKey;
 
     err = SeosCryptoApi_keyInit(ctx, &key, SeosCryptoKey_Type_AES,
-                                SeosCryptoKey_Flags_NONE, 128);
+                                SeosCryptoKey_Flags_EXPORTABLE_RAW, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyGenerate(ctx, key);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    sz = sizeof(aesKey);
+    err = SeosCryptoApi_keyExport(ctx, key, NULL, &aesKey, &sz);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     SeosCryptoApi_keyFree(ctx, key);
 
@@ -400,40 +405,65 @@ static void
 testKey_generatePair_ok(SeosCryptoCtx* ctx)
 {
     seos_err_t err;
+    size_t sz;
     SeosCrypto_KeyHandle prvKey, pubKey;
+    SeosCryptoKey_RSAPrv rsaPrv;
+    SeosCryptoKey_RSAPub rsaPub;
+    SeosCryptoKey_SECP256r1Prv ecPrv;
+    SeosCryptoKey_SECP256r1Pub ecPub;
+    SeosCryptoKey_DHPrv dhPrv;
+    SeosCryptoKey_DHPub dhPub;
 
     // Generate RSA keypair
     err = SeosCryptoApi_keyInit(ctx, &prvKey, SeosCryptoKey_Type_RSA_PRV,
-                                SeosCryptoKey_Flags_NONE, 128);
+                                SeosCryptoKey_Flags_EXPORTABLE_RAW, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyInit(ctx, &pubKey, SeosCryptoKey_Type_RSA_PUB,
-                                SeosCryptoKey_Flags_NONE, 128);
+                                SeosCryptoKey_Flags_EXPORTABLE_RAW, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyGeneratePair(ctx, prvKey, pubKey);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    sz = sizeof(rsaPrv);
+    err = SeosCryptoApi_keyExport(ctx, prvKey, NULL, &rsaPrv, &sz);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    sz = sizeof(rsaPub);
+    err = SeosCryptoApi_keyExport(ctx, pubKey, NULL, &rsaPub, &sz);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     SeosCryptoApi_keyFree(ctx, prvKey);
     SeosCryptoApi_keyFree(ctx, pubKey);
 
     // Generate EC keypair
     err = SeosCryptoApi_keyInit(ctx, &prvKey, SeosCryptoKey_Type_SECP256R1_PRV,
-                                SeosCryptoKey_Flags_NONE, 256);
+                                SeosCryptoKey_Flags_EXPORTABLE_RAW, 256);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyInit(ctx, &pubKey, SeosCryptoKey_Type_SECP256R1_PUB,
-                                SeosCryptoKey_Flags_NONE, 256);
+                                SeosCryptoKey_Flags_EXPORTABLE_RAW, 256);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyGeneratePair(ctx, prvKey, pubKey);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    sz = sizeof(ecPrv);
+    err = SeosCryptoApi_keyExport(ctx, prvKey, NULL, &ecPrv, &sz);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    sz = sizeof(ecPub);
+    err = SeosCryptoApi_keyExport(ctx, pubKey, NULL, &ecPub, &sz);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     SeosCryptoApi_keyFree(ctx, prvKey);
     SeosCryptoApi_keyFree(ctx, pubKey);
 
     // Generate DH keypair
     err = SeosCryptoApi_keyInit(ctx, &prvKey, SeosCryptoKey_Type_DH_PRV,
-                                SeosCryptoKey_Flags_NONE, 128);
+                                SeosCryptoKey_Flags_EXPORTABLE_RAW, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyInit(ctx, &pubKey, SeosCryptoKey_Type_DH_PUB,
-                                SeosCryptoKey_Flags_NONE, 128);
+                                SeosCryptoKey_Flags_EXPORTABLE_RAW, 128);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_keyGeneratePair(ctx, prvKey, pubKey);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    sz = sizeof(dhPrv);
+    err = SeosCryptoApi_keyExport(ctx, prvKey, NULL, &dhPrv, &sz);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    sz = sizeof(dhPub);
+    err = SeosCryptoApi_keyExport(ctx, pubKey, NULL, &dhPub, &sz);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     SeosCryptoApi_keyFree(ctx, prvKey);
     SeosCryptoApi_keyFree(ctx, pubKey);
