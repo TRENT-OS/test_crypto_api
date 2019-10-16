@@ -36,6 +36,11 @@ int entropyFunc(void*           ctx,
 
 int run()
 {
+    const SeosCrypto_Callbacks cb = {
+        .malloc     = malloc,
+        .free       = free,
+        .entropy    = entropyFunc
+    };   
     SeosCrypto cryptoCtx;
     SeosCryptoClient client;
     SeosCryptoCtx* apiLocal;
@@ -50,7 +55,7 @@ int run()
     err = SeosCryptoClient_init(&client, rpcHandle, cryptoClientDataport);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    err = SeosCrypto_init(&cryptoCtx, malloc, free, entropyFunc, NULL);
+    err = SeosCrypto_init(&cryptoCtx, &cb, NULL);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
     apiLocal    = SeosCrypto_TO_SEOS_CRYPTO_CTX(&cryptoCtx);
