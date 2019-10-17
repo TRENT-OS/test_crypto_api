@@ -26,7 +26,6 @@ DeclareCAmkESComponent(TEST_CRYPTO
     C_FLAGS
         -Wall -Werror
     LIBS
-        seos_libs
         seos_crypto
 )
 
