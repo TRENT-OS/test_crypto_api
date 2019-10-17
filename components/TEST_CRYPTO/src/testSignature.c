@@ -108,17 +108,13 @@ static const char expectedRsaSignature[] =
 static void
 testSignature_sign_RSA_ok(SeosCryptoCtx* ctx)
 {
-    SeosCrypto_KeyHandle prvHandle;
-    SeosCrypto_SignatureHandle sigHandle;
+    SeosCrypto_KeyHandle prvHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
     char signature[256];
     size_t signatureSize = sizeof(signature);
 
-    err = SeosCryptoApi_keyInit(ctx, &prvHandle, SeosCryptoKey_Type_RSA_PRV, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, prvHandle, NULL, &rsaPrvData,
-                                  sizeof(rsaPrvData));
+    err = SeosCryptoApi_keyImport(ctx, &prvHandle, NULL, SeosCryptoKey_Type_RSA_PRV, 0, &rsaPrvData, sizeof(rsaPrvData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // For signing we only need a private key
@@ -144,23 +140,15 @@ testSignature_sign_RSA_ok(SeosCryptoCtx* ctx)
 static void
 testSignature_sign_fail(SeosCryptoCtx* ctx)
 {
-    SeosCrypto_KeyHandle prvHandle, pubHandle;
-    SeosCrypto_SignatureHandle sigHandle, emptyHandle;
+    SeosCrypto_KeyHandle prvHandle = NULL, pubHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL, emptyHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
     char signature[256];
     size_t signatureSize = sizeof(signature);
 
-    err = SeosCryptoApi_keyInit(ctx, &prvHandle, SeosCryptoKey_Type_RSA_PRV, 0,
-                                1024);
+    err = SeosCryptoApi_keyImport(ctx, &prvHandle, NULL, SeosCryptoKey_Type_RSA_PRV, 0, &rsaPrvData, sizeof(rsaPrvData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, prvHandle, NULL, &rsaPrvData,
-                                  sizeof(rsaPrvData));
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyInit(ctx, &pubHandle, SeosCryptoKey_Type_RSA_PUB, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, pubHandle, NULL, &rsaPubData,
-                                  sizeof(rsaPubData));
+    err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, SeosCryptoKey_Type_RSA_PUB, 0, &rsaPubData, sizeof(rsaPubData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
@@ -228,15 +216,11 @@ testSignature_sign_fail(SeosCryptoCtx* ctx)
 static void
 testSignature_verify_RSA_ok(SeosCryptoCtx* ctx)
 {
-    SeosCrypto_KeyHandle pubHandle;
-    SeosCrypto_SignatureHandle sigHandle;
+    SeosCrypto_KeyHandle pubHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_keyInit(ctx, &pubHandle, SeosCryptoKey_Type_RSA_PUB, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, pubHandle, NULL, &rsaPubData,
-                                  sizeof(rsaPubData));
+    err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, SeosCryptoKey_Type_RSA_PUB, 0, &rsaPubData, sizeof(rsaPubData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // For signing we only need a public key
@@ -260,21 +244,13 @@ testSignature_verify_RSA_ok(SeosCryptoCtx* ctx)
 static void
 testSignature_verify_fail(SeosCryptoCtx* ctx)
 {
-    SeosCrypto_KeyHandle pubHandle, prvHandle;
-    SeosCrypto_SignatureHandle sigHandle, emptyHandle;
+    SeosCrypto_KeyHandle pubHandle = NULL, prvHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL, emptyHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_keyInit(ctx, &prvHandle, SeosCryptoKey_Type_RSA_PRV, 0,
-                                1024);
+    err = SeosCryptoApi_keyImport(ctx, &prvHandle, NULL, SeosCryptoKey_Type_RSA_PRV, 0, &rsaPrvData, sizeof(rsaPrvData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, prvHandle, NULL, &rsaPrvData,
-                                  sizeof(rsaPrvData));
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyInit(ctx, &pubHandle, SeosCryptoKey_Type_RSA_PUB, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, pubHandle, NULL, &rsaPubData,
-                                  sizeof(rsaPubData));
+    err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, SeosCryptoKey_Type_RSA_PUB, 0, &rsaPubData, sizeof(rsaPubData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
@@ -335,20 +311,14 @@ testSignature_verify_fail(SeosCryptoCtx* ctx)
 static void
 testSignature_init_ok(SeosCryptoCtx* ctx)
 {
-    SeosCrypto_KeyHandle pubHandle, prvHandle;
-    SeosCrypto_SignatureHandle sigHandle;
+    SeosCrypto_KeyHandle pubHandle = NULL, prvHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_keyInit(ctx, &prvHandle, SeosCryptoKey_Type_RSA_PRV, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, prvHandle, NULL, &rsaPrvData,
+    err = SeosCryptoApi_keyImport(ctx, &prvHandle, NULL, SeosCryptoKey_Type_RSA_PRV, 0, &rsaPrvData,
                                   sizeof(rsaPrvData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyInit(ctx, &pubHandle, SeosCryptoKey_Type_RSA_PUB, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, pubHandle, NULL, &rsaPubData,
+    err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, SeosCryptoKey_Type_RSA_PUB, 0, &rsaPubData,
                                   sizeof(rsaPubData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -384,19 +354,13 @@ testSignature_init_ok(SeosCryptoCtx* ctx)
 static void
 testSignature_init_fail(SeosCryptoCtx* ctx)
 {
-    SeosCrypto_KeyHandle keyHandle, prvHandle;
-    SeosCrypto_SignatureHandle sigHandle;
+    SeosCrypto_KeyHandle keyHandle = NULL, prvHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_keyInit(ctx, &keyHandle, SeosCryptoKey_Type_AES, 0, 256);
+    err = SeosCryptoApi_keyGenerate(ctx, &keyHandle, SeosCryptoKey_Type_AES, 0, 256);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyGenerate(ctx, keyHandle);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyInit(ctx, &prvHandle, SeosCryptoKey_Type_RSA_PRV, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, prvHandle, NULL, &rsaPrvData,
-                                  sizeof(rsaPrvData));
+    err = SeosCryptoApi_keyImport(ctx, &prvHandle, NULL, SeosCryptoKey_Type_RSA_PRV, 0, &rsaPrvData, sizeof(rsaPrvData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Use empty context
@@ -439,15 +403,11 @@ testSignature_init_fail(SeosCryptoCtx* ctx)
 static void
 testSignature_free_ok(SeosCryptoCtx* ctx)
 {
-    SeosCrypto_KeyHandle pubHandle;
-    SeosCrypto_SignatureHandle sigHandle;
+    SeosCrypto_KeyHandle pubHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_keyInit(ctx, &pubHandle, SeosCryptoKey_Type_RSA_PUB, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, pubHandle, NULL, &rsaPubData,
-                                  sizeof(rsaPubData));
+    err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, SeosCryptoKey_Type_RSA_PUB, 0, &rsaPubData, sizeof(rsaPubData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
@@ -460,15 +420,11 @@ testSignature_free_ok(SeosCryptoCtx* ctx)
 static void
 testSignature_free_fail(SeosCryptoCtx* ctx)
 {
-    SeosCrypto_KeyHandle pubHandle;
-    SeosCrypto_SignatureHandle sigHandle;
+    SeosCrypto_KeyHandle pubHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_keyInit(ctx, &pubHandle, SeosCryptoKey_Type_RSA_PUB, 0,
-                                1024);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_keyImport(ctx, pubHandle, NULL, &rsaPubData,
-                                  sizeof(rsaPubData));
+    err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, SeosCryptoKey_Type_RSA_PUB, 0, &rsaPubData, sizeof(rsaPubData));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
