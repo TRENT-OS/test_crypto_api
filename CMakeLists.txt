@@ -7,7 +7,6 @@ seos_use_libs(
     SEOS_LIBS_LOGGER
     SEOS_CRYPTO
     SEOS_CRYPTO_IMPL_MBEDTLS
-    SPIFFS
 )
 
 project(tests_crypto_api C)
