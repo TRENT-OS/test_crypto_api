@@ -63,6 +63,9 @@ int run()
 
     Debug_PRINTF("Starting tests of SeosCryptoApi:\n");
 
+    testKey(apiLocal);
+    testKey(apiRpc);
+    
     testAgreement(apiLocal);
     testAgreement(apiRpc);
 
@@ -71,9 +74,6 @@ int run()
 
     testDigest(apiLocal);
     testDigest(apiRpc);
-
-    testKey(apiLocal);
-    testKey(apiRpc);
 
     testRng(apiLocal);
     testRng(apiRpc);
