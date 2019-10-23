@@ -136,11 +136,11 @@ testSignature_sign_RSA_ok(SeosCryptoCtx* ctx)
     // For signing we only need a private key
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, msgData, strlen(msgData),
                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(!memcmp(expectedRsaSignature, signature,
                          sizeof(expectedRsaSignature)));
 
@@ -169,44 +169,44 @@ testSignature_sign_fail(SeosCryptoCtx* ctx)
 
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Use empty context
     err = SeosCryptoApi_signatureSign(NULL, sigHandle, msgData, strlen(msgData),
                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use empty sig handle
     emptyHandle = NULL;
     err = SeosCryptoApi_signatureSign(ctx, emptyHandle, msgData, strlen(msgData),
                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_HANDLE, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
 
     // Use empty data
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, NULL, strlen(msgData),
                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use zero length data
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, msgData, 0,
                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use NULL output buffer
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, msgData, strlen(msgData),
                                       NULL, &signatureSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use NULL output size buffer
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, msgData, strlen(msgData),
                                       signature, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use too small output buffer
     signatureSize = 10;
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, msgData, strlen(msgData),
                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_BUFFER_TOO_SMALL, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
 
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -214,7 +214,7 @@ testSignature_sign_fail(SeosCryptoCtx* ctx)
     // Try signing with only a public key
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, msgData, strlen(msgData),
                                       signature, &signatureSize);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
@@ -242,11 +242,11 @@ testSignature_verify_RSA_ok(SeosCryptoCtx* ctx)
     // For signing we only need a public key
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_signatureVerify(ctx, sigHandle, msgData, strlen(msgData),
                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -270,38 +270,38 @@ testSignature_verify_fail(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Use empty context
     err = SeosCryptoApi_signatureVerify(NULL, sigHandle, msgData, strlen(msgData),
                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use empty handle
     emptyHandle = NULL;
     err = SeosCryptoApi_signatureVerify(ctx, emptyHandle, msgData, strlen(msgData),
                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_HANDLE, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
 
     // Use empty msg buffer
     err = SeosCryptoApi_signatureVerify(ctx, sigHandle, NULL, strlen(msgData),
                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use zero lenght input
     err = SeosCryptoApi_signatureVerify(ctx, sigHandle, msgData, 0,
                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use empty signature buffer
     err = SeosCryptoApi_signatureVerify(ctx, sigHandle, msgData, strlen(msgData),
                                         NULL, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use zero length signature
     err = SeosCryptoApi_signatureVerify(ctx, sigHandle, msgData, strlen(msgData),
                                         expectedRsaSignature, 0);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -309,10 +309,10 @@ testSignature_verify_fail(SeosCryptoCtx* ctx)
     // Try verification if we have only private key
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureVerify(ctx, sigHandle, msgData, strlen(msgData),
                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_ABORTED, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -339,21 +339,21 @@ testSignature_init_ok(SeosCryptoCtx* ctx)
     // Init just with prv key
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Init just with prv key
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Use both keys
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, pubHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -380,31 +380,31 @@ testSignature_init_fail(SeosCryptoCtx* ctx)
     // Use empty context
     err = SeosCryptoApi_signatureInit(NULL, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use empty sig handle
     err = SeosCryptoApi_signatureInit(ctx, NULL,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use wrong algorithm
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle, 666, prvHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_SUPPORTED, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
     // Use wrong type of key for prv
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, keyHandle, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use wrong type of key for prv
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, keyHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Use no keys
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, NULL);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     err = SeosCryptoApi_keyFree(ctx, keyHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -426,13 +426,14 @@ testSignature_free_ok(SeosCryptoCtx* ctx)
 
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_keyFree(ctx, pubHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 static void
@@ -442,11 +443,11 @@ testSignature_free_fail(SeosCryptoCtx* ctx)
     SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
-     err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, &rsaPubData);
+    err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, &rsaPubData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
                                       SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Empty context
     err = SeosCryptoApi_signatureFree(NULL, sigHandle);
@@ -457,6 +458,121 @@ testSignature_free_fail(SeosCryptoCtx* ctx)
 
     err = SeosCryptoApi_signatureFree(ctx, sigHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
+static void
+testSignature_sign_buffer(SeosCryptoCtx* ctx)
+{
+    SeosCrypto_KeyHandle prvHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL;
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    static unsigned int hashBuf[SeosCrypto_DATAPORT_SIZE + 1],
+           sigBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    size_t hashLen, sigLen;
+
+    err = SeosCryptoApi_keyImport(ctx, &prvHandle, NULL, &rsaPrvData);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
+                                      SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, NULL);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Should go through but then return ABORTED because crypto fails
+    hashLen = SeosCrypto_DATAPORT_SIZE;
+    sigLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_signatureSign(ctx, sigHandle, hashBuf, hashLen, sigBuf,
+                                      &sigLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
+
+    // Should fail because input is too long
+    hashLen = SeosCrypto_DATAPORT_SIZE + 1;
+    sigLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_signatureSign(ctx, sigHandle, hashBuf, hashLen, sigBuf,
+                                      &sigLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+
+    // Should fail because output is too long
+    hashLen = SeosCrypto_DATAPORT_SIZE;
+    sigLen = SeosCrypto_DATAPORT_SIZE + 1;
+    err = SeosCryptoApi_signatureSign(ctx, sigHandle, hashBuf, hashLen, sigBuf,
+                                      &sigLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+
+    // Should fail but give us the required output size which is the size of the
+    // modulus of the private key, e.g., |N| = |P| + |Q|
+    hashLen = SeosCryptoDigest_SIZE_MD5;
+    sigLen = 10;
+    err = SeosCryptoApi_signatureSign(ctx, sigHandle, hashBuf, hashLen, sigBuf,
+                                      &sigLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
+    Debug_ASSERT(sigLen == (rsaPrvData.data.rsa.prv.pLen +
+                            rsaPrvData.data.rsa.prv.qLen));
+
+    err = SeosCryptoApi_signatureFree(ctx, sigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_keyFree(ctx, prvHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    err = SeosCryptoApi_keyImport(ctx, &prvHandle, NULL, &rsaPrvData);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
+                                      SeosCryptoSignature_Algorithm_RSA_PKCS1, prvHandle, NULL);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    // Sign with input/output buffer being the same
+    memcpy(hashBuf, msgData, strlen(msgData));
+    hashLen = strlen(msgData);
+    sigLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_signatureSign(ctx, sigHandle,
+                                      hashBuf, hashLen,
+                                      hashBuf, &sigLen);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT(sigLen == sizeof(expectedRsaSignature));
+    Debug_ASSERT(!memcmp(expectedRsaSignature, hashBuf, sigLen));
+    err = SeosCryptoApi_signatureFree(ctx, sigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_keyFree(ctx, prvHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
+static void
+testSignature_verify_buffer(SeosCryptoCtx* ctx)
+{
+    SeosCrypto_KeyHandle pubHandle = NULL;
+    SeosCrypto_SignatureHandle sigHandle = NULL;
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    static unsigned int hashBuf[SeosCrypto_DATAPORT_SIZE + 1],
+           sigBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    size_t hashLen, sigLen;
+
+    err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, &rsaPubData);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_signatureInit(ctx, &sigHandle,
+                                      SeosCryptoSignature_Algorithm_RSA_PKCS1, NULL, pubHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Should go through but fail with ABORTED because crypto fails
+    sigLen = (rsaPrvData.data.rsa.prv.pLen + rsaPrvData.data.rsa.prv.qLen);
+    hashLen = SeosCrypto_DATAPORT_SIZE - sigLen;
+    err = SeosCryptoApi_signatureVerify(ctx, sigHandle, hashBuf, hashLen, sigBuf,
+                                        sigLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
+
+    // Should fail because the total of both is too big for internal buffer
+    hashLen = 16;
+    sigLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_signatureVerify(ctx, sigHandle, hashBuf, hashLen, sigBuf,
+                                        sigLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+
+    err = SeosCryptoApi_signatureFree(ctx, sigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_keyFree(ctx, pubHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
 }
 
 void
@@ -473,4 +589,7 @@ testSignature(SeosCryptoCtx* ctx)
 
     testSignature_verify_RSA_ok(ctx);
     testSignature_verify_fail(ctx);
+
+    testSignature_sign_buffer(ctx);
+    testSignature_verify_buffer(ctx);
 }

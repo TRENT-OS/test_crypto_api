@@ -4,6 +4,7 @@
  */
 
 #include "testKey.h"
+#include "SeosCryptoKey.h"
 #include "SeosCryptoApi.h"
 
 #include <string.h>
@@ -441,7 +442,7 @@ do_export(SeosCryptoCtx*            ctx,
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     memset(&expData, 0, sizeof(SeosCryptoKey_Data));
     if ((err = SeosCryptoApi_keyExport(ctx, key, NULL,
-                                          &expData)) != SEOS_SUCCESS)
+                                       &expData)) != SEOS_SUCCESS)
     {
         return err;
     }
@@ -661,7 +662,7 @@ do_makePublic(SeosCryptoCtx*            ctx,
     err = SeosCryptoApi_keyGenerate(ctx, &key, spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     if ((err = SeosCryptoApi_keyMakePublic(ctx, &pubKey, key,
-                                              &spec->key.attribs)) != SEOS_SUCCESS)
+                                           &spec->key.attribs)) != SEOS_SUCCESS)
     {
         return err;
     }
@@ -729,7 +730,7 @@ testKey_makePublic_fail(SeosCryptoCtx* ctx)
 
     // Empty ctx
     err = SeosCryptoApi_keyMakePublic(NULL, &pubKey, key,
-                                         &dh64bSpec.key.attribs);
+                                      &dh64bSpec.key.attribs);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Empty target handle
@@ -738,7 +739,7 @@ testKey_makePublic_fail(SeosCryptoCtx* ctx)
 
     // Invalid private handle
     err = SeosCryptoApi_keyMakePublic(ctx, &pubKey, NULL,
-                                         &dh64bSpec.key.attribs);
+                                      &dh64bSpec.key.attribs);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
 
     // Empty attribs
@@ -833,19 +834,19 @@ testKey_loadParams_ok(SeosCryptoCtx* ctx)
     // Load SECP192r1
     n = sizeof(eccParams);
     err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
-                                         &eccParams, &n);
+                                      &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(eccParams));
 
     // Load SECP224r1
     err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP224R1,
-                                         &eccParams, &n);
+                                      &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(eccParams));
 
     // Load SECP256r1
     err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP256R1,
-                                         &eccParams, &n);
+                                      &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(eccParams));
 
@@ -862,7 +863,7 @@ testKey_loadParams_fail(SeosCryptoCtx* ctx)
     // Empty context
     n = sizeof(eccParams);
     err = SeosCryptoApi_keyLoadParams(NULL, SeosCryptoKey_Param_ECC_SECP192R1,
-                                         &eccParams, &n);
+                                      &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Wrong param name
@@ -871,18 +872,18 @@ testKey_loadParams_fail(SeosCryptoCtx* ctx)
 
     // Empty buffer
     err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
-                                         NULL, &n);
+                                      NULL, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Empty length
     err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
-                                         &eccParams, NULL);
+                                      &eccParams, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // To small buffer
     n = 17;
     err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
-                                         &eccParams, &n);
+                                      &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -925,6 +926,70 @@ testKey_free_fail(SeosCryptoCtx* ctx)
     Debug_PRINTF("->%s: OK\n", __func__);
 }
 
+static void
+testKey_getParams_buffer(SeosCryptoCtx* ctx)
+{
+    seos_err_t err;
+    SeosCrypto_KeyHandle key = NULL;
+    static unsigned char paramBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    size_t paramLen;
+
+    err = SeosCryptoApi_keyGenerate(ctx, &key, &dh101pSpec);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Should be OK and give the correct length
+    paramLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_keyGetParams(ctx, key, paramBuf, &paramLen);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT(paramLen == sizeof(SeosCryptoKey_DHParams));
+
+    // Should fail but give the correct length
+    paramLen = 10;
+    err = SeosCryptoApi_keyGetParams(ctx, key, paramBuf, &paramLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
+    Debug_ASSERT(paramLen == sizeof(SeosCryptoKey_DHParams));
+
+    // Should fail due buffer being too big
+    paramLen = SeosCrypto_DATAPORT_SIZE+1;
+    err = SeosCryptoApi_keyGetParams(ctx, key, paramBuf, &paramLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+  
+    err = SeosCryptoApi_keyFree(ctx, key);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
+static void
+testKey_loadParams_buffer(SeosCryptoCtx* ctx)
+{
+    seos_err_t err;
+    static unsigned char paramBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    size_t paramLen;
+
+    // Should be OK
+    paramLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
+                                      paramBuf, &paramLen);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT(paramLen == sizeof(SeosCryptoKey_ECCParams));
+
+    // Should fail, but give the minimum size
+    paramLen = 10;
+    err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
+                                      paramBuf, &paramLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
+    Debug_ASSERT(paramLen == sizeof(SeosCryptoKey_ECCParams));
+
+    // Should fail because buffer is too big
+    paramLen = SeosCrypto_DATAPORT_SIZE+1;
+    err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
+                                      paramBuf, &paramLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
 void testKey(SeosCryptoCtx* ctx)
 {
     testKey_import_ok(ctx);
@@ -947,4 +1012,7 @@ void testKey(SeosCryptoCtx* ctx)
 
     testKey_free_ok(ctx);
     testKey_free_fail(ctx);
+
+    testKey_getParams_buffer(ctx);
+    testKey_loadParams_buffer(ctx);
 }

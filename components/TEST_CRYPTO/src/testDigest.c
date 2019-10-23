@@ -138,19 +138,19 @@ do_hash(SeosCryptoCtx*               ctx,
     size_t digestSize;
 
     err = SeosCryptoApi_digestInit(ctx, &digHandle, algo);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, vec->msg.len);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     digestSize = sizeof(digest);
     err = SeosCryptoApi_digestFinalize(ctx, digHandle, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(digestSize == vec->digest.len);
     Debug_ASSERT(!memcmp(digest, vec->digest.bytes, vec->digest.len));
 
     err = SeosCryptoApi_digestFree(ctx, digHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 }
 
 static void
@@ -187,16 +187,16 @@ testDigest_init_ok(SeosCryptoCtx* ctx)
 
     // Test MD5
     err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_digestFree(ctx, digHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test SHA256
     err = SeosCryptoApi_digestInit(ctx, &digHandle,
                                    SeosCryptoDigest_Algorithm_SHA256);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_digestFree(ctx, digHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -210,15 +210,15 @@ testDigest_init_fail(SeosCryptoCtx* ctx)
     // Test with emtpy ctx
     err = SeosCryptoApi_digestInit(NULL, &digHandle,
                                    SeosCryptoDigest_Algorithm_MD5);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test with emtpy handle
     err = SeosCryptoApi_digestInit(ctx, NULL, SeosCryptoDigest_Algorithm_MD5);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test with invalid algo id
     err = SeosCryptoApi_digestInit(ctx, &digHandle, 666);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_NOT_SUPPORTED, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -230,9 +230,9 @@ testDigest_free_ok(SeosCryptoCtx* ctx)
     SeosCrypto_DigestHandle digHandle;
 
     err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_digestFree(ctx, digHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -244,19 +244,19 @@ testDigest_free_fail(SeosCryptoCtx* ctx)
     SeosCrypto_DigestHandle digHandle, emptyHandle;
 
     err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test empty ctx
     err = SeosCryptoApi_digestFree(NULL, digHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test empty handle
     emptyHandle = NULL;
     err = SeosCryptoApi_digestFree(ctx, emptyHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_HANDLE, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
 
     err = SeosCryptoApi_digestFree(ctx, digHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -272,35 +272,35 @@ testDigest_process_fail(SeosCryptoCtx* ctx)
 
 
     err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test with empty ctx
     err = SeosCryptoApi_digestProcess(NULL, digHandle, vec->msg.bytes,
                                       vec->msg.len);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test with empty handle
     err = SeosCryptoApi_digestProcess(ctx, NULL, vec->msg.bytes, vec->msg.len);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_HANDLE, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
 
     // Test with empty input
     err = SeosCryptoApi_digestProcess(ctx, digHandle, NULL, vec->msg.len);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test with zero lenght input
     err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, 0);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Update after already finalizing it
     err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, vec->msg.len);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_digestFinalize(ctx, digHandle, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, vec->msg.len);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_ABORTED, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     err = SeosCryptoApi_digestFree(ctx, digHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -315,41 +315,117 @@ testDigest_finalize_fail(SeosCryptoCtx* ctx)
     size_t digestSize = sizeof(digest);
 
     err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Finalize without updating
     err = SeosCryptoApi_digestFinalize(ctx, digHandle, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_ABORTED, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, vec->msg.len);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Finalize without context
     err = SeosCryptoApi_digestFinalize(NULL, digHandle, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Finalize without handle
     err = SeosCryptoApi_digestFinalize(ctx, NULL, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_HANDLE, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
 
     // Finalize without output buffer
     err = SeosCryptoApi_digestFinalize(ctx, digHandle, NULL, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_INVALID_PARAMETER, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Finalize without sufficient space
     digestSize = 4;
     err = SeosCryptoApi_digestFinalize(ctx, digHandle, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_BUFFER_TOO_SMALL, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
 
     // Finalize twice
     digestSize = sizeof(digest);
     err = SeosCryptoApi_digestFinalize(ctx, digHandle, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_digestFinalize(ctx, digHandle, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(err == SEOS_ERROR_ABORTED, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     err = SeosCryptoApi_digestFree(ctx, digHandle);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
+static void
+testDigest_process_buffer(SeosCryptoCtx* ctx)
+{
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    SeosCrypto_DigestHandle digHandle;
+    static unsigned char inBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    size_t inLen;
+
+    err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Should go OK
+    inLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_digestProcess(ctx, digHandle, inBuf, inLen);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Should fail due to internal buffers being limited
+    inLen = SeosCrypto_DATAPORT_SIZE + 1;
+    err = SeosCryptoApi_digestProcess(ctx, digHandle, inBuf, inLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+
+    err = SeosCryptoApi_digestFree(ctx, digHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
+static void
+testDigest_finalize_buffer(SeosCryptoCtx* ctx)
+{
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    SeosCrypto_DigestHandle digHandle;
+    static unsigned char inBuf[SeosCrypto_DATAPORT_SIZE],
+           outBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    size_t inLen, outLen;
+
+    err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    inLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_digestProcess(ctx, digHandle, inBuf, inLen);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    // Should be OK, as we are below the dataport limit
+    outLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_digestFinalize(ctx, digHandle, outBuf, &outLen);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestFree(ctx, digHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    inLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_digestProcess(ctx, digHandle, inBuf, inLen);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    // Should fail because out buffer is potentially too big
+    outLen = SeosCrypto_DATAPORT_SIZE + 1;
+    err = SeosCryptoApi_digestFinalize(ctx, digHandle, outBuf, &outLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+    err = SeosCryptoApi_digestFree(ctx, digHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    inLen = SeosCrypto_DATAPORT_SIZE;
+    err = SeosCryptoApi_digestProcess(ctx, digHandle, inBuf, inLen);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    // This should fail but give us the expected buffer size
+    outLen = 10;
+    err = SeosCryptoApi_digestFinalize(ctx, digHandle, outBuf, &outLen);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
+    Debug_ASSERT(outLen == SeosCryptoDigest_SIZE_MD5);
+    err = SeosCryptoApi_digestFree(ctx, digHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -370,4 +446,7 @@ testDigest(SeosCryptoCtx* ctx)
     // proof of correct funtioning
     testDigest_process_fail(ctx);
     testDigest_finalize_fail(ctx);
+
+    testDigest_process_buffer(ctx);
+    testDigest_finalize_buffer(ctx);
 }
