@@ -2,7 +2,7 @@
  * @addtogroup CryptoApi_Tests
  * @{
  *
- * @file testSignatureRsa.h
+ * @file testSignature.h
  *
  * @brief Tests for the RSA functinalities of the crypto API
  *
