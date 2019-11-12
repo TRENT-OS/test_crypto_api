@@ -122,17 +122,13 @@ static const macTestVector sha256Vectors[NUM_SHA256_TESTS] =
 // -----------------------------------------------------------------------------
 
 static void
-do_mac(SeosCryptoCtx*       ctx,
-       unsigned int         algo,
-       const macTestVector* vec)
+do_mac(SeosCryptoCtx*           ctx,
+       SeosCrypto_MacHandle     macHandle,
+       const macTestVector*     vec)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCrypto_MacHandle macHandle;
     char mac[64];
     size_t macSize;
-
-    err = SeosCryptoApi_macInit(ctx, &macHandle, algo);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_macStart(ctx, macHandle, vec->secret.bytes,
                                  vec->secret.len);
@@ -146,20 +142,25 @@ do_mac(SeosCryptoCtx*       ctx,
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(macSize == vec->mac.len);
     Debug_ASSERT(!memcmp(mac, vec->mac.bytes, vec->mac.len));
-
-    err = SeosCryptoApi_macFree(ctx, macHandle);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 }
 
 static void
 testMac_mac_HMAC_MD5(SeosCryptoCtx* ctx)
 {
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    SeosCrypto_MacHandle macHandle;
     size_t i;
+
+    err = SeosCryptoApi_macInit(ctx, &macHandle, SeosCryptoMac_Algorithm_HMAC_MD5);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
     {
-        do_mac(ctx, SeosCryptoMac_Algorithm_HMAC_MD5, &md5Vectors[i]);
+        do_mac(ctx, macHandle, &md5Vectors[i]);
     }
+
+    err = SeosCryptoApi_macFree(ctx, macHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -167,12 +168,21 @@ testMac_mac_HMAC_MD5(SeosCryptoCtx* ctx)
 static void
 testMac_mac_HMAC_SHA256(SeosCryptoCtx* ctx)
 {
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    SeosCrypto_MacHandle macHandle;
     size_t i;
+
+    err = SeosCryptoApi_macInit(ctx, &macHandle,
+                                SeosCryptoMac_Algorithm_HMAC_SHA256);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
     {
-        do_mac(ctx, SeosCryptoMac_Algorithm_HMAC_SHA256, &sha256Vectors[i]);
+        do_mac(ctx, macHandle, &sha256Vectors[i]);
     }
+
+    err = SeosCryptoApi_macFree(ctx, macHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }

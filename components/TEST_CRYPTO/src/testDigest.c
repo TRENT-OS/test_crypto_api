@@ -128,17 +128,13 @@ static const digestTestVector sha256Vectors[NUM_SHA256_TESTS] =
 // -----------------------------------------------------------------------------
 
 static void
-do_hash(SeosCryptoCtx*               ctx,
-        unsigned int                 algo,
-        const digestTestVector*      vec)
+do_hash(SeosCryptoCtx*              ctx,
+        SeosCrypto_DigestHandle     digHandle,
+        const digestTestVector*     vec)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCrypto_DigestHandle digHandle;
     char digest[64];
     size_t digestSize;
-
-    err = SeosCryptoApi_digestInit(ctx, &digHandle, algo);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, vec->msg.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -148,20 +144,25 @@ do_hash(SeosCryptoCtx*               ctx,
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(digestSize == vec->digest.len);
     Debug_ASSERT(!memcmp(digest, vec->digest.bytes, vec->digest.len));
-
-    err = SeosCryptoApi_digestFree(ctx, digHandle);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 }
 
 static void
 testDigest_hash_MD5(SeosCryptoCtx* ctx)
 {
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    SeosCrypto_DigestHandle digHandle;
     size_t i;
+
+    err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
     {
-        do_hash(ctx, SeosCryptoDigest_Algorithm_MD5, &md5Vectors[i]);
+        do_hash(ctx, digHandle, &md5Vectors[i]);
     }
+
+    err = SeosCryptoApi_digestFree(ctx, digHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -169,12 +170,21 @@ testDigest_hash_MD5(SeosCryptoCtx* ctx)
 static void
 testDigest_hash_SHA256(SeosCryptoCtx* ctx)
 {
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    SeosCrypto_DigestHandle digHandle;
     size_t i;
+
+    err = SeosCryptoApi_digestInit(ctx, &digHandle,
+                                   SeosCryptoDigest_Algorithm_SHA256);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
     {
-        do_hash(ctx, SeosCryptoDigest_Algorithm_SHA256, &sha256Vectors[i]);
+        do_hash(ctx, digHandle, &sha256Vectors[i]);
     }
+
+    err = SeosCryptoApi_digestFree(ctx, digHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
 }
@@ -267,9 +277,6 @@ testDigest_process_fail(SeosCryptoCtx* ctx)
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCrypto_DigestHandle digHandle;
     const digestTestVector* vec = &md5Vectors[0];
-    char digest[64];
-    size_t digestSize = sizeof(digest);
-
 
     err = SeosCryptoApi_digestInit(ctx, &digHandle, SeosCryptoDigest_Algorithm_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -290,14 +297,6 @@ testDigest_process_fail(SeosCryptoCtx* ctx)
     // Test with zero lenght input
     err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, 0);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
-
-    // Update after already finalizing it
-    err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, vec->msg.len);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_digestFinalize(ctx, digHandle, digest, &digestSize);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_digestProcess(ctx, digHandle, vec->msg.bytes, vec->msg.len);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     err = SeosCryptoApi_digestFree(ctx, digHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
