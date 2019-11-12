@@ -190,6 +190,99 @@ testDigest_hash_SHA256(SeosCryptoCtx* ctx)
 }
 
 static void
+do_clone(SeosCryptoCtx*                     ctx,
+         const SeosCryptoDigest_Algorithm   algo,
+         const digestTestVector*            vec)
+{
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    SeosCrypto_DigestHandle dstDigHandle, srcDigHandle;
+    char srcDigest[64], dstDigest[64];
+    size_t digestSize;
+
+    // Create digest object and process something
+    err = SeosCryptoApi_digestInit(ctx, &srcDigHandle, algo);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestProcess(ctx, srcDigHandle, vec->msg.bytes,
+                                      vec->msg.len);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Create new digest and clone the state of the other one
+    err = SeosCryptoApi_digestInit(ctx, &dstDigHandle, algo);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestClone(ctx, dstDigHandle, srcDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Finalize both objects and check if they match
+    digestSize = sizeof(srcDigest);
+    err = SeosCryptoApi_digestFinalize(ctx, srcDigHandle, srcDigest, &digestSize);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT(digestSize == vec->digest.len);
+    digestSize = sizeof(dstDigest);
+    err = SeosCryptoApi_digestFinalize(ctx, dstDigHandle, dstDigest, &digestSize);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT(digestSize == vec->digest.len);
+    Debug_ASSERT(!memcmp(srcDigest, dstDigest, digestSize));
+
+    err = SeosCryptoApi_digestFree(ctx, dstDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestFree(ctx, srcDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+}
+
+static void
+testDigest_clone_ok(SeosCryptoCtx* ctx)
+{
+    do_clone(ctx, SeosCryptoDigest_Algorithm_MD5, &md5Vectors[0]);
+    do_clone(ctx, SeosCryptoDigest_Algorithm_SHA256, &sha256Vectors[0]);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
+static void
+testDigest_clone_fail(SeosCryptoCtx* ctx)
+{
+    seos_err_t err = SEOS_ERROR_GENERIC;
+    const digestTestVector* vec = &md5Vectors[0];
+    SeosCrypto_DigestHandle dstDigHandle, srcDigHandle;
+
+    // Create digest object and process something
+    err = SeosCryptoApi_digestInit(ctx, &srcDigHandle, SeosCryptoDigest_Algorithm_MD5);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestProcess(ctx, srcDigHandle, vec->msg.bytes,
+                                      vec->msg.len);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestInit(ctx, &dstDigHandle, SeosCryptoDigest_Algorithm_MD5);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Empty ctx
+    err = SeosCryptoApi_digestClone(NULL, dstDigHandle, srcDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+
+    // Empty dst handle
+    err = SeosCryptoApi_digestClone(ctx, NULL, srcDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
+
+    // Empty src handle
+    err = SeosCryptoApi_digestClone(ctx, dstDigHandle, NULL);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
+
+    // Clone into wrong type of digest
+    err = SeosCryptoApi_digestFree(ctx, dstDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestInit(ctx, &dstDigHandle, SeosCryptoDigest_Algorithm_SHA256);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestClone(ctx, dstDigHandle, srcDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+
+    err = SeosCryptoApi_digestFree(ctx, dstDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_digestFree(ctx, srcDigHandle);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
+static void
 testDigest_init_ok(SeosCryptoCtx* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -440,6 +533,9 @@ testDigest(SeosCryptoCtx* ctx)
 
     testDigest_hash_SHA256(ctx);
     testDigest_hash_MD5(ctx);
+
+    testDigest_clone_ok(ctx);
+    testDigest_clone_fail(ctx);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
