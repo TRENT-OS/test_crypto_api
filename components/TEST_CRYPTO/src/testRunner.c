@@ -18,6 +18,7 @@
 #include "testCipher.h"
 #include "testRng.h"
 #include "testDigest.h"
+#include "testMac.h"
 #include "testKey.h"
 
 #include <camkes.h>
@@ -40,7 +41,7 @@ int run()
         .malloc     = malloc,
         .free       = free,
         .entropy    = entropyFunc
-    };   
+    };
     SeosCrypto cryptoCtx;
     SeosCryptoClient client;
     SeosCryptoCtx* apiLocal;
@@ -65,7 +66,7 @@ int run()
 
     testKey(apiLocal);
     testKey(apiRpc);
-    
+
     testAgreement(apiLocal);
     testAgreement(apiRpc);
 
@@ -74,6 +75,9 @@ int run()
 
     testDigest(apiLocal);
     testDigest(apiRpc);
+
+    testMac(apiLocal);
+    testMac(apiRpc);
 
     testRng(apiLocal);
     testRng(apiRpc);
