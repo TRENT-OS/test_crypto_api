@@ -79,17 +79,17 @@ static void
 testRng_reSeed_buffer(SeosCryptoCtx* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    static unsigned char seedBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char seedBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t seedLen;
 
     // Should go through, but will fail with aborted as RNG can only accept
     // limited amount of inputs per reseed
-    seedLen = SeosCrypto_DATAPORT_SIZE;
+    seedLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_rngReSeed(ctx, seedBuf, seedLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     // Should fail as input is too big
-    seedLen = SeosCrypto_DATAPORT_SIZE + 1;
+    seedLen = SeosCrypto_Size_DATAPORT + 1;
     err = SeosCryptoApi_rngReSeed(ctx, seedBuf, seedLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
@@ -100,17 +100,17 @@ static void
 testRng_getBytes_buffer(SeosCryptoCtx* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    static unsigned char rngBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char rngBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t rngLen;
 
     // Should go through, but will fail with aborted as RNG can only provide a
     // limited amount of bytes per call
-    rngLen = SeosCrypto_DATAPORT_SIZE;
+    rngLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_rngGetBytes(ctx, 0, rngBuf, rngLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     // Should fail as output is too big
-    rngLen = SeosCrypto_DATAPORT_SIZE + 1;
+    rngLen = SeosCrypto_Size_DATAPORT + 1;
     err = SeosCryptoApi_rngGetBytes(ctx, 0, rngBuf, rngLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 

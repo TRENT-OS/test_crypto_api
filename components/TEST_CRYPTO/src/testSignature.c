@@ -468,8 +468,8 @@ testSignature_sign_buffer(SeosCryptoCtx* ctx)
     SeosCrypto_KeyHandle prvHandle = NULL;
     SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
-    static unsigned int hashBuf[SeosCrypto_DATAPORT_SIZE + 1],
-           sigBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned int hashBuf[SeosCrypto_Size_DATAPORT + 1],
+           sigBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t hashLen, sigLen;
 
     err = SeosCryptoApi_keyImport(ctx, &prvHandle, NULL, &rsaPrvData);
@@ -479,29 +479,29 @@ testSignature_sign_buffer(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should go through but then return ABORTED because crypto fails
-    hashLen = SeosCrypto_DATAPORT_SIZE;
-    sigLen = SeosCrypto_DATAPORT_SIZE;
+    hashLen = SeosCrypto_Size_DATAPORT;
+    sigLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, hashBuf, hashLen, sigBuf,
                                       &sigLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     // Should fail because input is too long
-    hashLen = SeosCrypto_DATAPORT_SIZE + 1;
-    sigLen = SeosCrypto_DATAPORT_SIZE;
+    hashLen = SeosCrypto_Size_DATAPORT + 1;
+    sigLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, hashBuf, hashLen, sigBuf,
                                       &sigLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
     // Should fail because output is too long
-    hashLen = SeosCrypto_DATAPORT_SIZE;
-    sigLen = SeosCrypto_DATAPORT_SIZE + 1;
+    hashLen = SeosCrypto_Size_DATAPORT;
+    sigLen = SeosCrypto_Size_DATAPORT + 1;
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, hashBuf, hashLen, sigBuf,
                                       &sigLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
     // Should fail but give us the required output size which is the size of the
     // modulus of the private key, e.g., |N| = |P| + |Q|
-    hashLen = SeosCryptoDigest_SIZE_MD5;
+    hashLen = SeosCryptoDigest_Size_MD5;
     sigLen = 10;
     err = SeosCryptoApi_signatureSign(ctx, sigHandle, hashBuf, hashLen, sigBuf,
                                       &sigLen);
@@ -522,7 +522,7 @@ testSignature_sign_buffer(SeosCryptoCtx* ctx)
     // Sign with input/output buffer being the same
     memcpy(hashBuf, msgData, strlen(msgData));
     hashLen = strlen(msgData);
-    sigLen = SeosCrypto_DATAPORT_SIZE;
+    sigLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_signatureSign(ctx, sigHandle,
                                       hashBuf, hashLen,
                                       hashBuf, &sigLen);
@@ -543,8 +543,8 @@ testSignature_verify_buffer(SeosCryptoCtx* ctx)
     SeosCrypto_KeyHandle pubHandle = NULL;
     SeosCrypto_SignatureHandle sigHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
-    static unsigned int hashBuf[SeosCrypto_DATAPORT_SIZE + 1],
-           sigBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned int hashBuf[SeosCrypto_Size_DATAPORT + 1],
+           sigBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t hashLen, sigLen;
 
     err = SeosCryptoApi_keyImport(ctx, &pubHandle, NULL, &rsaPubData);
@@ -555,14 +555,14 @@ testSignature_verify_buffer(SeosCryptoCtx* ctx)
 
     // Should go through but fail with ABORTED because crypto fails
     sigLen = (rsaPrvData.data.rsa.prv.pLen + rsaPrvData.data.rsa.prv.qLen);
-    hashLen = SeosCrypto_DATAPORT_SIZE - sigLen;
+    hashLen = SeosCrypto_Size_DATAPORT - sigLen;
     err = SeosCryptoApi_signatureVerify(ctx, sigHandle, hashBuf, hashLen, sigBuf,
                                         sigLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     // Should fail because the total of both is too big for internal buffer
     hashLen = 16;
-    sigLen = SeosCrypto_DATAPORT_SIZE;
+    sigLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_signatureVerify(ctx, sigHandle, hashBuf, hashLen, sigBuf,
                                         sigLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);

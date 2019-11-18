@@ -931,14 +931,14 @@ testKey_getParams_buffer(SeosCryptoCtx* ctx)
 {
     seos_err_t err;
     SeosCrypto_KeyHandle key = NULL;
-    static unsigned char paramBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char paramBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t paramLen;
 
     err = SeosCryptoApi_keyGenerate(ctx, &key, &dh101pSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should be OK and give the correct length
-    paramLen = SeosCrypto_DATAPORT_SIZE;
+    paramLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_keyGetParams(ctx, key, paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(paramLen == sizeof(SeosCryptoKey_DHParams));
@@ -950,10 +950,10 @@ testKey_getParams_buffer(SeosCryptoCtx* ctx)
     Debug_ASSERT(paramLen == sizeof(SeosCryptoKey_DHParams));
 
     // Should fail due buffer being too big
-    paramLen = SeosCrypto_DATAPORT_SIZE+1;
+    paramLen = SeosCrypto_Size_DATAPORT+1;
     err = SeosCryptoApi_keyGetParams(ctx, key, paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
-  
+
     err = SeosCryptoApi_keyFree(ctx, key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -964,11 +964,11 @@ static void
 testKey_loadParams_buffer(SeosCryptoCtx* ctx)
 {
     seos_err_t err;
-    static unsigned char paramBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char paramBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t paramLen;
 
     // Should be OK
-    paramLen = SeosCrypto_DATAPORT_SIZE;
+    paramLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
                                       paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -982,7 +982,7 @@ testKey_loadParams_buffer(SeosCryptoCtx* ctx)
     Debug_ASSERT(paramLen == sizeof(SeosCryptoKey_ECCParams));
 
     // Should fail because buffer is too big
-    paramLen = SeosCrypto_DATAPORT_SIZE+1;
+    paramLen = SeosCrypto_Size_DATAPORT+1;
     err = SeosCryptoApi_keyLoadParams(ctx, SeosCryptoKey_Param_ECC_SECP192R1,
                                       paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);

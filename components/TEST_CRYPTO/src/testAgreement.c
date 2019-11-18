@@ -500,7 +500,7 @@ testAgreement_agree_buffer(SeosCryptoCtx* ctx)
 {
     SeosCrypto_KeyHandle pubHandle = NULL, prvHandle = NULL;
     SeosCrypto_AgreementHandle agrHandle = NULL;
-    static unsigned char sharedBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char sharedBuf[SeosCrypto_Size_DATAPORT + 1];
     seos_err_t err;
     size_t sharedLen;
 
@@ -516,7 +516,7 @@ testAgreement_agree_buffer(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should go through and get the resulting agreement size
-    sharedLen = SeosCrypto_DATAPORT_SIZE;
+    sharedLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_agreementAgree(ctx, agrHandle, pubHandle, sharedBuf,
                                        &sharedLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -530,7 +530,7 @@ testAgreement_agree_buffer(SeosCryptoCtx* ctx)
     Debug_ASSERT(sharedLen == dhPubData.data.dh.pub.params.pLen);
 
     // Should fail because output buffer is too big
-    sharedLen = SeosCrypto_DATAPORT_SIZE + 1;
+    sharedLen = SeosCrypto_Size_DATAPORT + 1;
     err = SeosCryptoApi_agreementAgree(ctx, agrHandle, pubHandle, sharedBuf,
                                        &sharedLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);

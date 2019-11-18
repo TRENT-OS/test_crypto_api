@@ -930,14 +930,14 @@ testCipher_init_buffer(SeosCryptoCtx* ctx)
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCrypto_KeyHandle keyHandle = NULL;
     SeosCrypto_CipherHandle cipherHandle = NULL;
-    static unsigned char ivBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char ivBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t ivLen;
 
     err = SeosCryptoApi_keyGenerate(ctx, &keyHandle, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should be OK
-    ivLen = SeosCryptoCipher_AES_BLOCK_SIZE;
+    ivLen = SeosCryptoCipher_Size_AES_BLOCK;
     err = SeosCryptoApi_cipherInit(ctx, &cipherHandle,
                                    SeosCryptoCipher_Algorithm_AES_CBC_DEC, keyHandle, ivBuf, ivLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -946,14 +946,14 @@ testCipher_init_buffer(SeosCryptoCtx* ctx)
 
     // Should fail with SEOS_ERROR_INVALID_PARAMETER beacause it is way too large
     // for any cipher
-    ivLen = SeosCrypto_DATAPORT_SIZE;
+    ivLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_cipherInit(ctx, &cipherHandle,
                                    SeosCryptoCipher_Algorithm_AES_CBC_DEC, keyHandle, ivBuf, ivLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Should fail with SEOS_ERROR_INSUFFICIENT_SPACE because it is too large for
     // the internal dataports
-    ivLen = SeosCrypto_DATAPORT_SIZE + 1;
+    ivLen = SeosCrypto_Size_DATAPORT + 1;
     err = SeosCryptoApi_cipherInit(ctx, &cipherHandle,
                                    SeosCryptoCipher_Algorithm_AES_CBC_DEC, keyHandle, ivBuf, ivLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
@@ -970,7 +970,7 @@ testCipher_start_buffer(SeosCryptoCtx* ctx)
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCrypto_KeyHandle keyHandle = NULL;
     SeosCrypto_CipherHandle cipherHandle;
-    static unsigned char ivBuf[16], inputBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char ivBuf[16], inputBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t inLen;
 
     err = SeosCryptoApi_keyGenerate(ctx, &keyHandle, &aes128Spec);
@@ -980,12 +980,12 @@ testCipher_start_buffer(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should be OK
-    inLen = SeosCrypto_DATAPORT_SIZE;
+    inLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_cipherStart(ctx, cipherHandle, inputBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should fail because input is too big
-    inLen = SeosCrypto_DATAPORT_SIZE + 1;
+    inLen = SeosCrypto_Size_DATAPORT + 1;
     err = SeosCryptoApi_cipherStart(ctx, cipherHandle, inputBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
@@ -1001,8 +1001,8 @@ testCipher_process_buffer(SeosCryptoCtx* ctx)
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCrypto_KeyHandle keyHandle = NULL;
     SeosCrypto_CipherHandle cipherHandle = NULL;
-    static unsigned char inBuf[SeosCrypto_DATAPORT_SIZE + 1],
-           outBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char inBuf[SeosCrypto_Size_DATAPORT + 1],
+           outBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t inLen, outLen;
 
     err = SeosCryptoApi_keyGenerate(ctx, &keyHandle, &aes128Spec);
@@ -1012,29 +1012,29 @@ testCipher_process_buffer(SeosCryptoCtx* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // This should go OK
-    inLen = outLen = SeosCrypto_DATAPORT_SIZE;
+    inLen = outLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_cipherProcess(ctx, cipherHandle, inBuf, inLen, outBuf,
                                       &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(inLen == outLen);
 
     // This should fail as input is too big
-    inLen = SeosCrypto_DATAPORT_SIZE + 1;
-    outLen = SeosCrypto_DATAPORT_SIZE;
+    inLen = SeosCrypto_Size_DATAPORT + 1;
+    outLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_cipherProcess(ctx, cipherHandle, inBuf, inLen, outBuf,
                                       &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
     // This should fail as output is too big
-    inLen = SeosCrypto_DATAPORT_SIZE;
-    outLen = SeosCrypto_DATAPORT_SIZE + 1;
+    inLen = SeosCrypto_Size_DATAPORT;
+    outLen = SeosCrypto_Size_DATAPORT + 1;
     err = SeosCryptoApi_cipherProcess(ctx, cipherHandle, inBuf, inLen, outBuf,
                                       &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
     // This should fail in the SeosCryptoCipher, but should give us the expected
     // (= minimum) output buffer size
-    inLen = SeosCrypto_DATAPORT_SIZE;
+    inLen = SeosCrypto_Size_DATAPORT;
     outLen = 10;
     err = SeosCryptoApi_cipherProcess(ctx, cipherHandle, inBuf, inLen, outBuf,
                                       &outLen);
@@ -1055,7 +1055,7 @@ testCipher_process_buffer(SeosCryptoCtx* ctx)
     memcpy(inBuf, aesEcbVectors[0].ct.bytes, aesEcbVectors[0].ct.len);
     outLen = aesEcbVectors[0].pt.len;
     err = SeosCryptoApi_cipherProcess(ctx, cipherHandle,
-                                      inBuf, aesEcbVectors[0].ct.len, 
+                                      inBuf, aesEcbVectors[0].ct.len,
                                       inBuf, &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(!memcmp(inBuf, aesEcbVectors[0].pt.bytes, aesEcbVectors[0].pt.len));
@@ -1074,7 +1074,7 @@ testCipher_finalize_buffer(SeosCryptoCtx* ctx)
     SeosCrypto_CipherHandle cipherHandle = NULL;
     SeosCrypto_KeyHandle keyHandle = NULL;
     unsigned char inBuf[16], outBuf[16], iv[12];
-    static unsigned char tagBuf[SeosCrypto_DATAPORT_SIZE + 1];
+    static unsigned char tagBuf[SeosCrypto_Size_DATAPORT + 1];
     size_t tagLen;
 
     err = SeosCryptoApi_keyGenerate(ctx, &keyHandle, &aes128Spec);
@@ -1090,10 +1090,10 @@ testCipher_finalize_buffer(SeosCryptoCtx* ctx)
                                       &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     // Should work fine and give the written size
-    tagLen = SeosCrypto_DATAPORT_SIZE;
+    tagLen = SeosCrypto_Size_DATAPORT;
     err = SeosCryptoApi_cipherFinalize(ctx, cipherHandle, tagBuf, &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT(SeosCryptoCipher_AES_GCM_TAG_SIZE == tagLen);
+    Debug_ASSERT(SeosCryptoCipher_Size_AES_GCM_TAG_MAX == tagLen);
 
     err = SeosCryptoApi_cipherFree(ctx, cipherHandle);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -1108,7 +1108,7 @@ testCipher_finalize_buffer(SeosCryptoCtx* ctx)
                                       &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     // Should fail due to limited internal buffers
-    tagLen = SeosCrypto_DATAPORT_SIZE + 1;
+    tagLen = SeosCrypto_Size_DATAPORT + 1;
     err = SeosCryptoApi_cipherFinalize(ctx, cipherHandle, tagBuf, &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
     // Should fail (tags bust be at least 4 bytes) but give the minimum size
