@@ -2,7 +2,10 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  *
  */
-#include "SeosCryptoCtx.h"
+
+#pragma once
+
+#include "SeosCryptoApi.h"
 
 void
-testRng(SeosCryptoCtx* cryptoCtx);
+testRng(SeosCryptoApi_Context* cryptoCtx);

@@ -35,7 +35,7 @@ DeclareCAmkESComponent(CRYPTO
         common
     SOURCES
         components/CRYPTO/instance/Crypto.c
-        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpc.c
+        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpcServer.c
     C_FLAGS
         -Wall -Werror
     LIBS

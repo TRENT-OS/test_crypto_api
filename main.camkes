@@ -13,7 +13,7 @@ assembly {
 
         connection seL4SharedData       cryptoData              (from test_crypto.cryptoClientDataport, to crypto.cryptoServerDataport);
         connection seL4RPCCall          cryptoRpc               (from test_crypto.Crypto, to crypto.Crypto);
-        connection seL4RPCCall          seosCryptoRpc           (from test_crypto.SeosCryptoRpc, to crypto.SeosCryptoRpc);
+        connection seL4RPCCall          seosCryptoRpc           (from test_crypto.SeosCryptoRpcServer, to crypto.SeosCryptoRpcServer);
     }
     configuration {
     }

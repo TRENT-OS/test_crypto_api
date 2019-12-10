@@ -3,7 +3,9 @@
  *
  */
 
-#include "SeosCryptoCtx.h"
+#pragma once
+
+#include "SeosCryptoApi.h"
 
 void
-testCipher(SeosCryptoCtx* cryptoCtx);
+testCipher(SeosCryptoApi_Context* cryptoCtx);

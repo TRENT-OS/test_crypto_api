@@ -2,7 +2,8 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  *
  */
-#include "SeosCryptoCtx.h"
+
+#include "SeosCryptoApi.h"
 
 void
-testAgreement(SeosCryptoCtx* cryptoCtx);
+testAgreement(SeosCryptoApi_Context* cryptoCtx);

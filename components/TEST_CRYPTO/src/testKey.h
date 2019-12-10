@@ -5,6 +5,7 @@
 
 #pragma once
 
-#include "SeosCryptoCtx.h"
+#include "SeosCryptoApi.h"
 
-void testKey(SeosCryptoCtx* cryptoCtx);
+void
+testKey(SeosCryptoApi_Context* cryptoCtx);

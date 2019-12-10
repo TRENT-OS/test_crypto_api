@@ -8,6 +8,6 @@ component TEST_CRYPTO {
 
     dataport    Buf                 cryptoClientDataport;
     uses        CryptoInf           Crypto;
-    uses        CryptoRpcInf        SeosCryptoRpc;
+    uses        CryptoRpcInf        SeosCryptoRpcServer;
 }
 

@@ -9,9 +9,10 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 
-#include "LibDebug/Debug.h"
+#include "SeosCryptoLib.h"
+#include "SeosCryptoRpcClient.h"
 
-#include "SeosCrypto.h"
+#include "LibDebug/Debug.h"
 
 #include "testSignature.h"
 #include "testAgreement.h"
@@ -26,9 +27,9 @@
 
 /* Defines -------------------------------------------------------------------*/
 
-int entropyFunc(void*           ctx,
-                unsigned char*  buf,
-                size_t          len)
+int entropyFunc(void*          ctx,
+                unsigned char* buf,
+                size_t         len)
 {
     // This would be the platform specific function to obtain entropy
     memset(buf, 0, len);
@@ -37,30 +38,31 @@ int entropyFunc(void*           ctx,
 
 int run()
 {
-    const SeosCrypto_Callbacks cb = {
+    const SeosCryptoApi_Callbacks cb =
+    {
         .malloc     = malloc,
         .free       = free,
         .entropy    = entropyFunc
     };
-    SeosCrypto cryptoCtx;
-    SeosCryptoClient client;
-    SeosCryptoCtx* apiLocal;
-    SeosCryptoCtx* apiRpc;
-    SeosCryptoRpc_Handle rpcHandle = NULL;
+    SeosCryptoLib cryptoCtx;
+    SeosCryptoRpcClient client;
+    SeosCryptoApi_Context* apiLocal;
+    SeosCryptoApi_Context* apiRpc;
+    SeosCryptoApi_RpcServer rpcHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
 
     err = Crypto_getRpcHandle(&rpcHandle);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
     Debug_LOG_INFO("%s: got rpc object %p from server", __func__, rpcHandle);
 
-    err = SeosCryptoClient_init(&client, rpcHandle, cryptoClientDataport);
+    err = SeosCryptoRpcClient_init(&client, rpcHandle, cryptoClientDataport);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    err = SeosCrypto_init(&cryptoCtx, &cb, NULL);
+    err = SeosCryptoLib_init(&cryptoCtx, &cb, NULL);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
-    apiLocal    = SeosCrypto_TO_SEOS_CRYPTO_CTX(&cryptoCtx);
-    apiRpc      = SeosCryptoClient_TO_SEOS_CRYPTO_CTX(&client);
+    apiLocal    = SeosCryptoLib_TO_SEOS_CRYPTO_CTX(&cryptoCtx);
+    apiRpc      = SeosCryptoRpcClient_TO_SEOS_CRYPTO_CTX(&client);
 
     Debug_PRINTF("Starting tests of SeosCryptoApi:\n");
 

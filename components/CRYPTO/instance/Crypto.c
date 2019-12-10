@@ -2,14 +2,17 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  *
  */
+
+#include "SeosCryptoApi.h"
+#include "SeosCryptoRpcServer.h"
+#include "SeosCryptoLib.h"
+
 #include "LibDebug/Debug.h"
 
-#include "Crypto.h"
-#include "SeosCrypto.h"
 #include <string.h>
 #include <camkes.h>
 
-static SeosCrypto    cryptoCore;
+static SeosCryptoLib    cryptoCore;
 
 int entropyFunc(void*           ctx,
                 unsigned char*  buf,
@@ -21,19 +24,19 @@ int entropyFunc(void*           ctx,
 }
 
 seos_err_t
-Crypto_getRpcHandle(SeosCryptoRpc_Handle* instance)
+Crypto_getRpcHandle(SeosCryptoApi_RpcServer* instance)
 {
-    static SeosCryptoRpc the_one;
-    const SeosCrypto_Callbacks cb = {
+    static SeosCryptoRpcServer the_one;
+    const SeosCryptoApi_Callbacks cb = {
         .malloc     = malloc,
         .free       = free,
         .entropy    = entropyFunc
-    };       
+    };
 
-    seos_err_t retval = SeosCrypto_init(&cryptoCore, &cb, NULL);
+    seos_err_t retval = SeosCryptoLib_init(&cryptoCore, &cb, NULL);
     if (SEOS_SUCCESS == retval)
     {
-        retval = SeosCryptoRpc_init(&the_one, &cryptoCore, cryptoServerDataport);
+        retval = SeosCryptoRpcServer_init(&the_one, &cryptoCore, cryptoServerDataport);
         *instance = &the_one;
 
         if (SEOS_SUCCESS == retval)
@@ -45,7 +48,7 @@ Crypto_getRpcHandle(SeosCryptoRpc_Handle* instance)
 }
 
 void
-Crypto_closeRpcHandle(SeosCryptoRpc_Handle instance)
+Crypto_closeRpcHandle(SeosCryptoApi_RpcServer instance)
 {
     /// TODO
 }

@@ -4,13 +4,13 @@
  */
 #pragma once
 
-#include "SeosCryptoRpc.h"
+#include "SeosCryptoRpcServer.h"
 #include "LibDebug/Debug.h"
 
 #include <camkes.h>
 
 seos_err_t
-Crypto_getRpcHandle(SeosCryptoRpc_Handle* instance);
+Crypto_getRpcHandle(SeosCryptoApi_RpcServer* instance);
 
 void
-Crypto_closeRpcHandle(SeosCryptoRpc_Handle instance);
+Crypto_closeRpcHandle(SeosCryptoApi_RpcServer instance);
