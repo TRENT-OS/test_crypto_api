@@ -6,4 +6,5 @@
 #include "SeosCryptoApi.h"
 
 void
-testAgreement(SeosCryptoApi_Context* cryptoCtx);
+testAgreement(
+    SeosCryptoApi_Context* cryptoCtx);

@@ -327,8 +327,9 @@ static const SeosCryptoApi_Key_Spec rsa127Spec =
 // -----------------------------------------------------------------------------
 
 static seos_err_t
-do_import(SeosCryptoApi_Context*        ctx,
-          const SeosCryptoApi_Key_Data* data)
+do_import(
+    SeosCryptoApi_Context*        ctx,
+    const SeosCryptoApi_Key_Data* data)
 {
     seos_err_t err;
     SeosCryptoApi_Key key;
@@ -344,7 +345,8 @@ do_import(SeosCryptoApi_Context*        ctx,
 }
 
 static void
-testKey_import_ok(SeosCryptoApi_Context* ctx)
+testKey_import_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
 
@@ -388,7 +390,8 @@ testKey_import_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_import_fail(SeosCryptoApi_Context* ctx)
+testKey_import_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     SeosCryptoApi_Key key, wrapKey;
@@ -431,8 +434,9 @@ testKey_import_fail(SeosCryptoApi_Context* ctx)
 }
 
 static seos_err_t
-do_export(SeosCryptoApi_Context*        ctx,
-          const SeosCryptoApi_Key_Data* data)
+do_export(
+    SeosCryptoApi_Context*        ctx,
+    const SeosCryptoApi_Key_Data* data)
 {
     seos_err_t err;
     SeosCryptoApi_Key key;
@@ -453,7 +457,8 @@ do_export(SeosCryptoApi_Context*        ctx,
 }
 
 static void
-testKey_export_ok(SeosCryptoApi_Context* ctx)
+testKey_export_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
 
@@ -497,7 +502,8 @@ testKey_export_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_export_fail(SeosCryptoApi_Context* ctx)
+testKey_export_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     SeosCryptoApi_Key key, wrapKey;
@@ -533,8 +539,9 @@ testKey_export_fail(SeosCryptoApi_Context* ctx)
 }
 
 static seos_err_t
-do_generate(SeosCryptoApi_Context*        ctx,
-            const SeosCryptoApi_Key_Spec* spec)
+do_generate(
+    SeosCryptoApi_Context*        ctx,
+    const SeosCryptoApi_Key_Spec* spec)
 {
     seos_err_t err;
     SeosCryptoApi_Key key;
@@ -569,7 +576,8 @@ do_generate(SeosCryptoApi_Context*        ctx,
 }
 
 static void
-testKey_generate_ok(SeosCryptoApi_Context* ctx)
+testKey_generate_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
 
@@ -605,7 +613,8 @@ testKey_generate_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_generate_fail(SeosCryptoApi_Context* ctx)
+testKey_generate_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     SeosCryptoApi_Key key;
@@ -638,8 +647,9 @@ testKey_generate_fail(SeosCryptoApi_Context* ctx)
 }
 
 static seos_err_t
-do_makePublic(SeosCryptoApi_Context*        ctx,
-              const SeosCryptoApi_Key_Spec* spec)
+do_makePublic(
+    SeosCryptoApi_Context*        ctx,
+    const SeosCryptoApi_Key_Spec* spec)
 {
     seos_err_t err;
     SeosCryptoApi_Key key, pubKey;
@@ -682,7 +692,8 @@ do_makePublic(SeosCryptoApi_Context*        ctx,
 
 }
 static void
-testKey_makePublic_ok(SeosCryptoApi_Context* ctx)
+testKey_makePublic_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
 
@@ -706,7 +717,8 @@ testKey_makePublic_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_makePublic_fail(SeosCryptoApi_Context* ctx)
+testKey_makePublic_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     SeosCryptoApi_Key key, pubKey;
@@ -741,7 +753,8 @@ testKey_makePublic_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_getParams_ok(SeosCryptoApi_Context* ctx)
+testKey_getParams_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     size_t n;
@@ -766,7 +779,8 @@ testKey_getParams_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_getParams_fail(SeosCryptoApi_Context* ctx)
+testKey_getParams_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     size_t n;
@@ -801,7 +815,8 @@ testKey_getParams_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_loadParams_ok(SeosCryptoApi_Context* ctx)
+testKey_loadParams_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     size_t n;
@@ -830,7 +845,8 @@ testKey_loadParams_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_loadParams_fail(SeosCryptoApi_Context* ctx)
+testKey_loadParams_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     size_t n;
@@ -866,7 +882,8 @@ testKey_loadParams_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_free_ok(SeosCryptoApi_Context* ctx)
+testKey_free_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     SeosCryptoApi_Key key;
@@ -880,7 +897,8 @@ testKey_free_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_free_fail(SeosCryptoApi_Context* ctx)
+testKey_free_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     SeosCryptoApi_Key key;
@@ -899,7 +917,8 @@ testKey_free_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_getParams_buffer(SeosCryptoApi_Context* ctx)
+testKey_getParams_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     SeosCryptoApi_Key key;
@@ -933,7 +952,8 @@ testKey_getParams_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testKey_loadParams_buffer(SeosCryptoApi_Context* ctx)
+testKey_loadParams_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     static unsigned char paramBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
@@ -962,7 +982,8 @@ testKey_loadParams_buffer(SeosCryptoApi_Context* ctx)
     Debug_PRINTF("->%s: OK\n", __func__);
 }
 
-void testKey(SeosCryptoApi_Context* ctx)
+void testKey(
+    SeosCryptoApi_Context* ctx)
 {
     testKey_import_ok(ctx);
     testKey_import_fail(ctx);

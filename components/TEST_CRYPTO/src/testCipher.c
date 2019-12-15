@@ -237,11 +237,12 @@ static const SeosCryptoApi_Key_Spec dh64bSpec =
 // -----------------------------------------------------------------------------
 
 static seos_err_t
-do_AES_ECB(SeosCryptoApi_Context* ctx,
-           int                    algo,
-           SeosCryptoApi_Key*      key,
-           const vector_t*        din,
-           const vector_t*        dout)
+do_AES_ECB(
+    SeosCryptoApi_Context* ctx,
+    int                    algo,
+    SeosCryptoApi_Key*     key,
+    const vector_t*        din,
+    const vector_t*        dout)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Cipher obj;
@@ -261,7 +262,8 @@ do_AES_ECB(SeosCryptoApi_Context* ctx,
 }
 
 static void
-testCipher_encrypt_AES_ECB(SeosCryptoApi_Context* ctx)
+testCipher_encrypt_AES_ECB(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -283,7 +285,8 @@ testCipher_encrypt_AES_ECB(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_decrypt_AES_ECB(SeosCryptoApi_Context* ctx)
+testCipher_decrypt_AES_ECB(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -305,12 +308,13 @@ testCipher_decrypt_AES_ECB(SeosCryptoApi_Context* ctx)
 }
 
 static seos_err_t
-do_AES_CBC(SeosCryptoApi_Context* ctx,
-           int                    algo,
-           SeosCryptoApi_Key*      key,
-           const vector_t*        iv,
-           const vector_t*        din,
-           const vector_t*        dout)
+do_AES_CBC(
+    SeosCryptoApi_Context* ctx,
+    int                    algo,
+    SeosCryptoApi_Key*     key,
+    const vector_t*        iv,
+    const vector_t*        din,
+    const vector_t*        dout)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Cipher obj;
@@ -330,7 +334,8 @@ do_AES_CBC(SeosCryptoApi_Context* ctx,
 }
 
 static void
-testCipher_encrypt_AES_CBC(SeosCryptoApi_Context* ctx)
+testCipher_encrypt_AES_CBC(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -353,7 +358,8 @@ testCipher_encrypt_AES_CBC(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_decrypt_AES_CBC(SeosCryptoApi_Context* ctx)
+testCipher_decrypt_AES_CBC(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -376,14 +382,15 @@ testCipher_decrypt_AES_CBC(SeosCryptoApi_Context* ctx)
 }
 
 static seos_err_t
-do_AES_GCM(SeosCryptoApi_Context* ctx,
-           int                    algo,
-           SeosCryptoApi_Key*      key,
-           const vector_t*        iv,
-           const vector_t*        ad,
-           const vector_t*        din,
-           const vector_t*        dout,
-           const vector_t*        tag)
+do_AES_GCM(
+    SeosCryptoApi_Context* ctx,
+    int                    algo,
+    SeosCryptoApi_Key*     key,
+    const vector_t*        iv,
+    const vector_t*        ad,
+    const vector_t*        din,
+    const vector_t*        dout,
+    const vector_t*        tag)
 {
     seos_err_t err = SEOS_ERROR_GENERIC, ret;
     SeosCryptoApi_Cipher obj;
@@ -434,7 +441,8 @@ do_AES_GCM(SeosCryptoApi_Context* ctx,
 }
 
 static void
-testCipher_encrypt_AES_GCM(SeosCryptoApi_Context* ctx)
+testCipher_encrypt_AES_GCM(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -458,7 +466,8 @@ testCipher_encrypt_AES_GCM(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_decrypt_AES_GCM_ok(SeosCryptoApi_Context* ctx)
+testCipher_decrypt_AES_GCM_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -482,7 +491,8 @@ testCipher_decrypt_AES_GCM_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_decrypt_AES_GCM_fail(SeosCryptoApi_Context* ctx)
+testCipher_decrypt_AES_GCM_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -510,7 +520,8 @@ testCipher_decrypt_AES_GCM_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_init_ok(SeosCryptoApi_Context* ctx)
+testCipher_init_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Cipher obj;
@@ -571,7 +582,8 @@ testCipher_init_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_init_fail(SeosCryptoApi_Context* ctx)
+testCipher_init_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Cipher obj;
@@ -643,7 +655,8 @@ testCipher_init_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_free_ok(SeosCryptoApi_Context* ctx)
+testCipher_free_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Cipher obj;
@@ -666,7 +679,8 @@ testCipher_free_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_free_fail(SeosCryptoApi_Context* ctx)
+testCipher_free_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Cipher obj;
@@ -691,7 +705,8 @@ testCipher_free_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_start_fail(SeosCryptoApi_Context* ctx)
+testCipher_start_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -732,7 +747,8 @@ testCipher_start_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_process_fail(SeosCryptoApi_Context* ctx)
+testCipher_process_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -810,7 +826,8 @@ testCipher_process_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_finalize_fail(SeosCryptoApi_Context* ctx)
+testCipher_finalize_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -891,7 +908,8 @@ testCipher_finalize_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_init_buffer(SeosCryptoApi_Context* ctx)
+testCipher_init_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -931,7 +949,8 @@ testCipher_init_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_start_buffer(SeosCryptoApi_Context* ctx)
+testCipher_start_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -962,7 +981,8 @@ testCipher_start_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_process_buffer(SeosCryptoApi_Context* ctx)
+testCipher_process_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Key key;
@@ -1031,7 +1051,8 @@ testCipher_process_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testCipher_finalize_buffer(SeosCryptoApi_Context* ctx)
+testCipher_finalize_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Cipher obj;
@@ -1095,7 +1116,8 @@ testCipher_finalize_buffer(SeosCryptoApi_Context* ctx)
 }
 
 void
-testCipher(SeosCryptoApi_Context* ctx)
+testCipher(
+    SeosCryptoApi_Context* ctx)
 {
     testCipher_init_ok(ctx);
     testCipher_init_fail(ctx);

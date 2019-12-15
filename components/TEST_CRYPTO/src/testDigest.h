@@ -8,4 +8,5 @@
 #include "SeosCryptoApi.h"
 
 void
-testDigest(SeosCryptoApi_Context* cryptoCtx);
+testDigest(
+    SeosCryptoApi_Context* cryptoCtx);

@@ -96,7 +96,8 @@ static const SeosCryptoApi_Key_Spec secp256r1Spec =
 };
 
 static void
-testAgreement_init_ok(SeosCryptoApi_Context* ctx)
+testAgreement_init_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
@@ -128,7 +129,8 @@ testAgreement_init_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testAgreement_init_fail(SeosCryptoApi_Context* ctx)
+testAgreement_init_fail(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key ecKey, dhKey;
     SeosCryptoApi_Agreement obj;
@@ -182,12 +184,13 @@ testAgreement_init_fail(SeosCryptoApi_Context* ctx)
 }
 
 static seos_err_t
-agreeOnKey(SeosCryptoApi_Context* ctx,
-           SeosCryptoApi_Key*      prvKey,
-           SeosCryptoApi_Key*      pubKey,
-           unsigned int           algo,
-           unsigned char*         buf,
-           size_t*                bufSize)
+agreeOnKey(
+    SeosCryptoApi_Context* ctx,
+    SeosCryptoApi_Key*     prvKey,
+    SeosCryptoApi_Key*     pubKey,
+    unsigned int           algo,
+    unsigned char*         buf,
+    size_t*                bufSize)
 {
     SeosCryptoApi_Agreement obj;
     seos_err_t err;
@@ -214,7 +217,8 @@ agreeOnKey(SeosCryptoApi_Context* ctx,
 }
 
 static void
-testAgreement_compute_DH_ok(SeosCryptoApi_Context* ctx)
+testAgreement_compute_DH_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     unsigned char clientShared[64];
@@ -244,7 +248,8 @@ testAgreement_compute_DH_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testAgreement_compute_DH_rnd_ok(SeosCryptoApi_Context* ctx)
+testAgreement_compute_DH_rnd_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key_Spec dh64pSpec =
     {
@@ -303,7 +308,8 @@ testAgreement_compute_DH_rnd_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testAgreement_compute_ECDH_ok(SeosCryptoApi_Context* ctx)
+testAgreement_compute_ECDH_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     unsigned char clientShared[64];
@@ -333,7 +339,8 @@ testAgreement_compute_ECDH_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testAgreement_compute_ECDH_rnd_ok(SeosCryptoApi_Context* ctx)
+testAgreement_compute_ECDH_rnd_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key clPubKey, clPrvKey;
     SeosCryptoApi_Key svPubKey, svPrvKey;
@@ -380,7 +387,8 @@ testAgreement_compute_ECDH_rnd_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testAgreement_compute_fail(SeosCryptoApi_Context* ctx)
+testAgreement_compute_fail(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Agreement obj;
@@ -435,7 +443,8 @@ testAgreement_compute_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testAgreement_free_ok(SeosCryptoApi_Context* ctx)
+testAgreement_free_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
@@ -455,7 +464,8 @@ testAgreement_free_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testAgreement_free_fail(SeosCryptoApi_Context* ctx)
+testAgreement_free_fail(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
@@ -480,7 +490,8 @@ testAgreement_free_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testAgreement_agree_buffer(SeosCryptoApi_Context* ctx)
+testAgreement_agree_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Agreement obj;
@@ -527,7 +538,8 @@ testAgreement_agree_buffer(SeosCryptoApi_Context* ctx)
 }
 
 void
-testAgreement(SeosCryptoApi_Context* ctx)
+testAgreement(
+    SeosCryptoApi_Context* ctx)
 {
     testAgreement_init_ok(ctx);
     testAgreement_init_fail(ctx);

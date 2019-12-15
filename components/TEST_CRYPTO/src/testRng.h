@@ -8,4 +8,5 @@
 #include "SeosCryptoApi.h"
 
 void
-testRng(SeosCryptoApi_Context* cryptoCtx);
+testRng(
+    SeosCryptoApi_Context* cryptoCtx);

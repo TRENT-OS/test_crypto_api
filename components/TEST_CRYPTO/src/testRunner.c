@@ -27,9 +27,10 @@
 
 /* Defines -------------------------------------------------------------------*/
 
-int entropyFunc(void*          ctx,
-                unsigned char* buf,
-                size_t         len)
+int entropyFunc(
+    void*          ctx,
+    unsigned char* buf,
+    size_t         len)
 {
     // This would be the platform specific function to obtain entropy
     memset(buf, 0, len);

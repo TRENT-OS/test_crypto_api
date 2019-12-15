@@ -125,7 +125,8 @@ static const char expectedRsaSignature[] =
 };
 
 static void
-testSignature_sign_RSA_ok(SeosCryptoApi_Context* ctx)
+testSignature_sign_RSA_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Signature obj;
@@ -159,7 +160,8 @@ testSignature_sign_RSA_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_sign_fail(SeosCryptoApi_Context* ctx)
+testSignature_sign_fail(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key prvKey, pubKey;
     SeosCryptoApi_Signature obj;
@@ -232,7 +234,8 @@ testSignature_sign_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_verify_RSA_ok(SeosCryptoApi_Context* ctx)
+testSignature_verify_RSA_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
@@ -262,7 +265,8 @@ testSignature_verify_RSA_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_verify_fail(SeosCryptoApi_Context* ctx)
+testSignature_verify_fail(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Signature obj;
@@ -327,7 +331,8 @@ testSignature_verify_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_init_ok(SeosCryptoApi_Context* ctx)
+testSignature_init_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Signature obj;
@@ -374,7 +379,8 @@ testSignature_init_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_init_fail(SeosCryptoApi_Context* ctx)
+testSignature_init_fail(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key key, prvKey;
     SeosCryptoApi_Signature obj;
@@ -439,7 +445,8 @@ testSignature_init_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_free_ok(SeosCryptoApi_Context* ctx)
+testSignature_free_ok(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
@@ -463,7 +470,8 @@ testSignature_free_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_free_fail(SeosCryptoApi_Context* ctx)
+testSignature_free_fail(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
@@ -488,7 +496,8 @@ testSignature_free_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_sign_buffer(SeosCryptoApi_Context* ctx)
+testSignature_sign_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Signature obj;
@@ -567,7 +576,8 @@ testSignature_sign_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testSignature_verify_buffer(SeosCryptoApi_Context* ctx)
+testSignature_verify_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
@@ -607,7 +617,8 @@ testSignature_verify_buffer(SeosCryptoApi_Context* ctx)
 }
 
 void
-testSignature(SeosCryptoApi_Context* ctx)
+testSignature(
+    SeosCryptoApi_Context* ctx)
 {
     testSignature_init_ok(ctx);
     testSignature_init_fail(ctx);

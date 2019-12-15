@@ -8,4 +8,5 @@
 #include "SeosCryptoApi.h"
 
 void
-testKey(SeosCryptoApi_Context* cryptoCtx);
+testKey(
+    SeosCryptoApi_Context* cryptoCtx);

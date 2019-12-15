@@ -10,7 +10,8 @@
 #include <string.h>
 
 static void
-testRng_getBytes_ok(SeosCryptoApi_Context* ctx)
+testRng_getBytes_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char data[16];
@@ -22,7 +23,8 @@ testRng_getBytes_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testRng_getBytes_fail(SeosCryptoApi_Context* ctx)
+testRng_getBytes_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char data[16];
@@ -47,7 +49,8 @@ testRng_getBytes_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testRng_reSeed_ok(SeosCryptoApi_Context* ctx)
+testRng_reSeed_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char seed[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
@@ -59,7 +62,8 @@ testRng_reSeed_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testRng_reSeed_fail(SeosCryptoApi_Context* ctx)
+testRng_reSeed_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char seed[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
@@ -77,7 +81,8 @@ testRng_reSeed_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testRng_reSeed_buffer(SeosCryptoApi_Context* ctx)
+testRng_reSeed_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     static unsigned char seedBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
@@ -98,7 +103,8 @@ testRng_reSeed_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testRng_getBytes_buffer(SeosCryptoApi_Context* ctx)
+testRng_getBytes_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     static unsigned char rngBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
@@ -119,7 +125,8 @@ testRng_getBytes_buffer(SeosCryptoApi_Context* ctx)
 }
 
 void
-testRng(SeosCryptoApi_Context* ctx)
+testRng(
+    SeosCryptoApi_Context* ctx)
 {
     testRng_getBytes_ok(ctx);
     testRng_getBytes_fail(ctx);

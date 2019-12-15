@@ -8,4 +8,5 @@
 #include "SeosCryptoApi.h"
 
 void
-testMac(SeosCryptoApi_Context* cryptoCtx);
+testMac(
+    SeosCryptoApi_Context* cryptoCtx);

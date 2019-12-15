@@ -8,4 +8,5 @@
 #include "SeosCryptoApi.h"
 
 void
-testCipher(SeosCryptoApi_Context* cryptoCtx);
+testCipher(
+    SeosCryptoApi_Context* cryptoCtx);

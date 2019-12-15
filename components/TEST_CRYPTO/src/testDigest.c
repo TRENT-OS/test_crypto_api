@@ -129,8 +129,9 @@ static const digestTestVector sha256Vectors[NUM_SHA256_TESTS] =
 // -----------------------------------------------------------------------------
 
 static void
-do_hash(SeosCryptoApi_Digest*   obj,
-        const digestTestVector* vec)
+do_hash(
+    SeosCryptoApi_Digest*   obj,
+    const digestTestVector* vec)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char digest[64];
@@ -147,7 +148,8 @@ do_hash(SeosCryptoApi_Digest*   obj,
 }
 
 static void
-testDigest_hash_MD5(SeosCryptoApi_Context* ctx)
+testDigest_hash_MD5(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -168,7 +170,8 @@ testDigest_hash_MD5(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_hash_SHA256(SeosCryptoApi_Context* ctx)
+testDigest_hash_SHA256(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -190,9 +193,10 @@ testDigest_hash_SHA256(SeosCryptoApi_Context* ctx)
 }
 
 static void
-do_clone(SeosCryptoApi_Context*         ctx,
-         const SeosCryptoApi_Digest_Alg algo,
-         const digestTestVector*        vec)
+do_clone(
+    SeosCryptoApi_Context*         ctx,
+    const SeosCryptoApi_Digest_Alg algo,
+    const digestTestVector*        vec)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest dstObj, srcObj;
@@ -229,7 +233,8 @@ do_clone(SeosCryptoApi_Context*         ctx,
 }
 
 static void
-testDigest_clone_ok(SeosCryptoApi_Context* ctx)
+testDigest_clone_ok(
+    SeosCryptoApi_Context* ctx)
 {
     do_clone(ctx, SeosCryptoApi_Digest_ALG_MD5, &md5Vectors[0]);
     do_clone(ctx, SeosCryptoApi_Digest_ALG_SHA256, &sha256Vectors[0]);
@@ -238,7 +243,8 @@ testDigest_clone_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_clone_fail(SeosCryptoApi_Context* ctx)
+testDigest_clone_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     const digestTestVector* vec = &md5Vectors[0];
@@ -277,7 +283,8 @@ testDigest_clone_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_init_ok(SeosCryptoApi_Context* ctx)
+testDigest_init_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -298,7 +305,8 @@ testDigest_init_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_init_fail(SeosCryptoApi_Context* ctx)
+testDigest_init_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -320,7 +328,8 @@ testDigest_init_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_free_ok(SeosCryptoApi_Context* ctx)
+testDigest_free_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -334,7 +343,8 @@ testDigest_free_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_free_fail(SeosCryptoApi_Context* ctx)
+testDigest_free_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -353,7 +363,8 @@ testDigest_free_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_process_fail(SeosCryptoApi_Context* ctx)
+testDigest_process_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -381,7 +392,8 @@ testDigest_process_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_finalize_fail(SeosCryptoApi_Context* ctx)
+testDigest_finalize_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -426,7 +438,8 @@ testDigest_finalize_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_process_buffer(SeosCryptoApi_Context* ctx)
+testDigest_process_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -453,7 +466,8 @@ testDigest_process_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testDigest_finalize_buffer(SeosCryptoApi_Context* ctx)
+testDigest_finalize_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Digest obj;
@@ -502,7 +516,8 @@ testDigest_finalize_buffer(SeosCryptoApi_Context* ctx)
 }
 
 void
-testDigest(SeosCryptoApi_Context* ctx)
+testDigest(
+    SeosCryptoApi_Context* ctx)
 {
     testDigest_init_ok(ctx);
     testDigest_init_fail(ctx);

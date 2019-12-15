@@ -124,8 +124,9 @@ static const macTestVector sha256Vectors[NUM_SHA256_TESTS] =
 // -----------------------------------------------------------------------------
 
 static void
-do_mac(SeosCryptoApi_Mac*      obj,
-       const macTestVector*   vec)
+do_mac(
+    SeosCryptoApi_Mac*   obj,
+    const macTestVector* vec)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     char mac[64];
@@ -145,7 +146,8 @@ do_mac(SeosCryptoApi_Mac*      obj,
 }
 
 static void
-testMac_mac_HMAC_MD5(SeosCryptoApi_Context* ctx)
+testMac_mac_HMAC_MD5(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -166,7 +168,8 @@ testMac_mac_HMAC_MD5(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_mac_HMAC_SHA256(SeosCryptoApi_Context* ctx)
+testMac_mac_HMAC_SHA256(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -188,7 +191,8 @@ testMac_mac_HMAC_SHA256(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_start_fail(SeosCryptoApi_Context* ctx)
+testMac_start_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -222,7 +226,8 @@ testMac_start_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_process_fail(SeosCryptoApi_Context* ctx)
+testMac_process_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -262,7 +267,8 @@ testMac_process_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_finalize_fail(SeosCryptoApi_Context* ctx)
+testMac_finalize_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -309,7 +315,8 @@ testMac_finalize_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_start_buffer(SeosCryptoApi_Context* ctx)
+testMac_start_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -336,7 +343,8 @@ testMac_start_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_process_buffer(SeosCryptoApi_Context* ctx)
+testMac_process_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -365,7 +373,8 @@ testMac_process_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_finalize_buffer(SeosCryptoApi_Context* ctx)
+testMac_finalize_buffer(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -420,7 +429,8 @@ testMac_finalize_buffer(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_init_ok(SeosCryptoApi_Context* ctx)
+testMac_init_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -442,7 +452,8 @@ testMac_init_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_init_fail(SeosCryptoApi_Context* ctx)
+testMac_init_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -463,7 +474,8 @@ testMac_init_fail(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_free_ok(SeosCryptoApi_Context* ctx)
+testMac_free_ok(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -477,7 +489,8 @@ testMac_free_ok(SeosCryptoApi_Context* ctx)
 }
 
 static void
-testMac_free_fail(SeosCryptoApi_Context* ctx)
+testMac_free_fail(
+    SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi_Mac obj;
@@ -496,7 +509,8 @@ testMac_free_fail(SeosCryptoApi_Context* ctx)
 }
 
 void
-testMac(SeosCryptoApi_Context* ctx)
+testMac(
+    SeosCryptoApi_Context* ctx)
 {
     testMac_init_ok(ctx);
     testMac_init_fail(ctx);
