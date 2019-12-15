@@ -331,13 +331,13 @@ do_import(SeosCryptoApi_Context*        ctx,
           const SeosCryptoApi_Key_Data* data)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
 
     if ((err = SeosCryptoApi_Key_import(ctx, &key, NULL, data)) != SEOS_SUCCESS)
     {
         return err;
     }
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     return SEOS_SUCCESS;
@@ -391,7 +391,7 @@ static void
 testKey_import_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL, wrapKey = NULL;
+    SeosCryptoApi_Key key, wrapKey;
 
     err = SeosCryptoApi_Key_import(ctx, &wrapKey, NULL, &aes128Data);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -405,7 +405,7 @@ testKey_import_fail(SeosCryptoApi_Context* ctx)
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Non-empty wrapping key
-    err = SeosCryptoApi_Key_import(ctx, &key, wrapKey, &aes128Data);
+    err = SeosCryptoApi_Key_import(ctx, &key, &wrapKey, &aes128Data);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
     // Empty key data
@@ -424,7 +424,7 @@ testKey_import_fail(SeosCryptoApi_Context* ctx)
     err = SeosCryptoApi_Key_import(ctx, &key, NULL, &rsaLargeData);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, wrapKey);
+    err = SeosCryptoApi_Key_free(&wrapKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -435,19 +435,18 @@ do_export(SeosCryptoApi_Context*        ctx,
           const SeosCryptoApi_Key_Data* data)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
     SeosCryptoApi_Key_Data expData;
 
     err = SeosCryptoApi_Key_import(ctx, &key, NULL, data);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     memset(&expData, 0, sizeof(SeosCryptoApi_Key_Data));
-    if ((err = SeosCryptoApi_Key_export(ctx, key, NULL,
-                                       &expData)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_Key_export(&key, NULL, &expData)) != SEOS_SUCCESS)
     {
         return err;
     }
     Debug_ASSERT(!memcmp(data, &expData, sizeof(SeosCryptoApi_Key_Data)));
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     return SEOS_SUCCESS;
@@ -501,7 +500,7 @@ static void
 testKey_export_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL, wrapKey = NULL;
+    SeosCryptoApi_Key key, wrapKey;
     SeosCryptoApi_Key_Data expData;
 
     err = SeosCryptoApi_Key_import(ctx, &key, NULL, &aes128Data);
@@ -509,29 +508,25 @@ testKey_export_fail(SeosCryptoApi_Context* ctx)
     err = SeosCryptoApi_Key_generate(ctx, &wrapKey, &aes128noExpSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    // Empty ctx
-    err = SeosCryptoApi_Key_export(NULL, key, NULL, &expData);
+    // Empty key
+    err = SeosCryptoApi_Key_export(NULL, NULL, &expData);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    // Empty key
-    err = SeosCryptoApi_Key_export(ctx, NULL, NULL, &expData);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-
     // Non-empty wrapping key
-    err = SeosCryptoApi_Key_export(ctx, key, wrapKey, &expData);
+    err = SeosCryptoApi_Key_export(&key, &wrapKey, &expData);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
     // Empty export data buffer
-    err = SeosCryptoApi_Key_export(ctx, key, NULL, NULL);
+    err = SeosCryptoApi_Key_export(&key, NULL, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Non-exportable key
-    err = SeosCryptoApi_Key_export(ctx, wrapKey, NULL, &expData);
+    err = SeosCryptoApi_Key_export(&wrapKey, NULL, &expData);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_OPERATION_DENIED == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, wrapKey);
+    err = SeosCryptoApi_Key_free(&wrapKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -542,7 +537,7 @@ do_generate(SeosCryptoApi_Context*        ctx,
             const SeosCryptoApi_Key_Spec* spec)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
     SeosCryptoApi_Key_Data expData;
 
     if ((err = SeosCryptoApi_Key_generate(ctx, &key, spec)) != SEOS_SUCCESS)
@@ -550,7 +545,7 @@ do_generate(SeosCryptoApi_Context*        ctx,
         return err;
     }
     memset(&expData, 0, sizeof(SeosCryptoApi_Key_Data));
-    err = SeosCryptoApi_Key_export(ctx, key, NULL, &expData);
+    err = SeosCryptoApi_Key_export(&key, NULL, &expData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(spec->key.type == expData.type);
     Debug_ASSERT(!memcmp(&spec->key.attribs, &expData.attribs,
@@ -567,7 +562,7 @@ do_generate(SeosCryptoApi_Context*        ctx,
             Debug_ASSERT(1 == 0);
         }
     }
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     return SEOS_SUCCESS;
@@ -612,9 +607,8 @@ testKey_generate_ok(SeosCryptoApi_Context* ctx)
 static void
 testKey_generate_fail(SeosCryptoApi_Context* ctx)
 {
-
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
 
     // Empty ctx
     err = SeosCryptoApi_Key_generate(NULL, &key, &aes128Spec);
@@ -627,14 +621,6 @@ testKey_generate_fail(SeosCryptoApi_Context* ctx)
     // Empty spec
     err = SeosCryptoApi_Key_generate(ctx, &key, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
-
-    // Already existing key
-    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, key);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Wrong key size: 120-bit AES key
     err = SeosCryptoApi_Key_generate(ctx, &key, &aes120Spec);
@@ -656,17 +642,17 @@ do_makePublic(SeosCryptoApi_Context*        ctx,
               const SeosCryptoApi_Key_Spec* spec)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL, pubKey = NULL;
+    SeosCryptoApi_Key key, pubKey;
     SeosCryptoApi_Key_Data expData;
 
     err = SeosCryptoApi_Key_generate(ctx, &key, spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    if ((err = SeosCryptoApi_Key_makePublic(ctx, &pubKey, key,
-                                           &spec->key.attribs)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_Key_makePublic(&pubKey, &key,
+                                            &spec->key.attribs)) != SEOS_SUCCESS)
     {
         return err;
     }
-    err = SeosCryptoApi_Key_export(ctx, pubKey, NULL, &expData);
+    err = SeosCryptoApi_Key_export(&pubKey, NULL, &expData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     switch (spec->key.type)
     {
@@ -687,9 +673,9 @@ do_makePublic(SeosCryptoApi_Context*        ctx,
     default:
         Debug_ASSERT(1 == 0);
     }
-    err = SeosCryptoApi_Key_free(ctx, pubKey);
+    err = SeosCryptoApi_Key_free(&pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     return SEOS_SUCCESS;
@@ -723,38 +709,32 @@ static void
 testKey_makePublic_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL, pubKey = NULL;
+    SeosCryptoApi_Key key, pubKey;
 
     err = SeosCryptoApi_Key_generate(ctx, &key, &dh64bSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    // Empty ctx
-    err = SeosCryptoApi_Key_makePublic(NULL, &pubKey, key,
-                                      &dh64bSpec.key.attribs);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
-
     // Empty target handle
-    err = SeosCryptoApi_Key_makePublic(ctx, NULL, key, &dh64bSpec.key.attribs);
+    err = SeosCryptoApi_Key_makePublic(NULL, &key, &dh64bSpec.key.attribs);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Invalid private handle
-    err = SeosCryptoApi_Key_makePublic(ctx, &pubKey, NULL,
-                                      &dh64bSpec.key.attribs);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-
-    // Empty attribs
-    err = SeosCryptoApi_Key_makePublic(ctx, &pubKey, key, NULL);
+    err = SeosCryptoApi_Key_makePublic(&pubKey, NULL, &dh64bSpec.key.attribs);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, key);
+    // Empty attribs
+    err = SeosCryptoApi_Key_makePublic(&pubKey, &key, NULL);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Try making "public" from a symmetric key
     err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_makePublic(ctx, &pubKey, key, NULL);
+    err = SeosCryptoApi_Key_makePublic(&pubKey, &key, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -765,7 +745,7 @@ testKey_getParams_ok(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     size_t n;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
     SeosCryptoApi_Key_DhParams dhParams;
     SeosCryptoApi_Key_Data expData;
 
@@ -773,13 +753,13 @@ testKey_getParams_ok(SeosCryptoApi_Context* ctx)
     err = SeosCryptoApi_Key_generate(ctx, &key, &dh101pSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     n = sizeof(dhParams);
-    err = SeosCryptoApi_Key_getParams(ctx, key, &dhParams, &n);
+    err = SeosCryptoApi_Key_getParams(&key, &dhParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(dhParams));
-    err = SeosCryptoApi_Key_export(ctx, key, NULL, &expData);
+    err = SeosCryptoApi_Key_export(&key, NULL, &expData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(!memcmp(&expData.data.dh.prv.params, &dhParams, n));
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -790,35 +770,31 @@ testKey_getParams_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
     size_t n;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
     SeosCryptoApi_Key_DhParams dhParams;
 
     err = SeosCryptoApi_Key_generate(ctx, &key, &dh64bSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    // Empty context
+    // Empty key handle
     n = sizeof(dhParams);
-    err = SeosCryptoApi_Key_getParams(NULL, key, &dhParams, &n);
+    err = SeosCryptoApi_Key_getParams(NULL, &dhParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    // Empty key handle
-    err = SeosCryptoApi_Key_getParams(ctx, NULL, &dhParams, &n);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-
     // Empty buffer
-    err = SeosCryptoApi_Key_getParams(ctx, key, NULL, &n);
+    err = SeosCryptoApi_Key_getParams(&key, NULL, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Empty buffer len
-    err = SeosCryptoApi_Key_getParams(ctx, key, &dhParams, NULL);
+    err = SeosCryptoApi_Key_getParams(&key, &dhParams, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Too small buffer len
     n = 17;
-    err = SeosCryptoApi_Key_getParams(ctx, key, &dhParams, &n);
+    err = SeosCryptoApi_Key_getParams(&key, &dhParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -834,19 +810,19 @@ testKey_loadParams_ok(SeosCryptoApi_Context* ctx)
     // Load SECP192r1
     n = sizeof(eccParams);
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
-                                      &eccParams, &n);
+                                       &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(eccParams));
 
     // Load SECP224r1
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP224R1,
-                                      &eccParams, &n);
+                                       &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(eccParams));
 
     // Load SECP256r1
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP256R1,
-                                      &eccParams, &n);
+                                       &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(eccParams));
 
@@ -863,7 +839,7 @@ testKey_loadParams_fail(SeosCryptoApi_Context* ctx)
     // Empty context
     n = sizeof(eccParams);
     err = SeosCryptoApi_Key_loadParams(NULL, SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
-                                      &eccParams, &n);
+                                       &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Wrong param name
@@ -872,18 +848,18 @@ testKey_loadParams_fail(SeosCryptoApi_Context* ctx)
 
     // Empty buffer
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
-                                      NULL, &n);
+                                       NULL, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Empty length
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
-                                      &eccParams, NULL);
+                                       &eccParams, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // To small buffer
     n = 17;
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
-                                      &eccParams, &n);
+                                       &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -893,11 +869,11 @@ static void
 testKey_free_ok(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
 
     err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -907,20 +883,16 @@ static void
 testKey_free_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
 
     err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    // Empty ctx
-    err = SeosCryptoApi_Key_free(NULL, key);
+    // Empty key
+    err = SeosCryptoApi_Key_free(NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    // Empty key
-    err = SeosCryptoApi_Key_free(ctx, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -930,7 +902,7 @@ static void
 testKey_getParams_buffer(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key = NULL;
+    SeosCryptoApi_Key key;
     static unsigned char paramBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t paramLen;
 
@@ -939,22 +911,22 @@ testKey_getParams_buffer(SeosCryptoApi_Context* ctx)
 
     // Should be OK and give the correct length
     paramLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Key_getParams(ctx, key, paramBuf, &paramLen);
+    err = SeosCryptoApi_Key_getParams(&key, paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(paramLen == sizeof(SeosCryptoApi_Key_DhParams));
 
     // Should fail but give the correct length
     paramLen = 10;
-    err = SeosCryptoApi_Key_getParams(ctx, key, paramBuf, &paramLen);
+    err = SeosCryptoApi_Key_getParams(&key, paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
     Debug_ASSERT(paramLen == sizeof(SeosCryptoApi_Key_DhParams));
 
     // Should fail due buffer being too big
     paramLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    err = SeosCryptoApi_Key_getParams(ctx, key, paramBuf, &paramLen);
+    err = SeosCryptoApi_Key_getParams(&key, paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, key);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -970,21 +942,21 @@ testKey_loadParams_buffer(SeosCryptoApi_Context* ctx)
     // Should be OK
     paramLen = SeosCryptoApi_SIZE_DATAPORT;
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
-                                      paramBuf, &paramLen);
+                                       paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(paramLen == sizeof(SeosCryptoApi_Key_EccParams));
 
     // Should fail, but give the minimum size
     paramLen = 10;
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
-                                      paramBuf, &paramLen);
+                                       paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
     Debug_ASSERT(paramLen == sizeof(SeosCryptoApi_Key_EccParams));
 
     // Should fail because buffer is too big
     paramLen = SeosCryptoApi_SIZE_DATAPORT + 1;
     err = SeosCryptoApi_Key_loadParams(ctx, SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
-                                      paramBuf, &paramLen);
+                                       paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);

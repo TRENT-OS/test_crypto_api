@@ -239,23 +239,22 @@ static const SeosCryptoApi_Key_Spec dh64bSpec =
 static seos_err_t
 do_AES_ECB(SeosCryptoApi_Context* ctx,
            int                    algo,
-           SeosCryptoApi_Key      keyHandle,
+           SeosCryptoApi_Key*      key,
            const vector_t*        din,
            const vector_t*        dout)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher cipherHandle;
+    SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle, algo, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, algo, key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, din->bytes, din->len, buf,
-                                      &n);
+    err = SeosCryptoApi_Cipher_process(&obj, din->bytes, din->len, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == dout->len);
     Debug_ASSERT(!memcmp(buf, dout->bytes, n));
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     return SEOS_SUCCESS;
@@ -265,18 +264,18 @@ static void
 testCipher_encrypt_AES_ECB(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Key key;
     size_t i;
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(ctx, &keyHandle, NULL, &aesEcbVectors[i].key);
+        err = SeosCryptoApi_Key_import(ctx, &key, NULL, &aesEcbVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = do_AES_ECB(ctx, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, keyHandle,
+        err = do_AES_ECB(ctx, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, &key,
                          &aesEcbVectors[i].pt, &aesEcbVectors[i].ct);
 
-        err = SeosCryptoApi_Key_free(ctx, keyHandle);
+        err = SeosCryptoApi_Key_free(&key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
@@ -287,18 +286,18 @@ static void
 testCipher_decrypt_AES_ECB(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Key key;
     size_t i;
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(ctx, &keyHandle, NULL, &aesEcbVectors[i].key);
+        err = SeosCryptoApi_Key_import(ctx, &key, NULL, &aesEcbVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = do_AES_ECB(ctx, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, keyHandle,
+        err = do_AES_ECB(ctx, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, &key,
                          &aesEcbVectors[i].ct, &aesEcbVectors[i].pt);
 
-        err = SeosCryptoApi_Key_free(ctx, keyHandle);
+        err = SeosCryptoApi_Key_free(&key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
@@ -308,25 +307,23 @@ testCipher_decrypt_AES_ECB(SeosCryptoApi_Context* ctx)
 static seos_err_t
 do_AES_CBC(SeosCryptoApi_Context* ctx,
            int                    algo,
-           SeosCryptoApi_Key      keyHandle,
+           SeosCryptoApi_Key*      key,
            const vector_t*        iv,
            const vector_t*        din,
            const vector_t*        dout)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher cipherHandle;
+    SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle, algo, keyHandle, iv->bytes,
-                                   iv->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, algo, key, iv->bytes, iv->len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, din->bytes, din->len, buf,
-                                      &n);
+    err = SeosCryptoApi_Cipher_process(&obj, din->bytes, din->len, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == dout->len);
     Debug_ASSERT(!memcmp(buf, dout->bytes, n));
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     return SEOS_SUCCESS;
@@ -336,19 +333,19 @@ static void
 testCipher_encrypt_AES_CBC(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Key key;
     size_t i;
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(ctx, &keyHandle, NULL, &aesCbcVectors[i].key);
+        err = SeosCryptoApi_Key_import(ctx, &key, NULL, &aesCbcVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = do_AES_CBC(ctx, SeosCryptoApi_Cipher_ALG_AES_CBC_ENC, keyHandle,
+        err = do_AES_CBC(ctx, SeosCryptoApi_Cipher_ALG_AES_CBC_ENC, &key,
                          &aesCbcVectors[i].iv, &aesCbcVectors[i].pt, &aesCbcVectors[i].ct);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = SeosCryptoApi_Key_free(ctx, keyHandle);
+        err = SeosCryptoApi_Key_free(&key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
@@ -359,19 +356,19 @@ static void
 testCipher_decrypt_AES_CBC(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Key key;
     size_t i;
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(ctx, &keyHandle, NULL, &aesCbcVectors[i].key);
+        err = SeosCryptoApi_Key_import(ctx, &key, NULL, &aesCbcVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = do_AES_CBC(ctx, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, keyHandle,
+        err = do_AES_CBC(ctx, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, &key,
                          &aesCbcVectors[i].iv, &aesCbcVectors[i].ct, &aesCbcVectors[i].pt);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = SeosCryptoApi_Key_free(ctx, keyHandle);
+        err = SeosCryptoApi_Key_free(&key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
@@ -381,7 +378,7 @@ testCipher_decrypt_AES_CBC(SeosCryptoApi_Context* ctx)
 static seos_err_t
 do_AES_GCM(SeosCryptoApi_Context* ctx,
            int                    algo,
-           SeosCryptoApi_Key      keyHandle,
+           SeosCryptoApi_Key*      key,
            const vector_t*        iv,
            const vector_t*        ad,
            const vector_t*        din,
@@ -389,27 +386,25 @@ do_AES_GCM(SeosCryptoApi_Context* ctx,
            const vector_t*        tag)
 {
     seos_err_t err = SEOS_ERROR_GENERIC, ret;
-    SeosCryptoApi_Cipher cipherHandle = NULL;
+    SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle, algo, keyHandle, iv->bytes,
-                                   iv->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, algo, key, iv->bytes, iv->len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     if (ad->len > 0)
     {
-        err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, ad->bytes, ad->len);
+        err = SeosCryptoApi_Cipher_start(&obj, ad->bytes, ad->len);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
     else
     {
-        err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+        err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, din->bytes, din->len, buf,
-                                      &n);
+    err = SeosCryptoApi_Cipher_process(&obj, din->bytes, din->len, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == dout->len);
     Debug_ASSERT(!memcmp(buf, dout->bytes, n));
@@ -418,7 +413,7 @@ do_AES_GCM(SeosCryptoApi_Context* ctx,
     {
         // Here we create the tag
         n = sizeof(buf);
-        err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, buf, &n);
+        err = SeosCryptoApi_Cipher_finalize(&obj, buf, &n);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
         Debug_ASSERT(n == tag->len);
         Debug_ASSERT(!memcmp(buf, tag->bytes, n));
@@ -429,10 +424,10 @@ do_AES_GCM(SeosCryptoApi_Context* ctx,
         // Here we check the tag
         n = tag->len;
         memcpy(buf, tag->bytes, tag->len);
-        ret = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, buf, &n);
+        ret = SeosCryptoApi_Cipher_finalize(&obj, buf, &n);
     }
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     return ret;
@@ -442,20 +437,20 @@ static void
 testCipher_encrypt_AES_GCM(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Key key;
     size_t i;
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(ctx, &keyHandle, NULL, &aesGcmVectors[i].key);
+        err = SeosCryptoApi_Key_import(ctx, &key, NULL, &aesGcmVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = do_AES_GCM(ctx, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle,
+        err = do_AES_GCM(ctx, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, &key,
                          &aesGcmVectors[i].iv, &aesGcmVectors[i].ad, &aesGcmVectors[i].pt,
                          &aesGcmVectors[i].ct, &aesGcmVectors[i].tag);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = SeosCryptoApi_Key_free(ctx, keyHandle);
+        err = SeosCryptoApi_Key_free(&key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
@@ -466,20 +461,20 @@ static void
 testCipher_decrypt_AES_GCM_ok(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Key key;
     size_t i;
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(ctx, &keyHandle, NULL, &aesGcmVectors[i].key);
+        err = SeosCryptoApi_Key_import(ctx, &key, NULL, &aesGcmVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = do_AES_GCM(ctx, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, keyHandle,
+        err = do_AES_GCM(ctx, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, &key,
                          &aesGcmVectors[i].iv, &aesGcmVectors[i].ad, &aesGcmVectors[i].ct,
                          &aesGcmVectors[i].pt, &aesGcmVectors[i].tag);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-        err = SeosCryptoApi_Key_free(ctx, keyHandle);
+        err = SeosCryptoApi_Key_free(&key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     }
 
@@ -490,7 +485,7 @@ static void
 testCipher_decrypt_AES_GCM_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Key key;
     const cipherTestVector* vec;
     vector_t brokenTag;
 
@@ -501,14 +496,14 @@ testCipher_decrypt_AES_GCM_fail(SeosCryptoApi_Context* ctx)
     brokenTag.bytes[0] ^= 0xff;
 
     // Create GCM with manipulated tag
-    err = SeosCryptoApi_Key_import(ctx, &keyHandle, NULL, &vec->key);
+    err = SeosCryptoApi_Key_import(ctx, &key, NULL, &vec->key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = do_AES_GCM(ctx, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, keyHandle,
+    err = do_AES_GCM(ctx, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, &key,
                      &vec->iv, &vec->ad, &vec->ct, &vec->pt, &brokenTag);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -518,58 +513,58 @@ static void
 testCipher_init_ok(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher cipherHandle = NULL;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_Key key;
     const vector_t* vec;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test GCM enc
     vec = &aesGcmVectors[0].iv;
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test GCM dec
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test CBC enc
     vec = &aesCbcVectors[0].iv;
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_ENC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_CBC_ENC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test CBC dec
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test ECB enc
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test ECB dec
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -579,77 +574,69 @@ static void
 testCipher_init_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher cipherHandle = NULL;
-    SeosCryptoApi_Key keyHandle = NULL, tmpHandle = NULL;
+    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_Key key, pubKey;
     const vector_t* vec;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test empty ctx
     vec = &aesGcmVectors[0].iv;
-    err = SeosCryptoApi_Cipher_init(NULL, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(NULL, &obj,
+                                    SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test empty handle
-    err = SeosCryptoApi_Cipher_init(ctx, NULL,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, NULL, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test invalid algorithm
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle, 666, keyHandle, vec->bytes,
-                                   vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, 666, &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
-    // Test empty key handle
-    tmpHandle = NULL;
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, tmpHandle, vec->bytes, vec->len);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-
     // Test GCM/CBC without IV buf
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, keyHandle, NULL, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
+                                    &key, NULL, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test GCM/CBC without IV buf
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, keyHandle, vec->bytes, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
+                                    &key, vec->bytes, 0);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
     // Test CBC with wrong sized IV
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_ENC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_CBC_ENC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test GCM with wrong sized IV
     vec = &aesCbcVectors[0].iv;
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
     // Test ECB with IV
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test with wrong key type
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &dh64bSpec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &dh64bSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_makePublic(ctx, &tmpHandle, keyHandle,
-                                      &dh64bSpec.key.attribs);
+    err = SeosCryptoApi_Key_makePublic(&pubKey, &key, &dh64bSpec.key.attribs);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     vec = &aesGcmVectors[0].iv;
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, vec->bytes, vec->len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, vec->bytes, vec->len);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, tmpHandle);
+    err = SeosCryptoApi_Key_free(&pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -659,20 +646,20 @@ static void
 testCipher_free_ok(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher cipherHandle = NULL;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_Key key;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Simply free
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -682,26 +669,22 @@ static void
 testCipher_free_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher cipherHandle = NULL;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_Key key;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-
-    // Test without ctx
-    err = SeosCryptoApi_Cipher_free(NULL, cipherHandle);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Test with empty handle
-    err = SeosCryptoApi_Cipher_free(ctx, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
+    err = SeosCryptoApi_Cipher_free(NULL);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -711,44 +694,38 @@ static void
 testCipher_start_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
-    SeosCryptoApi_Cipher cipherHandle = NULL, emptyHandle = NULL;
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Cipher obj;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, aesGcmVectors[0].iv.bytes,
-                                   aesGcmVectors[0].iv.len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, aesGcmVectors[0].iv.bytes, aesGcmVectors[0].iv.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Start without ctx
-    err = SeosCryptoApi_Cipher_start(NULL, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(NULL, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    // Start without invalid handle
-    emptyHandle = NULL;
-    err = SeosCryptoApi_Cipher_start(ctx, emptyHandle, NULL, 0);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-
     // Start twice
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
-    // Start for cipher in wrong mode
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    // Start for obj in wrong mode
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -758,82 +735,75 @@ static void
 testCipher_process_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
-    SeosCryptoApi_Cipher cipherHandle = NULL, emptyHandle = NULL;
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, aesGcmVectors[0].iv.bytes,
-                                   aesGcmVectors[0].iv.len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, aesGcmVectors[0].iv.bytes, aesGcmVectors[0].iv.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Process without calling start for GCM
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 16, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     // Process without context
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_process(NULL, cipherHandle, buf, 16, buf, &n);
+    err = SeosCryptoApi_Cipher_process(NULL, buf, 16, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    // Process without context
-    emptyHandle = NULL;
-    err = SeosCryptoApi_Cipher_process(ctx, emptyHandle, buf, 16, buf, &n);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-
     // Process with empty input buf
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, NULL, 16, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, NULL, 16, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Process with empty zero blocksize
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 0, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 0, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Process without output buffer
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 16, NULL, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 16, NULL, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Process with too small output buffer
     n = 3;
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 16, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
 
     // Process without with non-aligned block (which is ok for last call to Process in GCM mode)
     // but then adding another block via Process
     n = sizeof(buf);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 20, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 20, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 16, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Process with un-aligned block sizes for ECB
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 18, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 18, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Process with un-aligned block sizes for CBC
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_ENC, keyHandle, aesCbcVectors[0].iv.bytes,
-                                   aesCbcVectors[0].iv.len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_CBC_ENC,
+                                    &key, aesCbcVectors[0].iv.bytes, aesCbcVectors[0].iv.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 18, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 18, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -843,83 +813,78 @@ static void
 testCipher_finalize_fail(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
-    SeosCryptoApi_Cipher cipherHandle = NULL, emptyHandle = NULL;
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, aesGcmVectors[0].iv.bytes,
-                                   aesGcmVectors[0].iv.len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, aesGcmVectors[0].iv.bytes,
+                                    aesGcmVectors[0].iv.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Finalize without calling start+Process
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, buf, &n);
+    err = SeosCryptoApi_Cipher_finalize(&obj, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
     // Finalize without calling Process
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, buf, &n);
+    err = SeosCryptoApi_Cipher_finalize(&obj, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 16, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Finalize without context
-    err = SeosCryptoApi_Cipher_finalize(NULL, cipherHandle, buf, &n);
+    err = SeosCryptoApi_Cipher_finalize(NULL, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    // Finalize without handle
-    emptyHandle = NULL;
-    err = SeosCryptoApi_Cipher_finalize(ctx, emptyHandle, buf, &n);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
-
     // Finalize without buffer in ENC mode (wants to write a tag)
-    err = SeosCryptoApi_Cipher_finalize(NULL, cipherHandle, NULL, &n);
+    err = SeosCryptoApi_Cipher_finalize(&obj, NULL, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Finalize with zero length buffer
-    err = SeosCryptoApi_Cipher_finalize(NULL, cipherHandle, buf, 0);
+    err = SeosCryptoApi_Cipher_finalize(&obj, buf, 0);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Finalize without buffer in DEC mode (will just compare the tag)
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, keyHandle, aesGcmVectors[0].iv.bytes,
-                                   aesGcmVectors[0].iv.len);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
+                                    &key, aesGcmVectors[0].iv.bytes,
+                                    aesGcmVectors[0].iv.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, buf, 16, buf, &n);
+    err = SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, NULL, &n);
+    err = SeosCryptoApi_Cipher_finalize(&obj, NULL, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Finalize without zero length in DEC mode (will just compare the tag)
     n = 0;
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, buf, &n);
+    err = SeosCryptoApi_Cipher_finalize(&obj, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    // Finalize on wrong type of cipher
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, keyHandle, NULL, 0);
+    // Finalize on wrong type of obj
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     n = sizeof(buf);
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, buf, &n);
+    err = SeosCryptoApi_Cipher_finalize(&obj, buf, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -929,37 +894,37 @@ static void
 testCipher_init_buffer(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
-    SeosCryptoApi_Cipher cipherHandle = NULL;
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Cipher obj;
     static unsigned char ivBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t ivLen;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should be OK
     ivLen = SeosCryptoApi_Cipher_SIZE_AES_BLOCK;
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, keyHandle, ivBuf, ivLen);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
+                                    &key, ivBuf, ivLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should fail with SEOS_ERROR_INVALID_PARAMETER beacause it is way too large
-    // for any cipher
+    // for any obj
     ivLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, keyHandle, ivBuf, ivLen);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
+                                    &key, ivBuf, ivLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Should fail with SEOS_ERROR_INSUFFICIENT_SPACE because it is too large for
     // the internal dataports
     ivLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, keyHandle, ivBuf, ivLen);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
+                                    &key, ivBuf, ivLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -969,28 +934,28 @@ static void
 testCipher_start_buffer(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
-    SeosCryptoApi_Cipher cipherHandle;
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Cipher obj;
     static unsigned char ivBuf[16], inputBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, ivBuf, 12);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, ivBuf, 12);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should be OK
     inLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, inputBuf, inLen);
+    err = SeosCryptoApi_Cipher_start(&obj, inputBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Should fail because input is too big
     inLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, inputBuf, inLen);
+    err = SeosCryptoApi_Cipher_start(&obj, inputBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -1000,70 +965,66 @@ static void
 testCipher_process_buffer(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Key keyHandle = NULL;
-    SeosCryptoApi_Cipher cipherHandle = NULL;
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Cipher obj;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
-                         outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+           outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // This should go OK
     inLen = outLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, inBuf, inLen, outBuf,
-                                      &outLen);
+    err = SeosCryptoApi_Cipher_process(&obj, inBuf, inLen, outBuf,
+                                       &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(inLen == outLen);
 
     // This should fail as input is too big
     inLen = SeosCryptoApi_SIZE_DATAPORT + 1;
     outLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, inBuf, inLen, outBuf,
-                                      &outLen);
+    err = SeosCryptoApi_Cipher_process(&obj, inBuf, inLen, outBuf, &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
     // This should fail as output is too big
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     outLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, inBuf, inLen, outBuf,
-                                      &outLen);
+    err = SeosCryptoApi_Cipher_process(&obj, inBuf, inLen, outBuf, &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
-    // This should fail in the SeosCryptoCipher, but should give us the expected
+    // This should fail in the SeosCryptoLib_Cipher, but should give us the expected
     // (= minimum) output buffer size
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     outLen = 10;
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, inBuf, inLen, outBuf,
-                                      &outLen);
+    err = SeosCryptoApi_Cipher_process(&obj, inBuf, inLen, outBuf, &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
     Debug_ASSERT(inLen == outLen);
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_import(ctx, &keyHandle, NULL, &aesEcbVectors[0].key);
+    err = SeosCryptoApi_Key_import(ctx, &key, NULL, &aesEcbVectors[0].key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, keyHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
+                                    &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     // Compute with same buffer used for input and output
     memcpy(inBuf, aesEcbVectors[0].ct.bytes, aesEcbVectors[0].ct.len);
     outLen = aesEcbVectors[0].pt.len;
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle,
-                                      inBuf, aesEcbVectors[0].ct.len,
-                                      inBuf, &outLen);
+    err = SeosCryptoApi_Cipher_process(&obj, inBuf, aesEcbVectors[0].ct.len, inBuf,
+                                       &outLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(!memcmp(inBuf, aesEcbVectors[0].pt.bytes,
                          aesEcbVectors[0].pt.len));
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
@@ -1073,61 +1034,61 @@ static void
 testCipher_finalize_buffer(SeosCryptoApi_Context* ctx)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
-    SeosCryptoApi_Cipher cipherHandle = NULL;
-    SeosCryptoApi_Key keyHandle = NULL;
+    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_Key key;
     unsigned char inBuf[16], outBuf[16], iv[12];
     static unsigned char tagBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t tagLen;
 
-    err = SeosCryptoApi_Key_generate(ctx, &keyHandle, &aes128Spec);
+    err = SeosCryptoApi_Key_generate(ctx, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, iv, 12);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, iv, 12);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     tagLen = sizeof(outBuf);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, inBuf, 16, outBuf,
-                                      &tagLen);
+    err = SeosCryptoApi_Cipher_process(&obj, inBuf, 16, outBuf, &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
     // Should work fine and give the written size
     tagLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, tagBuf, &tagLen);
+    err = SeosCryptoApi_Cipher_finalize(&obj, tagBuf, &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(SeosCryptoApi_Cipher_SIZE_AES_GCM_TAG_MAX == tagLen);
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Cipher_init(ctx, &cipherHandle,
-                                   SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, keyHandle, iv, 12);
+    err = SeosCryptoApi_Cipher_init(ctx, &obj, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                    &key, iv, 12);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Cipher_start(ctx, cipherHandle, NULL, 0);
+    err = SeosCryptoApi_Cipher_start(&obj, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     tagLen = sizeof(outBuf);
-    err = SeosCryptoApi_Cipher_process(ctx, cipherHandle, inBuf, 16, outBuf,
-                                      &tagLen);
+    err = SeosCryptoApi_Cipher_process(&obj, inBuf, 16, outBuf,
+                                       &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     // Should fail due to limited internal buffers
     tagLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, tagBuf, &tagLen);
+    err = SeosCryptoApi_Cipher_finalize(&obj, tagBuf, &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
     // Should fail (tags bust be at least 4 bytes) but give the minimum size
     tagLen = 3;
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, tagBuf, &tagLen);
+    err = SeosCryptoApi_Cipher_finalize(&obj, tagBuf, &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
     Debug_ASSERT(4 == tagLen);
     // Should work
     tagLen = 5;
-    err = SeosCryptoApi_Cipher_finalize(ctx, cipherHandle, tagBuf, &tagLen);
+    err = SeosCryptoApi_Cipher_finalize(&obj, tagBuf, &tagLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(5 == tagLen);
 
-    err = SeosCryptoApi_Cipher_free(ctx, cipherHandle);
+    err = SeosCryptoApi_Cipher_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_free(ctx, keyHandle);
+    err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     Debug_PRINTF("->%s: OK\n", __func__);
