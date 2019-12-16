@@ -9,4 +9,4 @@
 
 void
 testCipher(
-    SeosCryptoApi_Context* cryptoCtx);
+    SeosCryptoApi* api);

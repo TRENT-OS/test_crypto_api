@@ -1,16 +1,15 @@
 /**
  * Copyright (C) 2019, Hensoldt Cyber GmbH
- *
  */
+
 #pragma once
 
-#include "SeosCryptoRpcServer.h"
-#include "LibDebug/Debug.h"
-
-#include <camkes.h>
+#include "SeosCryptoApi.h"
 
 seos_err_t
-Crypto_getRpcHandle(SeosCryptoApi_RpcServer* instance);
+Crypto_openSession(
+    SeosCryptoApi_Ptr* api);
 
-void
-Crypto_closeRpcHandle(SeosCryptoApi_RpcServer instance);
+seos_err_t
+Crypto_closeSession(
+    SeosCryptoApi_Ptr api);

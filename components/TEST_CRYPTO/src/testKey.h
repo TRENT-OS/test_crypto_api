@@ -9,4 +9,4 @@
 
 void
 testKey(
-    SeosCryptoApi_Context* cryptoCtx);
+    SeosCryptoApi* api);

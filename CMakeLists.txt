@@ -5,7 +5,8 @@ seos_set_config_file(config.h)
 seos_use_libs(
     SEOS_LIBS
     SEOS_LIBS_LOGGER
-    SEOS_CRYPTO
+    SEOS_CRYPTO_WITH_RPC_CLIENT
+    SEOS_CRYPTO_WITH_RPC_SERVER
     SEOS_CRYPTO_IMPL_MBEDTLS
 )
 
@@ -27,7 +28,7 @@ DeclareCAmkESComponent(TEST_CRYPTO
         -Wall -Werror
     LIBS
         seos_core_api
-        seos_crypto
+        seos_crypto_with_rpc_client
 )
 
 DeclareCAmkESComponent(CRYPTO
@@ -35,13 +36,12 @@ DeclareCAmkESComponent(CRYPTO
         common
     SOURCES
         components/CRYPTO/instance/Crypto.c
-        ${SEOS_LIBS_DIR}/seos_crypto/src/SeosCryptoRpcServer.c
     C_FLAGS
         -Wall -Werror
     LIBS
         seos_core_api
         seos_libs
-        seos_crypto
+        seos_crypto_with_rpc_server
 )
 
 DeclareCAmkESRootserver(main.camkes)

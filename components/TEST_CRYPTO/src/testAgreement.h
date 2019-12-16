@@ -7,4 +7,4 @@
 
 void
 testAgreement(
-    SeosCryptoApi_Context* cryptoCtx);
+    SeosCryptoApi* api);

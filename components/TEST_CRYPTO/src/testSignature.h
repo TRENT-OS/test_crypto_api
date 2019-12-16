@@ -9,4 +9,4 @@
 
 void
 testSignature(
-    SeosCryptoApi_Context* cryptoCtx);
+    SeosCryptoApi* api);

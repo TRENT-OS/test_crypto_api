@@ -9,4 +9,4 @@
 
 void
 testMac(
-    SeosCryptoApi_Context* cryptoCtx);
+    SeosCryptoApi* api);

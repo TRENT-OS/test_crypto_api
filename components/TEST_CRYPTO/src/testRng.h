@@ -9,4 +9,4 @@
 
 void
 testRng(
-    SeosCryptoApi_Context* cryptoCtx);
+    SeosCryptoApi* api);

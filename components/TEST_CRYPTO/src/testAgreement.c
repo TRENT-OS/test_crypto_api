@@ -1,6 +1,5 @@
 /**
  * Copyright (C) 2019, Hensoldt Cyber GmbH
- *
  */
 
 #include "SeosCryptoApi.h"
@@ -97,16 +96,16 @@ static const SeosCryptoApi_Key_Spec secp256r1Spec =
 
 static void
 testAgreement_init_ok(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
     seos_err_t err;
 
     // Regular init with DH priv key
-    err = SeosCryptoApi_Key_import(ctx, &prvKey, NULL, &dhPrvData);
+    err = SeosCryptoApi_Key_import(api, &prvKey, NULL, &dhPrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Agreement_init(ctx, &obj, SeosCryptoApi_Agreement_ALG_DH,
+    err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_DH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Agreement_free(&obj);
@@ -115,9 +114,9 @@ testAgreement_init_ok(
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Regular init with ECDH priv key
-    err = SeosCryptoApi_Key_import(ctx, &prvKey, NULL, &ecPrvData);
+    err = SeosCryptoApi_Key_import(api, &prvKey, NULL, &ecPrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Agreement_init(ctx, &obj, SeosCryptoApi_Agreement_ALG_ECDH,
+    err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_ECDH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Agreement_free(&obj);
@@ -130,48 +129,48 @@ testAgreement_init_ok(
 
 static void
 testAgreement_init_fail(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key ecKey, dhKey;
     SeosCryptoApi_Agreement obj;
     seos_err_t err;
 
-    err = SeosCryptoApi_Key_import(ctx, &dhKey, NULL, &dhPubData);
+    err = SeosCryptoApi_Key_import(api, &dhKey, NULL, &dhPubData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(ctx, &ecKey, NULL, &ecPubData);
+    err = SeosCryptoApi_Key_import(api, &ecKey, NULL, &ecPubData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Try without handle
-    err = SeosCryptoApi_Agreement_init(ctx, NULL,
+    err = SeosCryptoApi_Agreement_init(api, NULL,
                                        SeosCryptoApi_Agreement_ALG_ECDH, &ecKey);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Try with invalid algorithm
-    err = SeosCryptoApi_Agreement_init(ctx, &obj, 666, &ecKey);
+    err = SeosCryptoApi_Agreement_init(api, &obj, 666, &ecKey);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
     // Try with invalid key handle
-    err = SeosCryptoApi_Agreement_init(ctx, &obj,
+    err = SeosCryptoApi_Agreement_init(api, &obj,
                                        SeosCryptoApi_Agreement_ALG_ECDH, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
 
     // Try with DH public key
-    err = SeosCryptoApi_Agreement_init(ctx, &obj,
+    err = SeosCryptoApi_Agreement_init(api, &obj,
                                        SeosCryptoApi_Agreement_ALG_DH, &dhKey);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Try with DH public key but ECDH alg
-    err = SeosCryptoApi_Agreement_init(ctx, &obj,
+    err = SeosCryptoApi_Agreement_init(api, &obj,
                                        SeosCryptoApi_Agreement_ALG_ECDH, &dhKey);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Try with ECDH public key but DH alg
-    err = SeosCryptoApi_Agreement_init(ctx, &obj,
+    err = SeosCryptoApi_Agreement_init(api, &obj,
                                        SeosCryptoApi_Agreement_ALG_DH, &ecKey);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
     // Try with ECDH public key
-    err = SeosCryptoApi_Agreement_init(ctx, &obj,
+    err = SeosCryptoApi_Agreement_init(api, &obj,
                                        SeosCryptoApi_Agreement_ALG_ECDH, &ecKey);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
@@ -185,12 +184,12 @@ testAgreement_init_fail(
 
 static seos_err_t
 agreeOnKey(
-    SeosCryptoApi_Context* ctx,
-    SeosCryptoApi_Key*     prvKey,
-    SeosCryptoApi_Key*     pubKey,
-    unsigned int           algo,
-    unsigned char*         buf,
-    size_t*                bufSize)
+    SeosCryptoApi*     api,
+    SeosCryptoApi_Key* prvKey,
+    SeosCryptoApi_Key* pubKey,
+    unsigned int       algo,
+    unsigned char*     buf,
+    size_t*            bufSize)
 {
     SeosCryptoApi_Agreement obj;
     seos_err_t err;
@@ -199,7 +198,7 @@ agreeOnKey(
 
     // We have a prvKey key (and a pubKey one) and want to use to to agree on a shared
     // secret to perform symmetric cryptography
-    err = SeosCryptoApi_Agreement_init(ctx, &obj, algo, prvKey);
+    err = SeosCryptoApi_Agreement_init(api, &obj, algo, prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // We have received a pubKey key (e.g., from a server) and use this to derive a secret
@@ -218,21 +217,21 @@ agreeOnKey(
 
 static void
 testAgreement_compute_DH_ok(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     unsigned char clientShared[64];
     seos_err_t err;
     size_t n;
 
-    err = SeosCryptoApi_Key_import(ctx, &pubKey, NULL, &dhPubData);
+    err = SeosCryptoApi_Key_import(api, &pubKey, NULL, &dhPubData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(ctx, &prvKey, NULL, &dhPrvData);
+    err = SeosCryptoApi_Key_import(api, &prvKey, NULL, &dhPrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Compute the side of the CLIENT
     n = sizeof(clientShared);
-    err = agreeOnKey(ctx, &prvKey, &pubKey, SeosCryptoApi_Agreement_ALG_DH,
+    err = agreeOnKey(api, &prvKey, &pubKey, SeosCryptoApi_Agreement_ALG_DH,
                      clientShared, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     // // Make sure both actually match!
@@ -249,7 +248,7 @@ testAgreement_compute_DH_ok(
 
 static void
 testAgreement_compute_DH_rnd_ok(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key_Spec dh64pSpec =
     {
@@ -266,7 +265,7 @@ testAgreement_compute_DH_rnd_ok(
     size_t n;
 
     // Generate a new keypair for the server
-    err = SeosCryptoApi_Key_generate(ctx, &svPrvKey, &dh64bSpec);
+    err = SeosCryptoApi_Key_generate(api, &svPrvKey, &dh64bSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Key_makePublic(&svPubKey, &svPrvKey,
                                        &dh64bSpec.key.attribs);
@@ -278,7 +277,7 @@ testAgreement_compute_DH_rnd_ok(
     err = SeosCryptoApi_Key_getParams(&svPrvKey, &dh64pSpec.key.params, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(sizeof(SeosCryptoApi_Key_DhParams) == n);
-    err = SeosCryptoApi_Key_generate(ctx, &clPrvKey, &dh64pSpec);
+    err = SeosCryptoApi_Key_generate(api, &clPrvKey, &dh64pSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Key_makePublic(&clPubKey, &clPrvKey,
                                        &dh64pSpec.key.attribs);
@@ -286,11 +285,11 @@ testAgreement_compute_DH_rnd_ok(
 
     // Compute both sides of the key agreement and check if the match
     n = sizeof(clShared);
-    err = agreeOnKey(ctx, &clPrvKey, &svPubKey, SeosCryptoApi_Agreement_ALG_DH,
+    err = agreeOnKey(api, &clPrvKey, &svPubKey, SeosCryptoApi_Agreement_ALG_DH,
                      clShared, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     n = sizeof(svShared);
-    err = agreeOnKey(ctx, &svPrvKey, &clPubKey, SeosCryptoApi_Agreement_ALG_DH,
+    err = agreeOnKey(api, &svPrvKey, &clPubKey, SeosCryptoApi_Agreement_ALG_DH,
                      svShared, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT_PRINTFLN(!memcmp(clShared, svShared, n), "Shared key mismatch");
@@ -309,21 +308,21 @@ testAgreement_compute_DH_rnd_ok(
 
 static void
 testAgreement_compute_ECDH_ok(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     unsigned char clientShared[64];
     seos_err_t err;
     size_t n;
 
-    err = SeosCryptoApi_Key_import(ctx, &pubKey, NULL, &ecPubData);
+    err = SeosCryptoApi_Key_import(api, &pubKey, NULL, &ecPubData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(ctx, &prvKey, NULL, &ecPrvData);
+    err = SeosCryptoApi_Key_import(api, &prvKey, NULL, &ecPrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Compute the side of the CLIENT
     n = sizeof(clientShared);
-    err = agreeOnKey(ctx, &prvKey, &pubKey, SeosCryptoApi_Agreement_ALG_ECDH,
+    err = agreeOnKey(api, &prvKey, &pubKey, SeosCryptoApi_Agreement_ALG_ECDH,
                      clientShared, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     // Make sure both actually match!
@@ -340,7 +339,7 @@ testAgreement_compute_ECDH_ok(
 
 static void
 testAgreement_compute_ECDH_rnd_ok(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key clPubKey, clPrvKey;
     SeosCryptoApi_Key svPubKey, svPrvKey;
@@ -349,7 +348,7 @@ testAgreement_compute_ECDH_rnd_ok(
     size_t n;
 
     // Generate a new keypair for the server
-    err = SeosCryptoApi_Key_generate(ctx, &svPrvKey, &secp256r1Spec);
+    err = SeosCryptoApi_Key_generate(api, &svPrvKey, &secp256r1Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Key_makePublic(&svPubKey, &svPrvKey,
                                        &secp256r1Spec.key.attribs);
@@ -357,7 +356,7 @@ testAgreement_compute_ECDH_rnd_ok(
 
     // Genrate new keypair for client; the keytype specifies the params so no need
     // for them to be passed explcitly
-    err = SeosCryptoApi_Key_generate(ctx, &clPrvKey, &secp256r1Spec);
+    err = SeosCryptoApi_Key_generate(api, &clPrvKey, &secp256r1Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Key_makePublic(&clPubKey, &clPrvKey,
                                        &secp256r1Spec.key.attribs);
@@ -365,11 +364,11 @@ testAgreement_compute_ECDH_rnd_ok(
 
     // Compute both sides of the key agreement and check if the match
     n = sizeof(clShared);
-    err = agreeOnKey(ctx, &clPrvKey, &svPubKey, SeosCryptoApi_Agreement_ALG_ECDH,
+    err = agreeOnKey(api, &clPrvKey, &svPubKey, SeosCryptoApi_Agreement_ALG_ECDH,
                      clShared, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     n = sizeof(svShared);
-    err = agreeOnKey(ctx, &svPrvKey, &clPubKey, SeosCryptoApi_Agreement_ALG_ECDH,
+    err = agreeOnKey(api, &svPrvKey, &clPubKey, SeosCryptoApi_Agreement_ALG_ECDH,
                      svShared, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT_PRINTFLN(!memcmp(clShared, svShared, n), "Shared key mismatch");
@@ -388,7 +387,7 @@ testAgreement_compute_ECDH_rnd_ok(
 
 static void
 testAgreement_compute_fail(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Agreement obj;
@@ -396,12 +395,12 @@ testAgreement_compute_fail(
     seos_err_t err;
     size_t n;
 
-    err = SeosCryptoApi_Key_import(ctx, &pubKey, NULL, &ecPubData);
+    err = SeosCryptoApi_Key_import(api, &pubKey, NULL, &ecPubData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(ctx, &prvKey, NULL, &ecPrvData);
+    err = SeosCryptoApi_Key_import(api, &prvKey, NULL, &ecPrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Agreement_init(ctx, &obj, SeosCryptoApi_Agreement_ALG_ECDH,
+    err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_ECDH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -444,15 +443,15 @@ testAgreement_compute_fail(
 
 static void
 testAgreement_free_ok(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
     seos_err_t err;
 
-    err = SeosCryptoApi_Key_import(ctx, &prvKey, NULL, &dhPrvData);
+    err = SeosCryptoApi_Key_import(api, &prvKey, NULL, &dhPrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Agreement_init(ctx, &obj, SeosCryptoApi_Agreement_ALG_DH,
+    err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_DH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Agreement_free(&obj);
@@ -465,15 +464,15 @@ testAgreement_free_ok(
 
 static void
 testAgreement_free_fail(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
     seos_err_t err;
 
-    err = SeosCryptoApi_Key_import(ctx, &prvKey, NULL, &dhPrvData);
+    err = SeosCryptoApi_Key_import(api, &prvKey, NULL, &dhPrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Agreement_init(ctx, &obj, SeosCryptoApi_Agreement_ALG_DH,
+    err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_DH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -491,7 +490,7 @@ testAgreement_free_fail(
 
 static void
 testAgreement_agree_buffer(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Agreement obj;
@@ -499,14 +498,14 @@ testAgreement_agree_buffer(
     seos_err_t err;
     size_t sharedLen;
 
-    err = SeosCryptoApi_Key_import(ctx, &pubKey, NULL, &dhPubData);
+    err = SeosCryptoApi_Key_import(api, &pubKey, NULL, &dhPubData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(ctx, &prvKey, NULL, &dhPrvData);
+    err = SeosCryptoApi_Key_import(api, &prvKey, NULL, &dhPrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // We have a prvKey key (and a pubKey one) and want to use to to agree on a shared
     // secret to perform symmetric cryptography
-    err = SeosCryptoApi_Agreement_init(ctx, &obj, SeosCryptoApi_Agreement_ALG_DH,
+    err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_DH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -539,21 +538,21 @@ testAgreement_agree_buffer(
 
 void
 testAgreement(
-    SeosCryptoApi_Context* ctx)
+    SeosCryptoApi* api)
 {
-    testAgreement_init_ok(ctx);
-    testAgreement_init_fail(ctx);
+    testAgreement_init_ok(api);
+    testAgreement_init_fail(api);
 
-    testAgreement_compute_DH_ok(ctx);
-    testAgreement_compute_DH_rnd_ok(ctx);
+    testAgreement_compute_DH_ok(api);
+    testAgreement_compute_DH_rnd_ok(api);
 
-    testAgreement_compute_ECDH_ok(ctx);
-    testAgreement_compute_ECDH_rnd_ok(ctx);
+    testAgreement_compute_ECDH_ok(api);
+    testAgreement_compute_ECDH_rnd_ok(api);
 
-    testAgreement_compute_fail(ctx);
+    testAgreement_compute_fail(api);
 
-    testAgreement_free_ok(ctx);
-    testAgreement_free_fail(ctx);
+    testAgreement_free_ok(api);
+    testAgreement_free_fail(api);
 
-    testAgreement_agree_buffer(ctx);
+    testAgreement_agree_buffer(api);
 }

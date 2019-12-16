@@ -9,8 +9,7 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 
-#include "SeosCryptoLib.h"
-#include "SeosCryptoRpcClient.h"
+#include "SeosCryptoApi.h"
 
 #include "LibDebug/Debug.h"
 
@@ -27,7 +26,7 @@
 
 /* Defines -------------------------------------------------------------------*/
 
-int entropyFunc(
+int entropy(
     void*          ctx,
     unsigned char* buf,
     size_t         len)
@@ -39,56 +38,72 @@ int entropyFunc(
 
 int run()
 {
-    const SeosCryptoApi_Callbacks cb =
-    {
-        .malloc     = malloc,
-        .free       = free,
-        .entropy    = entropyFunc
-    };
-    SeosCryptoLib cryptoCtx;
-    SeosCryptoRpcClient client;
-    SeosCryptoApi_Context* apiLocal;
-    SeosCryptoApi_Context* apiRpc;
-    SeosCryptoApi_RpcServer rpcHandle = NULL;
     seos_err_t err = SEOS_ERROR_GENERIC;
+    SeosCryptoApi apiLocal, apiRemote;
+    SeosCryptoApi_Config cfgLocal =
+    {
+        .mode = SeosCryptoApi_Mode_LIBRARY,
+        .mem = {
+            .malloc = malloc,
+            .free = free,
+        },
+        .impl.lib.rng = {
+            .entropy = entropy,
+            .context = NULL
+        }
+    };
+    SeosCryptoApi_Config cfgRemote =
+    {
+        .mode = SeosCryptoApi_Mode_RPC_CLIENT,
+        .mem = {
+            .malloc = malloc,
+            .free = free,
+        },
+        .impl.client.dataPort = cryptoClientDataport
+    };
 
-    err = Crypto_getRpcHandle(&rpcHandle);
+    // Open local instance of API
+    err = SeosCryptoApi_init(&apiLocal, &cfgLocal);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-    Debug_LOG_INFO("%s: got rpc object %p from server", __func__, rpcHandle);
 
-    err = SeosCryptoRpcClient_init(&client, rpcHandle, cryptoClientDataport);
+    // Open remote instance of API with pointer to Crypto component API object
+    err = Crypto_openSession(&cfgRemote.impl.client.api);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-
-    err = SeosCryptoLib_init(&cryptoCtx, &cb, NULL);
+    err = SeosCryptoApi_init(&apiRemote, &cfgRemote);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-
-    apiLocal    = SeosCryptoLib_TO_SEOS_CRYPTO_CTX(&cryptoCtx);
-    apiRpc      = SeosCryptoRpcClient_TO_SEOS_CRYPTO_CTX(&client);
 
     Debug_PRINTF("Starting tests of SeosCryptoApi:\n");
 
-    testKey(apiLocal);
-    testKey(apiRpc);
+    testKey(&apiLocal);
+    testKey(&apiRemote);
 
-    testAgreement(apiLocal);
-    testAgreement(apiRpc);
+    testAgreement(&apiLocal);
+    testAgreement(&apiRemote);
 
-    testCipher(apiLocal);
-    testCipher(apiRpc);
+    testCipher(&apiLocal);
+    testCipher(&apiRemote);
 
-    testDigest(apiLocal);
-    testDigest(apiRpc);
+    testDigest(&apiLocal);
+    testDigest(&apiRemote);
 
-    testMac(apiLocal);
-    testMac(apiRpc);
+    testMac(&apiLocal);
+    testMac(&apiRemote);
 
-    testRng(apiLocal);
-    testRng(apiRpc);
+    testRng(&apiLocal);
+    testRng(&apiRemote);
 
-    testSignature(apiLocal);
-    testSignature(apiRpc);
+    testSignature(&apiLocal);
+    testSignature(&apiRemote);
 
     Debug_PRINTF("All tests completed.\n");
+
+    err = SeosCryptoApi_free(&apiRemote);
+    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    err = SeosCryptoApi_free(&apiLocal);
+    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+
+    err = Crypto_closeSession(cfgRemote.impl.client.api);
+    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
     return 0;
 }
