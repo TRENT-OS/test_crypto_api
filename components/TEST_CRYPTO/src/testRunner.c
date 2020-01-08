@@ -13,18 +13,16 @@
 
 #include "LibDebug/Debug.h"
 
-#include "testSignature.h"
-#include "testAgreement.h"
-#include "testCipher.h"
-#include "testRng.h"
-#include "testDigest.h"
-#include "testMac.h"
-#include "testKey.h"
-
 #include <camkes.h>
 #include <string.h>
 
-/* Defines -------------------------------------------------------------------*/
+void testAgreement(SeosCryptoApi* api);
+void testCipher(SeosCryptoApi* api);
+void testDigest(SeosCryptoApi* api);
+void testKey(SeosCryptoApi* api);
+void testMac(SeosCryptoApi* api);
+void testRng(SeosCryptoApi* api);
+void testSignature(SeosCryptoApi* api);
 
 int entropy(
     void*          ctx,
