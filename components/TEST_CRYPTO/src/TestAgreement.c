@@ -22,7 +22,7 @@ static const unsigned char ecdhSharedResult[] =
 };
 
 static void
-testAgreement_init_ok(
+TestAgreement_init_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -55,7 +55,7 @@ testAgreement_init_ok(
 }
 
 static void
-testAgreement_init_fail(
+TestAgreement_init_fail(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key ecKey, dhKey;
@@ -143,7 +143,7 @@ agreeOnKey(
 }
 
 static void
-testAgreement_compute_DH_ok(
+TestAgreement_compute_DH_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -174,7 +174,7 @@ testAgreement_compute_DH_ok(
 }
 
 static void
-testAgreement_compute_DH_rnd_ok(
+TestAgreement_compute_DH_rnd_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key clPubKey, clPrvKey;
@@ -226,7 +226,7 @@ testAgreement_compute_DH_rnd_ok(
 }
 
 static void
-testAgreement_compute_ECDH_ok(
+TestAgreement_compute_ECDH_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -257,7 +257,7 @@ testAgreement_compute_ECDH_ok(
 }
 
 static void
-testAgreement_compute_ECDH_rnd_ok(
+TestAgreement_compute_ECDH_rnd_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key clPubKey, clPrvKey;
@@ -305,7 +305,7 @@ testAgreement_compute_ECDH_rnd_ok(
 }
 
 static void
-testAgreement_compute_fail(
+TestAgreement_compute_fail(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -361,7 +361,7 @@ testAgreement_compute_fail(
 }
 
 static void
-testAgreement_free_ok(
+TestAgreement_free_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -382,7 +382,7 @@ testAgreement_free_ok(
 }
 
 static void
-testAgreement_free_fail(
+TestAgreement_free_fail(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -408,7 +408,7 @@ testAgreement_free_fail(
 }
 
 static void
-testAgreement_agree_buffer(
+TestAgreement_agree_buffer(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -456,22 +456,22 @@ testAgreement_agree_buffer(
 }
 
 void
-testAgreement(
+TestAgreement_testAll(
     SeosCryptoApi* api)
 {
-    testAgreement_init_ok(api);
-    testAgreement_init_fail(api);
+    TestAgreement_init_ok(api);
+    TestAgreement_init_fail(api);
 
-    testAgreement_compute_DH_ok(api);
-    testAgreement_compute_DH_rnd_ok(api);
+    TestAgreement_compute_DH_ok(api);
+    TestAgreement_compute_DH_rnd_ok(api);
 
-    testAgreement_compute_ECDH_ok(api);
-    testAgreement_compute_ECDH_rnd_ok(api);
+    TestAgreement_compute_ECDH_ok(api);
+    TestAgreement_compute_ECDH_rnd_ok(api);
 
-    testAgreement_compute_fail(api);
+    TestAgreement_compute_fail(api);
 
-    testAgreement_free_ok(api);
-    testAgreement_free_fail(api);
+    TestAgreement_free_ok(api);
+    TestAgreement_free_fail(api);
 
-    testAgreement_agree_buffer(api);
+    TestAgreement_agree_buffer(api);
 }

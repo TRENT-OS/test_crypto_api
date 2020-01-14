@@ -145,7 +145,7 @@ do_mac(
 }
 
 static void
-testMac_mac_HMAC_MD5(
+TestMac_mac_HMAC_MD5(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -167,7 +167,7 @@ testMac_mac_HMAC_MD5(
 }
 
 static void
-testMac_mac_HMAC_SHA256(
+TestMac_mac_HMAC_SHA256(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -190,7 +190,7 @@ testMac_mac_HMAC_SHA256(
 }
 
 static void
-testMac_start_fail(
+TestMac_start_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -225,7 +225,7 @@ testMac_start_fail(
 }
 
 static void
-testMac_process_fail(
+TestMac_process_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -266,7 +266,7 @@ testMac_process_fail(
 }
 
 static void
-testMac_finalize_fail(
+TestMac_finalize_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -314,7 +314,7 @@ testMac_finalize_fail(
 }
 
 static void
-testMac_start_buffer(
+TestMac_start_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -342,7 +342,7 @@ testMac_start_buffer(
 }
 
 static void
-testMac_process_buffer(
+TestMac_process_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -372,7 +372,7 @@ testMac_process_buffer(
 }
 
 static void
-testMac_finalize_buffer(
+TestMac_finalize_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -428,7 +428,7 @@ testMac_finalize_buffer(
 }
 
 static void
-testMac_init_ok(
+TestMac_init_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -451,7 +451,7 @@ testMac_init_ok(
 }
 
 static void
-testMac_init_fail(
+TestMac_init_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -473,7 +473,7 @@ testMac_init_fail(
 }
 
 static void
-testMac_free_ok(
+TestMac_free_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -488,7 +488,7 @@ testMac_free_ok(
 }
 
 static void
-testMac_free_fail(
+TestMac_free_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -508,25 +508,25 @@ testMac_free_fail(
 }
 
 void
-testMac(
+TestMac_testAll(
     SeosCryptoApi* api)
 {
-    testMac_init_ok(api);
-    testMac_init_fail(api);
+    TestMac_init_ok(api);
+    TestMac_init_fail(api);
 
-    testMac_free_ok(api);
-    testMac_free_fail(api);
+    TestMac_free_ok(api);
+    TestMac_free_fail(api);
 
-    testMac_mac_HMAC_MD5(api);
-    testMac_mac_HMAC_SHA256(api);
+    TestMac_mac_HMAC_MD5(api);
+    TestMac_mac_HMAC_SHA256(api);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    testMac_start_fail(api);
-    testMac_process_fail(api);
-    testMac_finalize_fail(api);
+    TestMac_start_fail(api);
+    TestMac_process_fail(api);
+    TestMac_finalize_fail(api);
 
-    testMac_start_buffer(api);
-    testMac_process_buffer(api);
-    testMac_finalize_buffer(api);
+    TestMac_start_buffer(api);
+    TestMac_process_buffer(api);
+    TestMac_finalize_buffer(api);
 }

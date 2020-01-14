@@ -26,7 +26,7 @@ static const char expectedRsaSignature[] =
 };
 
 static void
-testSignature_sign_RSA_ok(
+TestSignature_sign_RSA_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -61,7 +61,7 @@ testSignature_sign_RSA_ok(
 }
 
 static void
-testSignature_sign_fail(
+TestSignature_sign_fail(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey, pubKey;
@@ -135,7 +135,7 @@ testSignature_sign_fail(
 }
 
 static void
-testSignature_verify_RSA_ok(
+TestSignature_verify_RSA_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey;
@@ -166,7 +166,7 @@ testSignature_verify_RSA_ok(
 }
 
 static void
-testSignature_verify_fail(
+TestSignature_verify_fail(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -232,7 +232,7 @@ testSignature_verify_fail(
 }
 
 static void
-testSignature_init_ok(
+TestSignature_init_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -280,7 +280,7 @@ testSignature_init_ok(
 }
 
 static void
-testSignature_init_fail(
+TestSignature_init_fail(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key key, prvKey;
@@ -346,7 +346,7 @@ testSignature_init_fail(
 }
 
 static void
-testSignature_free_ok(
+TestSignature_free_ok(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey;
@@ -371,7 +371,7 @@ testSignature_free_ok(
 }
 
 static void
-testSignature_free_fail(
+TestSignature_free_fail(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey;
@@ -397,7 +397,7 @@ testSignature_free_fail(
 }
 
 static void
-testSignature_sign_buffer(
+TestSignature_sign_buffer(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -477,7 +477,7 @@ testSignature_sign_buffer(
 }
 
 static void
-testSignature_verify_buffer(
+TestSignature_verify_buffer(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey;
@@ -518,21 +518,21 @@ testSignature_verify_buffer(
 }
 
 void
-testSignature(
+TestSignature_testAll(
     SeosCryptoApi* api)
 {
-    testSignature_init_ok(api);
-    testSignature_init_fail(api);
+    TestSignature_init_ok(api);
+    TestSignature_init_fail(api);
 
-    testSignature_free_ok(api);
-    testSignature_free_fail(api);
+    TestSignature_free_ok(api);
+    TestSignature_free_fail(api);
 
-    testSignature_sign_RSA_ok(api);
-    testSignature_sign_fail(api);
+    TestSignature_sign_RSA_ok(api);
+    TestSignature_sign_fail(api);
 
-    testSignature_verify_RSA_ok(api);
-    testSignature_verify_fail(api);
+    TestSignature_verify_RSA_ok(api);
+    TestSignature_verify_fail(api);
 
-    testSignature_sign_buffer(api);
-    testSignature_verify_buffer(api);
+    TestSignature_sign_buffer(api);
+    TestSignature_verify_buffer(api);
 }

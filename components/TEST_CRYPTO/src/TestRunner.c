@@ -16,13 +16,13 @@
 #include <camkes.h>
 #include <string.h>
 
-void testAgreement(SeosCryptoApi* api);
-void testCipher(SeosCryptoApi* api);
-void testDigest(SeosCryptoApi* api);
-void testKey(SeosCryptoApi* api);
-void testMac(SeosCryptoApi* api);
-void testRng(SeosCryptoApi* api);
-void testSignature(SeosCryptoApi* api);
+void TestAgreement_testAll(SeosCryptoApi* api);
+void TestCipher_testAll(SeosCryptoApi* api);
+void TestDigest_testAll(SeosCryptoApi* api);
+void TestKey_testAll(SeosCryptoApi* api);
+void TestMac_testAll(SeosCryptoApi* api);
+void TestRng_testAll(SeosCryptoApi* api);
+void TestSignature_testAll(SeosCryptoApi* api);
 
 int entropy(
     void*          ctx,
@@ -72,26 +72,26 @@ int run()
 
     Debug_PRINTF("Starting tests of SeosCryptoApi:\n");
 
-    testKey(&apiLocal);
-    testKey(&apiRemote);
+    TestKey_testAll(&apiLocal);
+    TestKey_testAll(&apiRemote);
 
-    testAgreement(&apiLocal);
-    testAgreement(&apiRemote);
+    TestAgreement_testAll(&apiLocal);
+    TestAgreement_testAll(&apiRemote);
 
-    testCipher(&apiLocal);
-    testCipher(&apiRemote);
+    TestCipher_testAll(&apiLocal);
+    TestCipher_testAll(&apiRemote);
 
-    testDigest(&apiLocal);
-    testDigest(&apiRemote);
+    TestDigest_testAll(&apiLocal);
+    TestDigest_testAll(&apiRemote);
 
-    testMac(&apiLocal);
-    testMac(&apiRemote);
+    TestMac_testAll(&apiLocal);
+    TestMac_testAll(&apiRemote);
 
-    testRng(&apiLocal);
-    testRng(&apiRemote);
+    TestRng_testAll(&apiLocal);
+    TestRng_testAll(&apiRemote);
 
-    testSignature(&apiLocal);
-    testSignature(&apiRemote);
+    TestSignature_testAll(&apiLocal);
+    TestSignature_testAll(&apiRemote);
 
     Debug_PRINTF("All tests completed.\n");
 

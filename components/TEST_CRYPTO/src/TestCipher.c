@@ -241,7 +241,7 @@ do_AES_ECB(
 }
 
 static void
-testCipher_encrypt_AES_ECB(
+TestCipher_encrypt_AES_ECB(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -264,7 +264,7 @@ testCipher_encrypt_AES_ECB(
 }
 
 static void
-testCipher_decrypt_AES_ECB(
+TestCipher_decrypt_AES_ECB(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -313,7 +313,7 @@ do_AES_CBC(
 }
 
 static void
-testCipher_encrypt_AES_CBC(
+TestCipher_encrypt_AES_CBC(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -337,7 +337,7 @@ testCipher_encrypt_AES_CBC(
 }
 
 static void
-testCipher_decrypt_AES_CBC(
+TestCipher_decrypt_AES_CBC(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -420,7 +420,7 @@ do_AES_GCM(
 }
 
 static void
-testCipher_encrypt_AES_GCM(
+TestCipher_encrypt_AES_GCM(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -445,7 +445,7 @@ testCipher_encrypt_AES_GCM(
 }
 
 static void
-testCipher_decrypt_AES_GCM_ok(
+TestCipher_decrypt_AES_GCM_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -470,7 +470,7 @@ testCipher_decrypt_AES_GCM_ok(
 }
 
 static void
-testCipher_decrypt_AES_GCM_fail(
+TestCipher_decrypt_AES_GCM_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -499,7 +499,7 @@ testCipher_decrypt_AES_GCM_fail(
 }
 
 static void
-testCipher_init_ok(
+TestCipher_init_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -561,7 +561,7 @@ testCipher_init_ok(
 }
 
 static void
-testCipher_init_fail(
+TestCipher_init_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -634,7 +634,7 @@ testCipher_init_fail(
 }
 
 static void
-testCipher_free_ok(
+TestCipher_free_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -658,7 +658,7 @@ testCipher_free_ok(
 }
 
 static void
-testCipher_free_fail(
+TestCipher_free_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -684,7 +684,7 @@ testCipher_free_fail(
 }
 
 static void
-testCipher_start_fail(
+TestCipher_start_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -726,7 +726,7 @@ testCipher_start_fail(
 }
 
 static void
-testCipher_process_fail(
+TestCipher_process_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -805,7 +805,7 @@ testCipher_process_fail(
 }
 
 static void
-testCipher_finalize_fail(
+TestCipher_finalize_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -887,7 +887,7 @@ testCipher_finalize_fail(
 }
 
 static void
-testCipher_init_buffer(
+TestCipher_init_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -928,7 +928,7 @@ testCipher_init_buffer(
 }
 
 static void
-testCipher_start_buffer(
+TestCipher_start_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -960,7 +960,7 @@ testCipher_start_buffer(
 }
 
 static void
-testCipher_process_buffer(
+TestCipher_process_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -1030,7 +1030,7 @@ testCipher_process_buffer(
 }
 
 static void
-testCipher_finalize_buffer(
+TestCipher_finalize_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -1095,33 +1095,33 @@ testCipher_finalize_buffer(
 }
 
 void
-testCipher(
+TestCipher_testAll(
     SeosCryptoApi* api)
 {
-    testCipher_init_ok(api);
-    testCipher_init_fail(api);
+    TestCipher_init_ok(api);
+    TestCipher_init_fail(api);
 
-    testCipher_free_ok(api);
-    testCipher_free_fail(api);
+    TestCipher_free_ok(api);
+    TestCipher_free_fail(api);
 
-    testCipher_encrypt_AES_ECB(api);
-    testCipher_decrypt_AES_ECB(api);
+    TestCipher_encrypt_AES_ECB(api);
+    TestCipher_decrypt_AES_ECB(api);
 
-    testCipher_encrypt_AES_CBC(api);
-    testCipher_decrypt_AES_CBC(api);
+    TestCipher_encrypt_AES_CBC(api);
+    TestCipher_decrypt_AES_CBC(api);
 
-    testCipher_encrypt_AES_GCM(api);
-    testCipher_decrypt_AES_GCM_ok(api);
-    testCipher_decrypt_AES_GCM_fail(api);
+    TestCipher_encrypt_AES_GCM(api);
+    TestCipher_decrypt_AES_GCM_ok(api);
+    TestCipher_decrypt_AES_GCM_fail(api);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    testCipher_start_fail(api);
-    testCipher_process_fail(api);
-    testCipher_finalize_fail(api);
+    TestCipher_start_fail(api);
+    TestCipher_process_fail(api);
+    TestCipher_finalize_fail(api);
 
-    testCipher_init_buffer(api);
-    testCipher_start_buffer(api);
-    testCipher_process_buffer(api);
-    testCipher_finalize_buffer(api);
+    TestCipher_init_buffer(api);
+    TestCipher_start_buffer(api);
+    TestCipher_process_buffer(api);
+    TestCipher_finalize_buffer(api);
 }

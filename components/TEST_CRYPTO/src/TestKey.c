@@ -30,7 +30,7 @@ do_import(
 }
 
 static void
-testKey_import_ok(
+TestKey_import_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -75,7 +75,7 @@ testKey_import_ok(
 }
 
 static void
-testKey_import_fail(
+TestKey_import_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -142,7 +142,7 @@ do_export(
 }
 
 static void
-testKey_export_ok(
+TestKey_export_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -187,7 +187,7 @@ testKey_export_ok(
 }
 
 static void
-testKey_export_fail(
+TestKey_export_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -274,7 +274,7 @@ do_generate(
 }
 
 static void
-testKey_generate_ok(
+TestKey_generate_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -311,7 +311,7 @@ testKey_generate_ok(
 }
 
 static void
-testKey_generate_fail(
+TestKey_generate_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -390,7 +390,7 @@ do_makePublic(
 
 }
 static void
-testKey_makePublic_ok(
+TestKey_makePublic_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -415,7 +415,7 @@ testKey_makePublic_ok(
 }
 
 static void
-testKey_makePublic_fail(
+TestKey_makePublic_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -451,7 +451,7 @@ testKey_makePublic_fail(
 }
 
 static void
-testKey_getParams_ok(
+TestKey_getParams_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -477,7 +477,7 @@ testKey_getParams_ok(
 }
 
 static void
-testKey_getParams_fail(
+TestKey_getParams_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -513,7 +513,7 @@ testKey_getParams_fail(
 }
 
 static void
-testKey_loadParams_ok(
+TestKey_loadParams_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -543,7 +543,7 @@ testKey_loadParams_ok(
 }
 
 static void
-testKey_loadParams_fail(
+TestKey_loadParams_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -580,7 +580,7 @@ testKey_loadParams_fail(
 }
 
 static void
-testKey_free_ok(
+TestKey_free_ok(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -595,7 +595,7 @@ testKey_free_ok(
 }
 
 static void
-testKey_free_fail(
+TestKey_free_fail(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -615,7 +615,7 @@ testKey_free_fail(
 }
 
 static void
-testKey_getParams_buffer(
+TestKey_getParams_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -650,7 +650,7 @@ testKey_getParams_buffer(
 }
 
 static void
-testKey_loadParams_buffer(
+TestKey_loadParams_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err;
@@ -680,30 +680,30 @@ testKey_loadParams_buffer(
     Debug_PRINTF("->%s: OK\n", __func__);
 }
 
-void testKey(
+void TestKey_testAll(
     SeosCryptoApi* api)
 {
-    testKey_import_ok(api);
-    testKey_import_fail(api);
+    TestKey_import_ok(api);
+    TestKey_import_fail(api);
 
-    testKey_export_ok(api);
-    testKey_export_fail(api);
+    TestKey_export_ok(api);
+    TestKey_export_fail(api);
 
-    testKey_generate_ok(api);
-    testKey_generate_fail(api);
+    TestKey_generate_ok(api);
+    TestKey_generate_fail(api);
 
-    testKey_makePublic_ok(api);
-    testKey_makePublic_fail(api);
+    TestKey_makePublic_ok(api);
+    TestKey_makePublic_fail(api);
 
-    testKey_getParams_ok(api);
-    testKey_getParams_fail(api);
+    TestKey_getParams_ok(api);
+    TestKey_getParams_fail(api);
 
-    testKey_loadParams_ok(api);
-    testKey_loadParams_fail(api);
+    TestKey_loadParams_ok(api);
+    TestKey_loadParams_fail(api);
 
-    testKey_free_ok(api);
-    testKey_free_fail(api);
+    TestKey_free_ok(api);
+    TestKey_free_fail(api);
 
-    testKey_getParams_buffer(api);
-    testKey_loadParams_buffer(api);
+    TestKey_getParams_buffer(api);
+    TestKey_loadParams_buffer(api);
 }
