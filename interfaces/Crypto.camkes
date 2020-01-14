@@ -1,9 +1,11 @@
 procedure CryptoInf {
     include "SeosError.h";
     include "SeosCryptoApi.h";
+    include "Crypto.h";
 
     seos_err_t      openSession     (out SeosCryptoApi_Ptr api);
     seos_err_t      closeSession    (in SeosCryptoApi_Ptr api);
+    int             hasObject       (in Object_Ptr ptr);
 };
 
 procedure CryptoRpcInf {

@@ -10,6 +10,12 @@ seos_err_t
 Crypto_openSession(
     SeosCryptoApi_Ptr* api);
 
+typedef void* Object_Ptr;
+
+int
+Crypto_hasObject(
+    Object_Ptr ptr);
+
 seos_err_t
 Crypto_closeSession(
     SeosCryptoApi_Ptr api);

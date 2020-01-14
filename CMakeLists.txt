@@ -15,6 +15,7 @@ project(tests_crypto_api C)
 DeclareCAmkESComponent(TEST_CRYPTO
     INCLUDES
         common
+        components/CRYPTO/instance
     SOURCES
         components/TEST_CRYPTO/src/TestRunner.c
         components/TEST_CRYPTO/src/TestSignature.c
@@ -34,6 +35,7 @@ DeclareCAmkESComponent(TEST_CRYPTO
 DeclareCAmkESComponent(CRYPTO
     INCLUDES
         common
+        components/CRYPTO/instance
     SOURCES
         components/CRYPTO/instance/Crypto.c
     C_FLAGS
