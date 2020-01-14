@@ -4,6 +4,8 @@
 
 #include "SeosCryptoApi.h"
 
+#include "ObjectLocation.h"
+
 #include "LibDebug/Debug.h"
 
 #include <string.h>
@@ -21,6 +23,9 @@ typedef struct
     vector_t msg;
     vector_t mac;
 } macTestVector;
+
+#define Debug_ASSERT_LOCATION(api, o) \
+    Debug_ASSERT_OBJ_LOCATION(api, true, o.mac)
 
 // -----------------------------------------------------------------------------
 
@@ -154,6 +159,7 @@ TestMac_mac_HMAC_MD5(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
     {
@@ -177,6 +183,7 @@ TestMac_mac_HMAC_SHA256(
     err = SeosCryptoApi_Mac_init(api, &obj,
                                  SeosCryptoApi_Mac_ALG_HMAC_SHA256);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
     {
@@ -199,6 +206,7 @@ TestMac_start_fail(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Empty api
     err = SeosCryptoApi_Mac_start(NULL, vec->secret.bytes, vec->secret.len);
@@ -236,6 +244,7 @@ TestMac_process_fail(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Mac_start(&obj, vec->secret.bytes, vec->secret.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -277,6 +286,7 @@ TestMac_finalize_fail(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Finalize without updating
     err = SeosCryptoApi_Mac_finalize(&obj, mac, &macSize);
@@ -324,6 +334,7 @@ TestMac_start_buffer(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Should go OK
     inLen = SeosCryptoApi_SIZE_DATAPORT;
@@ -352,6 +363,7 @@ TestMac_process_buffer(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Mac_start(&obj, inBuf, 16);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -383,6 +395,7 @@ TestMac_finalize_buffer(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     err = SeosCryptoApi_Mac_start(&obj, inBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -397,6 +410,7 @@ TestMac_finalize_buffer(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     err = SeosCryptoApi_Mac_start(&obj, inBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -411,6 +425,7 @@ TestMac_finalize_buffer(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     err = SeosCryptoApi_Mac_start(&obj, inBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -437,6 +452,7 @@ TestMac_init_ok(
     // Test HMAC_MD5
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -481,6 +497,7 @@ TestMac_free_ok(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -496,6 +513,7 @@ TestMac_free_fail(
 
     err = SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Empty handle
     err = SeosCryptoApi_Mac_free(NULL);

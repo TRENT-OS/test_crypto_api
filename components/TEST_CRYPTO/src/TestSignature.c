@@ -3,7 +3,9 @@
  */
 
 #include "SeosCryptoApi.h"
+
 #include "SharedKeys.h"
+#include "ObjectLocation.h"
 
 #include "LibDebug/Debug.h"
 
@@ -25,6 +27,10 @@ static const char expectedRsaSignature[] =
     0x6c, 0x6a, 0x03, 0x4d, 0xca, 0x5c, 0x58, 0x54, 0x08, 0x42, 0x6b, 0xa2, 0x76, 0x3d, 0x44, 0x54
 };
 
+static bool allowExport = true;
+#define Debug_ASSERT_LOCATION(api, o) \
+    Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.signature)
+
 static void
 TestSignature_sign_RSA_ok(
     SeosCryptoApi* api)
@@ -44,6 +50,7 @@ TestSignature_sign_RSA_ok(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        &prvKey, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     err = SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
                                        signature, &signatureSize);
@@ -80,6 +87,7 @@ TestSignature_sign_fail(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        &prvKey, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Use empty context
     err = SeosCryptoApi_Signature_sign(NULL, msgData, strlen(msgData),
@@ -120,6 +128,7 @@ TestSignature_sign_fail(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        NULL, &pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
                                        signature, &signatureSize);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
@@ -151,6 +160,7 @@ TestSignature_verify_RSA_ok(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        NULL, &pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     err = SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
                                          expectedRsaSignature, sizeof(expectedRsaSignature));
@@ -181,6 +191,7 @@ TestSignature_verify_fail(
                                        SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        NULL, &pubKey);
+    Debug_ASSERT_LOCATION(api, obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Use empty context
@@ -216,6 +227,7 @@ TestSignature_verify_fail(
                                        SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        &prvKey, NULL);
+    Debug_ASSERT_LOCATION(api, obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
                                          expectedRsaSignature, sizeof(expectedRsaSignature));
@@ -249,6 +261,7 @@ TestSignature_init_ok(
                                        SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        &prvKey, NULL);
+    Debug_ASSERT_LOCATION(api, obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Signature_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -258,6 +271,7 @@ TestSignature_init_ok(
                                        SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        NULL, &pubKey);
+    Debug_ASSERT_LOCATION(api, obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Signature_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -267,6 +281,7 @@ TestSignature_init_ok(
                                        SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        &prvKey, &pubKey);
+    Debug_ASSERT_LOCATION(api, obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Signature_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -361,6 +376,7 @@ TestSignature_free_ok(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        NULL, &pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Signature_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -385,6 +401,7 @@ TestSignature_free_fail(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        NULL, &pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Empty context
     err = SeosCryptoApi_Signature_free(NULL);
@@ -414,6 +431,7 @@ TestSignature_sign_buffer(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        &prvKey, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Should go through but then return ABORTED because crypto fails
     hashLen = SeosCryptoApi_SIZE_DATAPORT;
@@ -458,6 +476,7 @@ TestSignature_sign_buffer(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        &prvKey, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     // Sign with input/output buffer being the same
     memcpy(hashBuf, msgData, strlen(msgData));
     hashLen = strlen(msgData);
@@ -494,6 +513,7 @@ TestSignature_verify_buffer(
                                        SeosCryptoApi_Digest_ALG_NONE,
                                        NULL, &pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Should go through but fail with ABORTED because crypto fails
     sigLen = (rsa1024PrvData.data.rsa.prv.pLen + rsa1024PrvData.data.rsa.prv.qLen);

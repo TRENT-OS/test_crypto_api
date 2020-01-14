@@ -4,6 +4,8 @@
 
 #include "SeosCryptoApi.h"
 
+#include "ObjectLocation.h"
+
 #include "LibDebug/Debug.h"
 
 #include <string.h>
@@ -20,6 +22,9 @@ typedef struct
     vector_t msg;
     vector_t digest;
 } digestTestVector;
+
+#define Debug_ASSERT_LOCATION(api, o) \
+    Debug_ASSERT_OBJ_LOCATION(api, true, o.digest)
 
 // -----------------------------------------------------------------------------
 
@@ -156,6 +161,7 @@ TestDigest_hash_MD5(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
     {
@@ -179,6 +185,7 @@ TestDigest_hash_SHA256(
     err = SeosCryptoApi_Digest_init(api, &obj,
                                     SeosCryptoApi_Digest_ALG_SHA256);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
     {
@@ -205,12 +212,14 @@ do_clone(
     // Create digest object and process something
     err = SeosCryptoApi_Digest_init(api, &srcObj, algo);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, srcObj);
     err = SeosCryptoApi_Digest_process(&srcObj, vec->msg.bytes, vec->msg.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Create new digest and clone the state of the other one
     err = SeosCryptoApi_Digest_init(api, &dstObj, algo);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, dstObj);
     err = SeosCryptoApi_Digest_clone(&dstObj, &srcObj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -252,10 +261,12 @@ TestDigest_clone_fail(
     // Create digest object and process something
     err = SeosCryptoApi_Digest_init(api, &srcObj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, srcObj);
     err = SeosCryptoApi_Digest_process(&srcObj, vec->msg.bytes, vec->msg.len);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Digest_init(api, &dstObj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, dstObj);
 
     // Empty dst handle
     err = SeosCryptoApi_Digest_clone(NULL, &srcObj);
@@ -269,6 +280,7 @@ TestDigest_clone_fail(
     err = SeosCryptoApi_Digest_free(&dstObj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Digest_init(api, &dstObj, SeosCryptoApi_Digest_ALG_SHA256);
+    Debug_ASSERT_LOCATION(api, dstObj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Digest_clone(&dstObj, &srcObj);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
@@ -291,12 +303,14 @@ TestDigest_init_ok(
     // Test MD5
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     // Test SHA256
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_SHA256);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -335,6 +349,7 @@ TestDigest_free_ok(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -350,6 +365,7 @@ TestDigest_free_fail(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Test empty api
     err = SeosCryptoApi_Digest_free(NULL);
@@ -371,6 +387,7 @@ TestDigest_process_fail(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Test with empty handle
     err = SeosCryptoApi_Digest_process(NULL, vec->msg.bytes, vec->msg.len);
@@ -402,6 +419,7 @@ TestDigest_finalize_fail(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Finalize without updating
     err = SeosCryptoApi_Digest_finalize(&obj, digest, &digestSize);
@@ -447,6 +465,7 @@ TestDigest_process_buffer(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Should go OK
     inLen = SeosCryptoApi_SIZE_DATAPORT;
@@ -476,6 +495,7 @@ TestDigest_finalize_buffer(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     err = SeosCryptoApi_Digest_process(&obj, inBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -488,6 +508,7 @@ TestDigest_finalize_buffer(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     err = SeosCryptoApi_Digest_process(&obj, inBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -500,6 +521,7 @@ TestDigest_finalize_buffer(
 
     err = SeosCryptoApi_Digest_init(api, &obj, SeosCryptoApi_Digest_ALG_MD5);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     err = SeosCryptoApi_Digest_process(&obj, inBuf, inLen);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);

@@ -3,6 +3,8 @@
  */
 
 #include "SeosCryptoApi.h"
+
+#include "ObjectLocation.h"
 #include "SharedKeys.h"
 
 #include "LibDebug/Debug.h"
@@ -21,6 +23,10 @@ static const unsigned char ecdhSharedResult[] =
     0x2f, 0xef, 0x8e, 0x9e, 0xce, 0x7d, 0xce, 0x03, 0x81, 0x24, 0x64, 0xd0, 0x4b, 0x94, 0x42, 0xde
 };
 
+static bool allowExport = true;
+#define Debug_ASSERT_LOCATION(api, o) \
+    Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.agreement)
+
 static void
 TestAgreement_init_ok(
     SeosCryptoApi* api)
@@ -35,6 +41,7 @@ TestAgreement_init_ok(
     err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_DH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
     err = SeosCryptoApi_Agreement_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Key_free(&prvKey);
@@ -45,6 +52,7 @@ TestAgreement_init_ok(
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_ECDH,
                                        &prvKey);
+    Debug_ASSERT_LOCATION(api, obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Agreement_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -127,6 +135,7 @@ agreeOnKey(
     // secret to perform symmetric cryptography
     err = SeosCryptoApi_Agreement_init(api, &obj, algo, prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // We have received a pubKey key (e.g., from a server) and use this to derive a secret
     // key of a given length; for now, don't pass a RNG
@@ -322,6 +331,7 @@ TestAgreement_compute_fail(
     err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_ECDH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Try without agreement handle
     n = sizeof(clientShared);
@@ -372,6 +382,7 @@ TestAgreement_free_ok(
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_DH,
                                        &prvKey);
+    Debug_ASSERT_LOCATION(api, obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Agreement_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -394,6 +405,7 @@ TestAgreement_free_fail(
     err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_DH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Empty handle
     err = SeosCryptoApi_Agreement_free(NULL);
@@ -427,6 +439,7 @@ TestAgreement_agree_buffer(
     err = SeosCryptoApi_Agreement_init(api, &obj, SeosCryptoApi_Agreement_ALG_DH,
                                        &prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // Should go through and get the resulting agreement size
     sharedLen = SeosCryptoApi_SIZE_DATAPORT;

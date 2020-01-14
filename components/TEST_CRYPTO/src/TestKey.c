@@ -3,11 +3,17 @@
  */
 
 #include "SeosCryptoApi.h"
+
+#include "ObjectLocation.h"
 #include "SharedKeys.h"
 
 #include "LibDebug/Debug.h"
 
 #include <string.h>
+
+static bool allowExport = true;
+#define Debug_ASSERT_LOCATION(api, o) \
+    Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.key)
 
 // -----------------------------------------------------------------------------
 
@@ -23,6 +29,7 @@ do_import(
     {
         return err;
     }
+    Debug_ASSERT_LOCATION(api, key);
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -119,6 +126,7 @@ do_export(
 
     err = SeosCryptoApi_Key_import(api, &key, data);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, key);
     memset(&expData, 0, sizeof(SeosCryptoApi_Key_Data));
     if ((err = SeosCryptoApi_Key_export(&key, &expData)) != SEOS_SUCCESS)
     {
@@ -247,6 +255,7 @@ do_generate(
     {
         return err;
     }
+    Debug_ASSERT_LOCATION(api, key);
     memset(&expData, 0, sizeof(SeosCryptoApi_Key_Data));
     err = SeosCryptoApi_Key_export(&key, &expData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -353,6 +362,7 @@ do_makePublic(
 
     err = SeosCryptoApi_Key_generate(api, &key, spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, key);
     if ((err = SeosCryptoApi_Key_makePublic(&pubKey, &key,
                                             &spec->key.attribs)) != SEOS_SUCCESS)
     {
@@ -360,6 +370,7 @@ do_makePublic(
     }
     err = SeosCryptoApi_Key_export(&pubKey, &expData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, pubKey);
     switch (spec->key.type)
     {
     case SeosCryptoApi_Key_TYPE_RSA_PRV:
@@ -440,6 +451,7 @@ TestKey_makePublic_fail(
     // Try making "public" from a symmetric key
     err = SeosCryptoApi_Key_generate(api, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, key);
     err = SeosCryptoApi_Key_makePublic(&pubKey, &key, NULL);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
     err = SeosCryptoApi_Key_free(&key);
@@ -461,6 +473,7 @@ TestKey_getParams_ok(
     // Generate params for DH
     err = SeosCryptoApi_Key_generate(api, &key, &dh101pSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, key);
     n = sizeof(dhParams);
     err = SeosCryptoApi_Key_getParams(&key, &dhParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -485,6 +498,7 @@ TestKey_getParams_fail(
 
     err = SeosCryptoApi_Key_generate(api, &key, &dh64bSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, key);
 
     // Empty key handle
     n = sizeof(dhParams);
@@ -586,6 +600,7 @@ TestKey_free_ok(
 
     err = SeosCryptoApi_Key_generate(api, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, key);
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -601,6 +616,7 @@ TestKey_free_fail(
 
     err = SeosCryptoApi_Key_generate(api, &key, &aes128Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, key);
 
     // Empty key
     err = SeosCryptoApi_Key_free(NULL);
@@ -623,6 +639,7 @@ TestKey_getParams_buffer(
 
     err = SeosCryptoApi_Key_generate(api, &key, &dh101pSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, key);
 
     // Should be OK and give the correct length
     paramLen = SeosCryptoApi_SIZE_DATAPORT;
