@@ -188,7 +188,7 @@ TestKey_export_fail(
         .type = SeosCryptoApi_Key_SPECTYPE_BITS,
         .key = {
             .type = SeosCryptoApi_Key_TYPE_AES,
-            .attribs.flags = SeosCryptoApi_Key_FLAG_NONE,
+            .attribs.exportable = false,
             .params.bits = 128
         }
     };
@@ -211,7 +211,23 @@ TestKey_export_fail(
     err = SeosCryptoApi_Key_generate(api, &key, &aes128noExpSpec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Key_export(&key, &expData);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_OPERATION_DENIED == err, "err %d", err);
+    if (api->mode == SeosCryptoApi_Mode_LIBRARY)
+    {
+        /*
+         * A library instance will store all keys in memory which is shared with the
+         * host component. Therefore, if the API runs in library mode, it will ALWAYS
+         * allow exports, even if the key is marked as "non exportable".
+         */
+        Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    }
+    else
+    {
+        /*
+         * It is assumed that all other modes of the Crypto API respect the
+         * exportable flag and thus deny the operation.
+         */
+        Debug_ASSERT_PRINTFLN(SEOS_ERROR_OPERATION_DENIED == err, "err %d", err);
+    }
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
