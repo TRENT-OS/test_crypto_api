@@ -250,7 +250,7 @@ TestCipher_encrypt_AES_ECB(
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(api, &key, NULL, &aesEcbVectors[i].key);
+        err = SeosCryptoApi_Key_import(api, &key, &aesEcbVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
         err = do_AES_ECB(api, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, &key,
@@ -273,7 +273,7 @@ TestCipher_decrypt_AES_ECB(
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(api, &key, NULL, &aesEcbVectors[i].key);
+        err = SeosCryptoApi_Key_import(api, &key, &aesEcbVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
         err = do_AES_ECB(api, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, &key,
@@ -322,7 +322,7 @@ TestCipher_encrypt_AES_CBC(
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(api, &key, NULL, &aesCbcVectors[i].key);
+        err = SeosCryptoApi_Key_import(api, &key, &aesCbcVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
         err = do_AES_CBC(api, SeosCryptoApi_Cipher_ALG_AES_CBC_ENC, &key,
@@ -346,7 +346,7 @@ TestCipher_decrypt_AES_CBC(
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(api, &key, NULL, &aesCbcVectors[i].key);
+        err = SeosCryptoApi_Key_import(api, &key, &aesCbcVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
         err = do_AES_CBC(api, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, &key,
@@ -429,7 +429,7 @@ TestCipher_encrypt_AES_GCM(
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(api, &key, NULL, &aesGcmVectors[i].key);
+        err = SeosCryptoApi_Key_import(api, &key, &aesGcmVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
         err = do_AES_GCM(api, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, &key,
@@ -454,7 +454,7 @@ TestCipher_decrypt_AES_GCM_ok(
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
-        err = SeosCryptoApi_Key_import(api, &key, NULL, &aesGcmVectors[i].key);
+        err = SeosCryptoApi_Key_import(api, &key, &aesGcmVectors[i].key);
         Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
         err = do_AES_GCM(api, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, &key,
@@ -485,7 +485,7 @@ TestCipher_decrypt_AES_GCM_fail(
     brokenTag.bytes[0] ^= 0xff;
 
     // Create GCM with manipulated tag
-    err = SeosCryptoApi_Key_import(api, &key, NULL, &vec->key);
+    err = SeosCryptoApi_Key_import(api, &key, &vec->key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
     err = do_AES_GCM(api, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, &key,
@@ -1008,7 +1008,7 @@ TestCipher_process_buffer(
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    err = SeosCryptoApi_Key_import(api, &key, NULL, &aesEcbVectors[0].key);
+    err = SeosCryptoApi_Key_import(api, &key, &aesEcbVectors[0].key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Cipher_init(api, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
                                     &key, NULL, 0);
