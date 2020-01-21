@@ -3,6 +3,7 @@
  */
 
 #include "SeosCryptoApi.h"
+#include "SharedKeys.h"
 
 #include "LibDebug/Debug.h"
 
@@ -209,27 +210,6 @@ static const cipherTestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
             .len = 16,
             .bytes = {0x7d, 0xe1, 0x2a, 0x56, 0x70, 0xe5, 0x70, 0xd8, 0xca, 0xe6, 0x24, 0xa1, 0x6d, 0xf0, 0x9c, 0x08},
         },
-    }
-};
-
-// -----------------------------------------------------------------------------
-
-static const SeosCryptoApi_Key_Spec aes128Spec =
-{
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
-    .key = {
-        .type = SeosCryptoApi_Key_TYPE_AES,
-        .attribs.flags = SeosCryptoApi_Key_FLAG_EXPORTABLE_RAW,
-        .params.bits = 128
-    }
-};
-static const SeosCryptoApi_Key_Spec dh64bSpec =
-{
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
-    .key = {
-        .attribs.flags = SeosCryptoApi_Key_FLAG_EXPORTABLE_RAW,
-        .type = SeosCryptoApi_Key_TYPE_DH_PRV,
-        .params.bits = 64
     }
 };
 
