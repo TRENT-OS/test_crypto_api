@@ -97,7 +97,7 @@ Crypto_openSession(
         .impl.lib.rng = {
             .entropy = my_entropy,
         },
-        .server.dataPort = cryptoServerDataport
+        .server.dataPort = SeosCryptoDataport
     };
 
     if ((inst = malloc(sizeof(SeosCryptoApi))) == NULL)

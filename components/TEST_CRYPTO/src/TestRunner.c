@@ -94,7 +94,7 @@ int run()
             .malloc = malloc,
             .free = free,
         },
-        .impl.client.dataPort = cryptoClientDataport
+        .impl.client.dataPort = SeosCryptoDataport
     };
     SeosCryptoApi_Config cfgRouter =
     {

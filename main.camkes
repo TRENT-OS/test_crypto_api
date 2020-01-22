@@ -1,6 +1,7 @@
 /**
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
+
 import <std_connector.camkes>;
 
 import "components/TEST_CRYPTO/TEST_CRYPTO.camkes";
@@ -11,11 +12,8 @@ assembly {
         component   TEST_CRYPTO         test_crypto;
         component   CRYPTO              crypto;
 
-        connection seL4SharedData       cryptoData              (from test_crypto.cryptoClientDataport, to crypto.cryptoServerDataport);
-        connection seL4RPCCall          cryptoRpc               (from test_crypto.Crypto, to crypto.Crypto);
-        connection seL4RPCCall          seosCryptoRpc           (from test_crypto.SeosCryptoRpcServer, to crypto.SeosCryptoRpcServer);
-    }
-    configuration {
+        connection seL4SharedData       shared  (from test_crypto.SeosCryptoDataport,   to crypto.SeosCryptoDataport);
+        connection seL4RPCCall          call_0  (from test_crypto.SeosCryptoRpcServer,  to crypto.SeosCryptoRpcServer);
+        connection seL4RPCCall          call_1  (from test_crypto.Crypto,               to crypto.Crypto);
     }
 }
-
