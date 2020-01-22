@@ -28,14 +28,14 @@ typedef struct
     SeosCryptoApi_Key_Data key;
 } cipherTestVector;
 
-static bool allowExport = true;
+static bool allowExport;
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.cipher)
 
 // -----------------------------------------------------------------------------
 
 #define NUM_AES_ECB_TESTS 3
-static const cipherTestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
+static cipherTestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
 {
     {
         .key = {
@@ -112,7 +112,7 @@ static const cipherTestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
 // -----------------------------------------------------------------------------
 
 #define NUM_AES_CBC_TESTS 1
-static const cipherTestVector aesCbcVectors[NUM_AES_CBC_TESTS] =
+static cipherTestVector aesCbcVectors[NUM_AES_CBC_TESTS] =
 {
     {
         .key = {
@@ -152,7 +152,7 @@ static const cipherTestVector aesCbcVectors[NUM_AES_CBC_TESTS] =
 // -----------------------------------------------------------------------------
 
 #define NUM_AES_GCM_TESTS 2
-static const cipherTestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
+static cipherTestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
 {
     {
         .key = {
@@ -223,6 +223,17 @@ static const cipherTestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
             .bytes = {0x7d, 0xe1, 0x2a, 0x56, 0x70, 0xe5, 0x70, 0xd8, 0xca, 0xe6, 0x24, 0xa1, 0x6d, 0xf0, 0x9c, 0x08},
         },
     }
+};
+
+static SeosCryptoApi_Key_Data* testKeyDataList[] =
+{
+    &aesEcbVectors[0].key,
+    &aesEcbVectors[1].key,
+    &aesEcbVectors[2].key,
+    &aesCbcVectors[0].key,
+    &aesGcmVectors[0].key,
+    &aesGcmVectors[1].key,
+    NULL
 };
 
 // -----------------------------------------------------------------------------
@@ -1000,7 +1011,7 @@ TestCipher_process_buffer(
     SeosCryptoApi_Key key;
     SeosCryptoApi_Cipher obj;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
-                         outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+           outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
 
     err = SeosCryptoApi_Key_generate(api, &key, &aes128Spec);
@@ -1008,6 +1019,7 @@ TestCipher_process_buffer(
     err = SeosCryptoApi_Cipher_init(api, &obj, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
                                     &key, NULL, 0);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    Debug_ASSERT_LOCATION(api, obj);
 
     // This should go OK
     inLen = outLen = SeosCryptoApi_SIZE_DATAPORT;
@@ -1134,6 +1146,11 @@ void
 TestCipher_testAll(
     SeosCryptoApi* api)
 {
+    allowExport = true;
+    keyData_setExportable(keyDataList, allowExport);
+    keyData_setExportable(testKeyDataList, allowExport);
+    keySpec_setExportable(keySpecList, allowExport);
+
     TestCipher_init_ok(api);
     TestCipher_init_fail(api);
 
@@ -1160,4 +1177,20 @@ TestCipher_testAll(
     TestCipher_start_buffer(api);
     TestCipher_process_buffer(api);
     TestCipher_finalize_buffer(api);
+
+    // Make all used keys NON-EXPORTABLE and re-run parts of the tests
+    if (api->mode == SeosCryptoApi_Mode_ROUTER)
+    {
+        allowExport = false;
+        keyData_setExportable(keyDataList, allowExport);
+        keyData_setExportable(testKeyDataList, allowExport);
+        keySpec_setExportable(keySpecList, allowExport);
+
+        TestCipher_encrypt_AES_ECB(api);
+        TestCipher_decrypt_AES_ECB(api);
+        TestCipher_encrypt_AES_CBC(api);
+        TestCipher_decrypt_AES_CBC(api);
+        TestCipher_encrypt_AES_GCM(api);
+        TestCipher_decrypt_AES_GCM_ok(api);
+    }
 }

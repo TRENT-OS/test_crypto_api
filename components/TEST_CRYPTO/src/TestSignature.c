@@ -27,7 +27,7 @@ static const char expectedRsaSignature[] =
     0x6c, 0x6a, 0x03, 0x4d, 0xca, 0x5c, 0x58, 0x54, 0x08, 0x42, 0x6b, 0xa2, 0x76, 0x3d, 0x44, 0x54
 };
 
-static bool allowExport = true;
+static bool allowExport;
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.signature)
 
@@ -421,7 +421,7 @@ TestSignature_sign_buffer(
     SeosCryptoApi_Signature obj;
     seos_err_t err = SEOS_ERROR_GENERIC;
     static unsigned int hashBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
-                        sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+           sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t hashLen, sigLen;
 
     err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
@@ -503,7 +503,7 @@ TestSignature_verify_buffer(
     SeosCryptoApi_Signature obj;
     seos_err_t err = SEOS_ERROR_GENERIC;
     static unsigned int hashBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
-                        sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+           sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t hashLen, sigLen;
 
     err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
@@ -537,10 +537,46 @@ TestSignature_verify_buffer(
     Debug_PRINTF("->%s: OK\n", __func__);
 }
 
+static void
+TestSignature_key_fail(
+    SeosCryptoApi* api)
+{
+    SeosCryptoApi_Key pubKey, prvKey;
+    SeosCryptoApi_Signature obj;
+    seos_err_t err = SEOS_ERROR_GENERIC;
+
+    // Test with both keys having different exportable attributes
+    rsa1024PrvData.attribs.exportable = false;
+    rsa1024PubData.attribs.exportable = true;
+
+    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Should fail due to different key localities
+    err = SeosCryptoApi_Signature_init(api, &obj,
+                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                       SeosCryptoApi_Digest_ALG_NONE,
+                                       &prvKey, &pubKey);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
+
+    err = SeosCryptoApi_Key_free(&pubKey);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_Key_free(&prvKey);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
 void
 TestSignature_testAll(
     SeosCryptoApi* api)
 {
+    allowExport = true;
+    keyData_setExportable(keyDataList, allowExport);
+    keySpec_setExportable(keySpecList, allowExport);
+
     TestSignature_init_ok(api);
     TestSignature_init_fail(api);
 
@@ -555,4 +591,17 @@ TestSignature_testAll(
 
     TestSignature_sign_buffer(api);
     TestSignature_verify_buffer(api);
+
+    // Make all used keys NON-EXPORTABLE and re-run parts of the tests
+    if (api->mode == SeosCryptoApi_Mode_ROUTER)
+    {
+        allowExport = false;
+        keyData_setExportable(keyDataList, allowExport);
+        keySpec_setExportable(keySpecList, allowExport);
+
+        TestSignature_sign_RSA_ok(api);
+        TestSignature_verify_RSA_ok(api);
+
+        TestSignature_key_fail(api);
+    }
 }

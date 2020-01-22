@@ -23,7 +23,7 @@ static const unsigned char ecdhSharedResult[] =
     0x2f, 0xef, 0x8e, 0x9e, 0xce, 0x7d, 0xce, 0x03, 0x81, 0x24, 0x64, 0xd0, 0x4b, 0x94, 0x42, 0xde
 };
 
-static bool allowExport = true;
+static bool allowExport;
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.agreement)
 
@@ -468,10 +468,46 @@ TestAgreement_agree_buffer(
     Debug_PRINTF("->%s: OK\n", __func__);
 }
 
+static void
+TestAgreement_key_fail(
+    SeosCryptoApi* api)
+{
+    SeosCryptoApi_Key pubKey, prvKey;
+    unsigned char clientShared[64];
+    seos_err_t err;
+    size_t n;
+
+    // Test with both keys having different exportable attributes
+    secp256r1PrvData.attribs.exportable = false;
+    secp256r1PubData.attribs.exportable = true;
+
+    err = SeosCryptoApi_Key_import(api, &pubKey, &secp256r1PubData);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_Key_import(api, &prvKey, &secp256r1PrvData);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    // Should fail, because objects are in different locations
+    n = sizeof(clientShared);
+    err = agreeOnKey(api, &prvKey, &pubKey, SeosCryptoApi_Agreement_ALG_ECDH,
+                     clientShared, &n);
+    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
+
+    err = SeosCryptoApi_Key_free(&pubKey);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    err = SeosCryptoApi_Key_free(&prvKey);
+    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+
+    Debug_PRINTF("->%s: OK\n", __func__);
+}
+
 void
 TestAgreement_testAll(
     SeosCryptoApi* api)
 {
+    allowExport = true;
+    keyData_setExportable(keyDataList, allowExport);
+    keySpec_setExportable(keySpecList, allowExport);
+
     TestAgreement_init_ok(api);
     TestAgreement_init_fail(api);
 
@@ -487,4 +523,19 @@ TestAgreement_testAll(
     TestAgreement_free_fail(api);
 
     TestAgreement_agree_buffer(api);
+
+    // Make all used keys NON-EXPORTABLE and re-run parts of the tests
+    if (api->mode == SeosCryptoApi_Mode_ROUTER)
+    {
+        allowExport = false;
+        keyData_setExportable(keyDataList, allowExport);
+        keySpec_setExportable(keySpecList, allowExport);
+
+        TestAgreement_compute_DH_ok(api);
+        TestAgreement_compute_DH_rnd_ok(api);
+        TestAgreement_compute_ECDH_ok(api);
+        TestAgreement_compute_ECDH_rnd_ok(api);
+
+        TestAgreement_key_fail(api);
+    }
 }

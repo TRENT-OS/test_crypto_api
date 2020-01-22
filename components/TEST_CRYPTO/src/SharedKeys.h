@@ -215,6 +215,23 @@ static SeosCryptoApi_Key_Data aes120Data =
     }
 };
 
+static SeosCryptoApi_Key_Data* keyDataList[] =
+{
+    &aes120Data,
+    &aes256Data,
+    &aes192Data,
+    &aes128Data,
+    &secp256r1PubData,
+    &secp256r1PrvData,
+    &rsaLargeData,
+    &rsaSmallData,
+    &rsa1024PubData,
+    &rsa1024PrvData,
+    &dh101PubData,
+    &dh101PrvData,
+    NULL
+};
+
 // -----------------------------------------------------------------------------
 
 static SeosCryptoApi_Key_Spec aes128Spec =
@@ -320,4 +337,50 @@ static SeosCryptoApi_Key_Spec rsa127Spec =
     }
 };
 
+static SeosCryptoApi_Key_Spec* keySpecList[] =
+{
+    &aes128Spec,
+    &aes192Spec,
+    &aes256Spec,
+    &aes120Spec,
+    &dh64bSpec,
+    &dh64pSpec,
+    &dh101pSpec,
+    &dh63bSpec,
+    &rsa128Spec,
+    &secp256r1Spec,
+    &rsa127Spec,
+    NULL
+};
+
 #pragma GCC diagnostic pop
+
+INLINE void
+keyData_setExportable(
+    SeosCryptoApi_Key_Data* dataList[],
+    bool                    exp)
+{
+    SeosCryptoApi_Key_Data* pData;
+    size_t i;
+
+    i = 0;
+    while ((pData = dataList[i++]) != NULL)
+    {
+        pData->attribs.exportable = exp;
+    }
+}
+
+INLINE void
+keySpec_setExportable(
+    SeosCryptoApi_Key_Spec* specList[],
+    bool                    exp)
+{
+    SeosCryptoApi_Key_Spec* pSpec;
+    size_t i;
+
+    i = 0;
+    while ((pSpec = specList[i++]) != NULL)
+    {
+        pSpec->key.attribs.exportable = exp;
+    }
+}

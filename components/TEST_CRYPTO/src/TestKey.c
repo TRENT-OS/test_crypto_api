@@ -11,7 +11,7 @@
 
 #include <string.h>
 
-static bool allowExport = true;
+static bool allowExport;
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.key)
 
@@ -258,21 +258,28 @@ do_generate(
     Debug_ASSERT_LOCATION(api, key);
     memset(&expData, 0, sizeof(SeosCryptoApi_Key_Data));
     err = SeosCryptoApi_Key_export(&key, &expData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT(spec->key.type == expData.type);
-    Debug_ASSERT(!memcmp(&spec->key.attribs, &expData.attribs,
-                         sizeof(SeosCryptoApi_Key_Attribs)));
-    if (spec->type == SeosCryptoApi_Key_SPECTYPE_PARAMS)
+    if (allowExport)
     {
-        switch (spec->key.type)
+        Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+        Debug_ASSERT(spec->key.type == expData.type);
+        Debug_ASSERT(!memcmp(&spec->key.attribs, &expData.attribs,
+                             sizeof(SeosCryptoApi_Key_Attribs)));
+        if (spec->type == SeosCryptoApi_Key_SPECTYPE_PARAMS)
         {
-        case SeosCryptoApi_Key_TYPE_DH_PRV:
-            Debug_ASSERT(!memcmp(&spec->key.params, &expData.data.dh.prv.params,
-                                 sizeof(SeosCryptoApi_Key_DhParams)));
-            break;
-        default:
-            Debug_ASSERT(1 == 0);
+            switch (spec->key.type)
+            {
+            case SeosCryptoApi_Key_TYPE_DH_PRV:
+                Debug_ASSERT(!memcmp(&spec->key.params, &expData.data.dh.prv.params,
+                                     sizeof(SeosCryptoApi_Key_DhParams)));
+                break;
+            default:
+                Debug_ASSERT(1 == 0);
+            }
         }
+    }
+    else
+    {
+        Debug_ASSERT_PRINTFLN(SEOS_ERROR_OPERATION_DENIED == err, "err %d", err);
     }
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
@@ -369,27 +376,35 @@ do_makePublic(
         return err;
     }
     err = SeosCryptoApi_Key_export(&pubKey, &expData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT_LOCATION(api, pubKey);
-    switch (spec->key.type)
+    if (allowExport)
     {
-    case SeosCryptoApi_Key_TYPE_RSA_PRV:
-        Debug_ASSERT(expData.type == SeosCryptoApi_Key_TYPE_RSA_PUB);
-        break;
-    case SeosCryptoApi_Key_TYPE_DH_PRV:
-        Debug_ASSERT(expData.type == SeosCryptoApi_Key_TYPE_DH_PUB);
-        if (SeosCryptoApi_Key_SPECTYPE_PARAMS == spec->type)
+        Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+        switch (spec->key.type)
         {
-            Debug_ASSERT(!memcmp(&expData.data.dh.pub.params, &spec->key.params.dh,
-                                 sizeof(SeosCryptoApi_Key_DhParams)));
+        case SeosCryptoApi_Key_TYPE_RSA_PRV:
+            Debug_ASSERT(expData.type == SeosCryptoApi_Key_TYPE_RSA_PUB);
+            break;
+        case SeosCryptoApi_Key_TYPE_DH_PRV:
+            Debug_ASSERT(expData.type == SeosCryptoApi_Key_TYPE_DH_PUB);
+            if (SeosCryptoApi_Key_SPECTYPE_PARAMS == spec->type)
+            {
+                Debug_ASSERT(!memcmp(&expData.data.dh.pub.params, &spec->key.params.dh,
+                                     sizeof(SeosCryptoApi_Key_DhParams)));
+            }
+            break;
+        case SeosCryptoApi_Key_TYPE_SECP256R1_PRV:
+            Debug_ASSERT(expData.type == SeosCryptoApi_Key_TYPE_SECP256R1_PUB);
+            break;
+        default:
+            Debug_ASSERT(1 == 0);
         }
-        break;
-    case SeosCryptoApi_Key_TYPE_SECP256R1_PRV:
-        Debug_ASSERT(expData.type == SeosCryptoApi_Key_TYPE_SECP256R1_PUB);
-        break;
-    default:
-        Debug_ASSERT(1 == 0);
     }
+    else
+    {
+        Debug_ASSERT_PRINTFLN(SEOS_ERROR_OPERATION_DENIED == err, "err %d", err);
+    }
+
     err = SeosCryptoApi_Key_free(&pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     err = SeosCryptoApi_Key_free(&key);
@@ -479,8 +494,15 @@ TestKey_getParams_ok(
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(dhParams));
     err = SeosCryptoApi_Key_export(&key, &expData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT(!memcmp(&expData.data.dh.prv.params, &dhParams, n));
+    if (allowExport)
+    {
+        Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+        Debug_ASSERT(!memcmp(&expData.data.dh.prv.params, &dhParams, n));
+    }
+    else
+    {
+        Debug_ASSERT_PRINTFLN(SEOS_ERROR_OPERATION_DENIED == err, "err %d", err);
+    }
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
@@ -698,6 +720,10 @@ TestKey_loadParams_buffer(
 void TestKey_testAll(
     SeosCryptoApi* api)
 {
+    allowExport = true;
+    keyData_setExportable(keyDataList, allowExport);
+    keySpec_setExportable(keySpecList, allowExport);
+
     TestKey_import_ok(api);
     TestKey_import_fail(api);
 
@@ -721,4 +747,18 @@ void TestKey_testAll(
 
     TestKey_getParams_buffer(api);
     TestKey_loadParams_buffer(api);
+
+    // Make all used keys NON-EXPORTABLE and re-run parts of the tests
+    if (api->mode == SeosCryptoApi_Mode_ROUTER)
+    {
+        allowExport = false;
+        keyData_setExportable(keyDataList, allowExport);
+        keySpec_setExportable(keySpecList, allowExport);
+
+        TestKey_import_ok(api);
+        TestKey_generate_ok(api);
+        TestKey_makePublic_ok(api);
+        TestKey_getParams_ok(api);
+        TestKey_loadParams_ok(api);
+    }
 }
