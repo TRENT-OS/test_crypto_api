@@ -26,6 +26,8 @@ static const unsigned char ecdhSharedResult[] =
 static bool allowExport;
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.agreement)
+#define Debug_PRINTF_TEST_OK(a) \
+    Debug_PRINTF("[mode=%i,exp=%s] %s: OK\n", a->mode, allowExport ? "true" : "false", __func__);
 
 static void
 TestAgreement_init_ok(
@@ -59,7 +61,7 @@ TestAgreement_init_ok(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -114,7 +116,7 @@ TestAgreement_init_fail(
     err = SeosCryptoApi_Key_free(&dhKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static seos_err_t
@@ -179,7 +181,7 @@ TestAgreement_compute_DH_ok(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -231,7 +233,7 @@ TestAgreement_compute_DH_rnd_ok(
     err = SeosCryptoApi_Key_free(&svPubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -262,7 +264,7 @@ TestAgreement_compute_ECDH_ok(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -310,7 +312,7 @@ TestAgreement_compute_ECDH_rnd_ok(
     err = SeosCryptoApi_Key_free(&svPubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -367,7 +369,7 @@ TestAgreement_compute_fail(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -389,7 +391,7 @@ TestAgreement_free_ok(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -416,7 +418,7 @@ TestAgreement_free_fail(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -465,7 +467,7 @@ TestAgreement_agree_buffer(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -497,7 +499,7 @@ TestAgreement_key_fail(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 void
@@ -535,7 +537,6 @@ TestAgreement_testAll(
         TestAgreement_compute_DH_rnd_ok(api);
         TestAgreement_compute_ECDH_ok(api);
         TestAgreement_compute_ECDH_rnd_ok(api);
-
         TestAgreement_key_fail(api);
     }
 }

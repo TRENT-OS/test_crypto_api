@@ -26,6 +26,8 @@ typedef struct
 
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, true, o.mac)
+#define Debug_PRINTF_TEST_OK(a) \
+    Debug_PRINTF("[mode=%i] %s: OK\n", a->mode, __func__);
 
 // -----------------------------------------------------------------------------
 
@@ -169,7 +171,7 @@ TestMac_mac_HMAC_MD5(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -193,7 +195,7 @@ TestMac_mac_HMAC_SHA256(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -229,7 +231,7 @@ TestMac_start_fail(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -271,7 +273,7 @@ TestMac_process_fail(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -320,7 +322,7 @@ TestMac_finalize_fail(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -349,7 +351,7 @@ TestMac_start_buffer(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -380,7 +382,7 @@ TestMac_process_buffer(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -439,7 +441,7 @@ TestMac_finalize_buffer(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -463,7 +465,7 @@ TestMac_init_ok(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -485,7 +487,7 @@ TestMac_init_fail(
     err = SeosCryptoApi_Mac_init(api, &obj, 666);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -501,7 +503,7 @@ TestMac_free_ok(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -522,7 +524,7 @@ TestMac_free_fail(
     err = SeosCryptoApi_Mac_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 void

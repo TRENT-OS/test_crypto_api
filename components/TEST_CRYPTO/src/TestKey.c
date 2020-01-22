@@ -14,6 +14,8 @@
 static bool allowExport;
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.key)
+#define Debug_PRINTF_TEST_OK(a) \
+    Debug_PRINTF("[mode=%i,exp=%s] %s: OK\n", a->mode, allowExport ? "true" : "false", __func__);
 
 // -----------------------------------------------------------------------------
 
@@ -78,7 +80,7 @@ TestKey_import_ok(
     err = do_import(api, &secp256r1PrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -112,7 +114,7 @@ TestKey_import_fail(
     err = SeosCryptoApi_Key_import(api, &key, &rsaLargeData);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static seos_err_t
@@ -181,7 +183,7 @@ TestKey_export_ok(
     err = do_export(api, &secp256r1PrvData);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -239,7 +241,7 @@ TestKey_export_fail(
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static seos_err_t
@@ -321,7 +323,7 @@ TestKey_generate_ok(
     err = do_generate(api, &secp256r1Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -355,7 +357,7 @@ TestKey_generate_fail(
     err = SeosCryptoApi_Key_generate(api, &key, &dh63bSpec);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static seos_err_t
@@ -435,7 +437,7 @@ TestKey_makePublic_ok(
     err = do_makePublic(api, &secp256r1Spec);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -472,7 +474,7 @@ TestKey_makePublic_fail(
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -506,7 +508,7 @@ TestKey_getParams_ok(
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -543,7 +545,7 @@ TestKey_getParams_fail(
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -573,7 +575,7 @@ TestKey_loadParams_ok(
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
     Debug_ASSERT(n == sizeof(eccParams));
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -610,7 +612,7 @@ TestKey_loadParams_fail(
                                        &eccParams, &n);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -626,7 +628,7 @@ TestKey_free_ok(
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -647,7 +649,7 @@ TestKey_free_fail(
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -683,7 +685,7 @@ TestKey_getParams_buffer(
     err = SeosCryptoApi_Key_free(&key);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -714,7 +716,7 @@ TestKey_loadParams_buffer(
                                        paramBuf, &paramLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 void TestKey_testAll(

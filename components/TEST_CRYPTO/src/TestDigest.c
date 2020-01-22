@@ -25,6 +25,8 @@ typedef struct
 
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, true, o.digest)
+#define Debug_PRINTF_TEST_OK(a) \
+    Debug_PRINTF("[mode=%i] %s: OK\n", a->mode, __func__);
 
 // -----------------------------------------------------------------------------
 
@@ -171,7 +173,7 @@ TestDigest_hash_MD5(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -195,7 +197,7 @@ TestDigest_hash_SHA256(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -247,7 +249,7 @@ TestDigest_clone_ok(
     do_clone(api, SeosCryptoApi_Digest_ALG_MD5, &md5Vectors[0]);
     do_clone(api, SeosCryptoApi_Digest_ALG_SHA256, &sha256Vectors[0]);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -290,7 +292,7 @@ TestDigest_clone_fail(
     err = SeosCryptoApi_Digest_free(&srcObj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -314,7 +316,7 @@ TestDigest_init_ok(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -337,7 +339,7 @@ TestDigest_init_fail(
     err = SeosCryptoApi_Digest_init(api, &obj, 666);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -353,7 +355,7 @@ TestDigest_free_ok(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -374,7 +376,7 @@ TestDigest_free_fail(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -404,7 +406,7 @@ TestDigest_process_fail(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -451,7 +453,7 @@ TestDigest_finalize_fail(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -480,7 +482,7 @@ TestDigest_process_buffer(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 static void
@@ -533,7 +535,7 @@ TestDigest_finalize_buffer(
     err = SeosCryptoApi_Digest_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF("->%s: OK\n", __func__);
+    Debug_PRINTF_TEST_OK(api);
 }
 
 void
