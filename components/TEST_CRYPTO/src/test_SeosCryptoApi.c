@@ -16,6 +16,7 @@
 #include <camkes.h>
 #include <string.h>
 
+// These are the tests for the sub-modules of the API
 void test_SeosCryptoApi_Agreement(SeosCryptoApi* api);
 void test_SeosCryptoApi_Cipher(SeosCryptoApi* api);
 void test_SeosCryptoApi_Digest(SeosCryptoApi* api);
@@ -23,6 +24,36 @@ void test_SeosCryptoApi_Key(SeosCryptoApi* api);
 void test_SeosCryptoApi_Mac(SeosCryptoApi* api);
 void test_SeosCryptoApi_Rng(SeosCryptoApi* api);
 void test_SeosCryptoApi_Signature(SeosCryptoApi* api);
+
+// Forward declaration
+static int entropy(void*, unsigned char*, size_t);
+
+// These are all the configurations of the Crypto API we want to test
+static SeosCryptoApi_Config cfgLib =
+{
+    .mode = SeosCryptoApi_Mode_LIBRARY,
+    .mem = {
+        .malloc = malloc,
+        .free = free,
+    },
+    .impl.lib.rng.entropy = entropy,
+};
+static SeosCryptoApi_Config cfgClient =
+{
+    .mode = SeosCryptoApi_Mode_RPC_CLIENT,
+    .mem = {
+        .malloc = malloc,
+        .free = free,
+    },
+};
+static SeosCryptoApi_Config cfgRouter =
+{
+    .mode = SeosCryptoApi_Mode_ROUTER,
+    .mem = {
+        .malloc = malloc,
+        .free = free,
+    },
+};
 
 // Private Functions -----------------------------------------------------------
 
@@ -69,44 +100,87 @@ test_SeosCryptoApi(
     test_SeosCryptoApi_Signature(api);
 }
 
+static void
+test_SeosCryptoApi_init_neg()
+{
+    SeosCryptoApi api;
+    SeosCryptoApi_Config badCfg;
+
+    // Set these up here as the dataport is not const, so that the configs
+    // should actually work
+    cfgClient.impl.client.dataPort = SeosCryptoDataport;
+    cfgRouter.impl.router.client = cfgClient.impl.client;
+    cfgRouter.impl.router.lib = cfgLib.impl.lib;
+
+    // Bad mode
+    memcpy(&badCfg, &cfgLib, sizeof(SeosCryptoApi_Config));
+    badCfg.mode = 666;
+    TEST_NOT_SUPP(SeosCryptoApi_init(&api, &badCfg));
+
+    // No malloc pointer in all modi
+    memcpy(&badCfg, &cfgLib, sizeof(SeosCryptoApi_Config));
+    badCfg.mem.malloc = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    memcpy(&badCfg, &cfgClient, sizeof(SeosCryptoApi_Config));
+    badCfg.mem.malloc = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    memcpy(&badCfg, &cfgRouter, sizeof(SeosCryptoApi_Config));
+    badCfg.mem.malloc = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    // No free pointer in all modi
+    memcpy(&badCfg, &cfgLib, sizeof(SeosCryptoApi_Config));
+    badCfg.mem.free = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    memcpy(&badCfg, &cfgClient, sizeof(SeosCryptoApi_Config));
+    badCfg.mem.free = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    memcpy(&badCfg, &cfgRouter, sizeof(SeosCryptoApi_Config));
+    badCfg.mem.free = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    // No RNG pointer for LIB
+    memcpy(&badCfg, &cfgLib, sizeof(SeosCryptoApi_Config));
+    badCfg.impl.lib.rng.entropy = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    // No dataport for CLIENT, ROUTER
+    memcpy(&badCfg, &cfgClient, sizeof(SeosCryptoApi_Config));
+    badCfg.impl.client.dataPort = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    memcpy(&badCfg, &cfgRouter, sizeof(SeosCryptoApi_Config));
+    badCfg.impl.router.client.dataPort = NULL;
+    TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
+
+    TEST_OK();
+}
+
+static void
+test_SeosCryptoApi_free_neg()
+{
+    // No context
+    TEST_INVAL_PARAM(SeosCryptoApi_free(NULL));
+
+    TEST_OK();
+}
+
 // Public Functions -----------------------------------------------------------
 
 int run()
 {
     SeosCryptoApi api;
-    SeosCryptoApi_Config cfgLib =
-    {
-        .mode = SeosCryptoApi_Mode_LIBRARY,
-        .mem = {
-            .malloc = malloc,
-            .free = free,
-        },
-        .impl.lib.rng = {
-            .entropy = entropy,
-            .context = NULL
-        }
-    };
-    SeosCryptoApi_Config cfgClient =
-    {
-        .mode = SeosCryptoApi_Mode_RPC_CLIENT,
-        .mem = {
-            .malloc = malloc,
-            .free = free,
-        },
-        .impl.client.dataPort = SeosCryptoDataport
-    };
-    SeosCryptoApi_Config cfgRouter =
-    {
-        .mode = SeosCryptoApi_Mode_ROUTER,
-        .mem = {
-            .malloc = malloc,
-            .free = free,
-        },
-        // The router switches between client and lib, so we just copy their
-        // respective configs here..
-        .impl.router.client = cfgClient.impl.client,
-        .impl.router.lib = cfgLib.impl.lib,
-    };
+
+    // We simply do negative tests here, as everything else below here covers
+    // good API configurations and free'ing as well.
+    test_SeosCryptoApi_init_neg();
+    test_SeosCryptoApi_free_neg();
+
+    Debug_PRINTF("\n");
 
     // Test LIBRARY mode
     TEST_SUCCESS(SeosCryptoApi_init(&api, &cfgLib));
@@ -114,6 +188,8 @@ int run()
     TEST_SUCCESS(SeosCryptoApi_free(&api));
 
     Debug_PRINTF("\n");
+
+    cfgClient.impl.client.dataPort = SeosCryptoDataport;
 
     // Test RPC CLIENT mode
     TEST_SUCCESS(Crypto_openSession());
@@ -123,6 +199,9 @@ int run()
     TEST_SUCCESS(Crypto_closeSession());
 
     Debug_PRINTF("\n");
+
+    cfgRouter.impl.router.client = cfgClient.impl.client;
+    cfgRouter.impl.router.lib = cfgLib.impl.lib;
 
     // Test ROUTER mode
     TEST_SUCCESS(Crypto_openSession());
