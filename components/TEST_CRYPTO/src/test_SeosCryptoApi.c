@@ -16,13 +16,13 @@
 #include <camkes.h>
 #include <string.h>
 
-void TestAgreement_testAll(SeosCryptoApi* api);
-void TestCipher_testAll(SeosCryptoApi* api);
-void TestDigest_testAll(SeosCryptoApi* api);
-void TestKey_testAll(SeosCryptoApi* api);
-void TestMac_testAll(SeosCryptoApi* api);
-void TestRng_testAll(SeosCryptoApi* api);
-void TestSignature_testAll(SeosCryptoApi* api);
+void test_SeosCryptoApi_Agreement(SeosCryptoApi* api);
+void test_SeosCryptoApi_Cipher(SeosCryptoApi* api);
+void test_SeosCryptoApi_Digest(SeosCryptoApi* api);
+void test_SeosCryptoApi_Key(SeosCryptoApi* api);
+void test_SeosCryptoApi_Mac(SeosCryptoApi* api);
+void test_SeosCryptoApi_Rng(SeosCryptoApi* api);
+void test_SeosCryptoApi_Signature(SeosCryptoApi* api);
 
 // Private Functions -----------------------------------------------------------
 
@@ -38,7 +38,7 @@ entropy(
 }
 
 static void
-testAll(
+test_SeosCryptoApi(
     SeosCryptoApi* api)
 {
     char mode[128];
@@ -60,13 +60,13 @@ testAll(
 
     Debug_PRINTF("Testing Crypto API in %s mode:\n", mode);
 
-    TestAgreement_testAll(api);
-    TestCipher_testAll(api);
-    TestDigest_testAll(api);
-    TestKey_testAll(api);
-    TestMac_testAll(api);
-    TestRng_testAll(api);
-    TestSignature_testAll(api);
+    test_SeosCryptoApi_Agreement(api);
+    test_SeosCryptoApi_Cipher(api);
+    test_SeosCryptoApi_Digest(api);
+    test_SeosCryptoApi_Key(api);
+    test_SeosCryptoApi_Mac(api);
+    test_SeosCryptoApi_Rng(api);
+    test_SeosCryptoApi_Signature(api);
 }
 
 // Public Functions -----------------------------------------------------------
@@ -112,7 +112,7 @@ int run()
     // Test LIBRARY mode
     err = SeosCryptoApi_init(&api, &cfgLib);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-    testAll(&api);
+    test_SeosCryptoApi(&api);
     err = SeosCryptoApi_free(&api);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
 
@@ -123,7 +123,7 @@ int run()
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
     err = SeosCryptoApi_init(&api, &cfgClient);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-    testAll(&api);
+    test_SeosCryptoApi(&api);
     err = SeosCryptoApi_free(&api);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
     err = Crypto_closeSession(cfgClient.impl.client.api);
@@ -136,7 +136,7 @@ int run()
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
     err = SeosCryptoApi_init(&api, &cfgRouter);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-    testAll(&api);
+    test_SeosCryptoApi(&api);
     err = SeosCryptoApi_free(&api);
     Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
     err = Crypto_closeSession(cfgRouter.impl.router.client.api);

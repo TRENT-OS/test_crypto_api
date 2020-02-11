@@ -34,7 +34,7 @@ static bool allowExport;
     Debug_PRINTF("[mode=%i,exp=%s] %s: OK\n", a->mode, allowExport ? "true" : "false", __func__);
 
 static void
-TestSignature_sign_RSA_ok(
+test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -70,7 +70,7 @@ TestSignature_sign_RSA_ok(
 }
 
 static void
-TestSignature_sign_fail(
+test_SeosCryptoApi_Signature_sign_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey, pubKey;
@@ -146,7 +146,7 @@ TestSignature_sign_fail(
 }
 
 static void
-TestSignature_verify_RSA_ok(
+test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey;
@@ -178,7 +178,7 @@ TestSignature_verify_RSA_ok(
 }
 
 static void
-TestSignature_verify_fail(
+test_SeosCryptoApi_Signature_verify_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -246,7 +246,7 @@ TestSignature_verify_fail(
 }
 
 static void
-TestSignature_init_ok(
+test_SeosCryptoApi_Signature_init_pos(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -297,7 +297,7 @@ TestSignature_init_ok(
 }
 
 static void
-TestSignature_init_fail(
+test_SeosCryptoApi_Signature_init_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key key, prvKey;
@@ -363,7 +363,7 @@ TestSignature_init_fail(
 }
 
 static void
-TestSignature_free_ok(
+test_SeosCryptoApi_Signature_free_pos(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey;
@@ -389,7 +389,7 @@ TestSignature_free_ok(
 }
 
 static void
-TestSignature_free_fail(
+test_SeosCryptoApi_Signature_free_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey;
@@ -416,7 +416,7 @@ TestSignature_free_fail(
 }
 
 static void
-TestSignature_sign_buffer(
+test_SeosCryptoApi_Signature_sign_buffer(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -498,7 +498,7 @@ TestSignature_sign_buffer(
 }
 
 static void
-TestSignature_verify_buffer(
+test_SeosCryptoApi_Signature_verify_buffer(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey;
@@ -540,7 +540,7 @@ TestSignature_verify_buffer(
 }
 
 static void
-TestSignature_key_fail(
+test_SeosCryptoApi_Signature_key_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -572,27 +572,30 @@ TestSignature_key_fail(
 }
 
 void
-TestSignature_testAll(
+test_SeosCryptoApi_Signature(
     SeosCryptoApi* api)
 {
     allowExport = true;
     keyData_setExportable(keyDataList, allowExport);
     keySpec_setExportable(keySpecList, allowExport);
 
-    TestSignature_init_ok(api);
-    TestSignature_init_fail(api);
+    test_SeosCryptoApi_Signature_init_pos(api);
+    test_SeosCryptoApi_Signature_init_neg(api);
 
-    TestSignature_free_ok(api);
-    TestSignature_free_fail(api);
+    test_SeosCryptoApi_Signature_free_pos(api);
+    test_SeosCryptoApi_Signature_free_neg(api);
 
-    TestSignature_sign_RSA_ok(api);
-    TestSignature_sign_fail(api);
+    // Test only failures separately, as computing ref. values is sufficient
+    // proof of correct funtioning
+    test_SeosCryptoApi_Signature_sign_neg(api);
+    test_SeosCryptoApi_Signature_verify_neg(api);
 
-    TestSignature_verify_RSA_ok(api);
-    TestSignature_verify_fail(api);
+    test_SeosCryptoApi_Signature_sign_buffer(api);
+    test_SeosCryptoApi_Signature_verify_buffer(api);
 
-    TestSignature_sign_buffer(api);
-    TestSignature_verify_buffer(api);
+    // Test vectors
+    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(api);
+    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(api);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
     if (api->mode == SeosCryptoApi_Mode_ROUTER)
@@ -601,9 +604,9 @@ TestSignature_testAll(
         keyData_setExportable(keyDataList, allowExport);
         keySpec_setExportable(keySpecList, allowExport);
 
-        TestSignature_sign_RSA_ok(api);
-        TestSignature_verify_RSA_ok(api);
+        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(api);
+        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(api);
 
-        TestSignature_key_fail(api);
+        test_SeosCryptoApi_Signature_key_neg(api);
     }
 }

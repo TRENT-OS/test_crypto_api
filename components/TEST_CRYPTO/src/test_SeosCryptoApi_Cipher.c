@@ -267,7 +267,7 @@ do_AES_ECB(
 }
 
 static void
-TestCipher_encrypt_AES_ECB(
+test_SeosCryptoApi_Cipher_do_AES_ECB_enc(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -290,7 +290,7 @@ TestCipher_encrypt_AES_ECB(
 }
 
 static void
-TestCipher_decrypt_AES_ECB(
+test_SeosCryptoApi_Cipher_do_AES_ECB_dec(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -340,7 +340,7 @@ do_AES_CBC(
 }
 
 static void
-TestCipher_encrypt_AES_CBC(
+test_SeosCryptoApi_Cipher_do_AES_CBC_enc(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -364,7 +364,7 @@ TestCipher_encrypt_AES_CBC(
 }
 
 static void
-TestCipher_decrypt_AES_CBC(
+test_SeosCryptoApi_Cipher_do_AES_CBC_dec(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -448,7 +448,7 @@ do_AES_GCM(
 }
 
 static void
-TestCipher_encrypt_AES_GCM(
+test_SeosCryptoApi_Cipher_do_AES_GCM_enc(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -473,7 +473,7 @@ TestCipher_encrypt_AES_GCM(
 }
 
 static void
-TestCipher_decrypt_AES_GCM_ok(
+test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -498,7 +498,7 @@ TestCipher_decrypt_AES_GCM_ok(
 }
 
 static void
-TestCipher_decrypt_AES_GCM_fail(
+test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -527,7 +527,7 @@ TestCipher_decrypt_AES_GCM_fail(
 }
 
 static void
-TestCipher_init_ok(
+test_SeosCryptoApi_Cipher_init_pos(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -595,7 +595,7 @@ TestCipher_init_ok(
 }
 
 static void
-TestCipher_init_fail(
+test_SeosCryptoApi_Cipher_init_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -668,7 +668,7 @@ TestCipher_init_fail(
 }
 
 static void
-TestCipher_free_ok(
+test_SeosCryptoApi_Cipher_free_pos(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -693,7 +693,7 @@ TestCipher_free_ok(
 }
 
 static void
-TestCipher_free_fail(
+test_SeosCryptoApi_Cipher_free_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -720,7 +720,7 @@ TestCipher_free_fail(
 }
 
 static void
-TestCipher_start_fail(
+test_SeosCryptoApi_Cipher_start_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -764,7 +764,7 @@ TestCipher_start_fail(
 }
 
 static void
-TestCipher_process_fail(
+test_SeosCryptoApi_Cipher_process_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -846,7 +846,7 @@ TestCipher_process_fail(
 }
 
 static void
-TestCipher_finalize_fail(
+test_SeosCryptoApi_Cipher_finalize_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -931,7 +931,7 @@ TestCipher_finalize_fail(
 }
 
 static void
-TestCipher_init_buffer(
+test_SeosCryptoApi_Cipher_init_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -973,7 +973,7 @@ TestCipher_init_buffer(
 }
 
 static void
-TestCipher_start_buffer(
+test_SeosCryptoApi_Cipher_start_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -1006,7 +1006,7 @@ TestCipher_start_buffer(
 }
 
 static void
-TestCipher_process_buffer(
+test_SeosCryptoApi_Cipher_process_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -1078,7 +1078,7 @@ TestCipher_process_buffer(
 }
 
 static void
-TestCipher_finalize_buffer(
+test_SeosCryptoApi_Cipher_finalize_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -1145,7 +1145,7 @@ TestCipher_finalize_buffer(
 }
 
 void
-TestCipher_testAll(
+test_SeosCryptoApi_Cipher(
     SeosCryptoApi* api)
 {
     allowExport = true;
@@ -1153,32 +1153,31 @@ TestCipher_testAll(
     keyData_setExportable(testKeyDataList, allowExport);
     keySpec_setExportable(keySpecList, allowExport);
 
-    TestCipher_init_ok(api);
-    TestCipher_init_fail(api);
+    test_SeosCryptoApi_Cipher_init_pos(api);
+    test_SeosCryptoApi_Cipher_init_neg(api);
 
-    TestCipher_free_ok(api);
-    TestCipher_free_fail(api);
-
-    TestCipher_encrypt_AES_ECB(api);
-    TestCipher_decrypt_AES_ECB(api);
-
-    TestCipher_encrypt_AES_CBC(api);
-    TestCipher_decrypt_AES_CBC(api);
-
-    TestCipher_encrypt_AES_GCM(api);
-    TestCipher_decrypt_AES_GCM_ok(api);
-    TestCipher_decrypt_AES_GCM_fail(api);
+    test_SeosCryptoApi_Cipher_free_pos(api);
+    test_SeosCryptoApi_Cipher_free_neg(api);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    TestCipher_start_fail(api);
-    TestCipher_process_fail(api);
-    TestCipher_finalize_fail(api);
+    test_SeosCryptoApi_Cipher_start_neg(api);
+    test_SeosCryptoApi_Cipher_process_neg(api);
+    test_SeosCryptoApi_Cipher_finalize_neg(api);
 
-    TestCipher_init_buffer(api);
-    TestCipher_start_buffer(api);
-    TestCipher_process_buffer(api);
-    TestCipher_finalize_buffer(api);
+    test_SeosCryptoApi_Cipher_init_buffer(api);
+    test_SeosCryptoApi_Cipher_start_buffer(api);
+    test_SeosCryptoApi_Cipher_process_buffer(api);
+    test_SeosCryptoApi_Cipher_finalize_buffer(api);
+
+    // Test vectors
+    test_SeosCryptoApi_Cipher_do_AES_ECB_enc(api);
+    test_SeosCryptoApi_Cipher_do_AES_ECB_dec(api);
+    test_SeosCryptoApi_Cipher_do_AES_CBC_enc(api);
+    test_SeosCryptoApi_Cipher_do_AES_CBC_dec(api);
+    test_SeosCryptoApi_Cipher_do_AES_GCM_enc(api);
+    test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(api);
+    test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(api);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
     if (api->mode == SeosCryptoApi_Mode_ROUTER)
@@ -1188,11 +1187,11 @@ TestCipher_testAll(
         keyData_setExportable(testKeyDataList, allowExport);
         keySpec_setExportable(keySpecList, allowExport);
 
-        TestCipher_encrypt_AES_ECB(api);
-        TestCipher_decrypt_AES_ECB(api);
-        TestCipher_encrypt_AES_CBC(api);
-        TestCipher_decrypt_AES_CBC(api);
-        TestCipher_encrypt_AES_GCM(api);
-        TestCipher_decrypt_AES_GCM_ok(api);
+        test_SeosCryptoApi_Cipher_do_AES_ECB_enc(api);
+        test_SeosCryptoApi_Cipher_do_AES_ECB_dec(api);
+        test_SeosCryptoApi_Cipher_do_AES_CBC_enc(api);
+        test_SeosCryptoApi_Cipher_do_AES_CBC_dec(api);
+        test_SeosCryptoApi_Cipher_do_AES_GCM_enc(api);
+        test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(api);
     }
 }

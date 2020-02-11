@@ -17,14 +17,14 @@ DeclareCAmkESComponent(TEST_CRYPTO
         common
         components/CRYPTO/instance
     SOURCES
-        components/TEST_CRYPTO/src/TestRunner.c
-        components/TEST_CRYPTO/src/TestSignature.c
-        components/TEST_CRYPTO/src/TestCipher.c
-        components/TEST_CRYPTO/src/TestRng.c
-        components/TEST_CRYPTO/src/TestDigest.c
-        components/TEST_CRYPTO/src/TestMac.c
-        components/TEST_CRYPTO/src/TestAgreement.c
-        components/TEST_CRYPTO/src/TestKey.c
+        components/TEST_CRYPTO/src/test_SeosCryptoApi.c
+        components/TEST_CRYPTO/src/test_SeosCryptoApi_Signature.c
+        components/TEST_CRYPTO/src/test_SeosCryptoApi_Cipher.c
+        components/TEST_CRYPTO/src/test_SeosCryptoApi_Rng.c
+        components/TEST_CRYPTO/src/test_SeosCryptoApi_Digest.c
+        components/TEST_CRYPTO/src/test_SeosCryptoApi_Mac.c
+        components/TEST_CRYPTO/src/test_SeosCryptoApi_Agreement.c
+        components/TEST_CRYPTO/src/test_SeosCryptoApi_Key.c
     C_FLAGS
         -Wall -Werror
     LIBS

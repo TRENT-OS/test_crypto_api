@@ -12,7 +12,7 @@
     Debug_PRINTF("[mode=%i] %s: OK\n", a->mode, __func__);
 
 static void
-TestRng_getBytes_ok(
+test_SeosCryptoApi_Rng_getBytes_pos(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -25,7 +25,7 @@ TestRng_getBytes_ok(
 }
 
 static void
-TestRng_getBytes_fail(
+test_SeosCryptoApi_Rng_getBytes_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -51,7 +51,7 @@ TestRng_getBytes_fail(
 }
 
 static void
-TestRng_reSeed_ok(
+test_SeosCryptoApi_Rng_reSeed_pos(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -64,7 +64,7 @@ TestRng_reSeed_ok(
 }
 
 static void
-TestRng_reSeed_fail(
+test_SeosCryptoApi_Rng_reSeed_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -83,7 +83,7 @@ TestRng_reSeed_fail(
 }
 
 static void
-TestRng_reSeed_buffer(
+test_SeosCryptoApi_Rng_reSeed_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -105,7 +105,7 @@ TestRng_reSeed_buffer(
 }
 
 static void
-TestRng_getBytes_buffer(
+test_SeosCryptoApi_Rng_getBytes_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -127,15 +127,15 @@ TestRng_getBytes_buffer(
 }
 
 void
-TestRng_testAll(
+test_SeosCryptoApi_Rng(
     SeosCryptoApi* api)
 {
-    TestRng_getBytes_ok(api);
-    TestRng_getBytes_fail(api);
+    test_SeosCryptoApi_Rng_getBytes_pos(api);
+    test_SeosCryptoApi_Rng_getBytes_neg(api);
 
-    TestRng_reSeed_ok(api);
-    TestRng_reSeed_fail(api);
+    test_SeosCryptoApi_Rng_reSeed_pos(api);
+    test_SeosCryptoApi_Rng_reSeed_neg(api);
 
-    TestRng_reSeed_buffer(api);
-    TestRng_getBytes_buffer(api);
+    test_SeosCryptoApi_Rng_reSeed_buffer(api);
+    test_SeosCryptoApi_Rng_getBytes_buffer(api);
 }

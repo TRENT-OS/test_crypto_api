@@ -30,7 +30,7 @@ static bool allowExport;
     Debug_PRINTF("[mode=%i,exp=%s] %s: OK\n", a->mode, allowExport ? "true" : "false", __func__);
 
 static void
-TestAgreement_init_ok(
+test_SeosCryptoApi_Agreement_init_pos(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -65,7 +65,7 @@ TestAgreement_init_ok(
 }
 
 static void
-TestAgreement_init_fail(
+test_SeosCryptoApi_Agreement_init_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key ecKey, dhKey;
@@ -154,7 +154,7 @@ agreeOnKey(
 }
 
 static void
-TestAgreement_compute_DH_ok(
+test_SeosCryptoApi_Agreement_do_DH(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -185,7 +185,7 @@ TestAgreement_compute_DH_ok(
 }
 
 static void
-TestAgreement_compute_DH_rnd_ok(
+test_SeosCryptoApi_Agreement_do_DH_rnd(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key clPubKey, clPrvKey;
@@ -237,7 +237,7 @@ TestAgreement_compute_DH_rnd_ok(
 }
 
 static void
-TestAgreement_compute_ECDH_ok(
+test_SeosCryptoApi_Agreement_do_ECDH(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -268,7 +268,7 @@ TestAgreement_compute_ECDH_ok(
 }
 
 static void
-TestAgreement_compute_ECDH_rnd_ok(
+test_SeosCryptoApi_Agreement_do_ECDH_rnd(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key clPubKey, clPrvKey;
@@ -316,7 +316,7 @@ TestAgreement_compute_ECDH_rnd_ok(
 }
 
 static void
-TestAgreement_compute_fail(
+test_SeosCryptoApi_Agreement_agree_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -373,7 +373,7 @@ TestAgreement_compute_fail(
 }
 
 static void
-TestAgreement_free_ok(
+test_SeosCryptoApi_Agreement_free_pos(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -395,7 +395,7 @@ TestAgreement_free_ok(
 }
 
 static void
-TestAgreement_free_fail(
+test_SeosCryptoApi_Agreement_free_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key prvKey;
@@ -422,7 +422,7 @@ TestAgreement_free_fail(
 }
 
 static void
-TestAgreement_agree_buffer(
+test_SeosCryptoApi_Agreement_agree_buffer(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -471,7 +471,7 @@ TestAgreement_agree_buffer(
 }
 
 static void
-TestAgreement_key_fail(
+test_SeosCryptoApi_Agreement_key_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key pubKey, prvKey;
@@ -503,28 +503,28 @@ TestAgreement_key_fail(
 }
 
 void
-TestAgreement_testAll(
+test_SeosCryptoApi_Agreement(
     SeosCryptoApi* api)
 {
     allowExport = true;
     keyData_setExportable(keyDataList, allowExport);
     keySpec_setExportable(keySpecList, allowExport);
 
-    TestAgreement_init_ok(api);
-    TestAgreement_init_fail(api);
+    test_SeosCryptoApi_Agreement_init_pos(api);
+    test_SeosCryptoApi_Agreement_init_neg(api);
 
-    TestAgreement_compute_DH_ok(api);
-    TestAgreement_compute_DH_rnd_ok(api);
+    test_SeosCryptoApi_Agreement_agree_neg(api);
 
-    TestAgreement_compute_ECDH_ok(api);
-    TestAgreement_compute_ECDH_rnd_ok(api);
+    test_SeosCryptoApi_Agreement_free_pos(api);
+    test_SeosCryptoApi_Agreement_free_neg(api);
 
-    TestAgreement_compute_fail(api);
+    test_SeosCryptoApi_Agreement_agree_buffer(api);
 
-    TestAgreement_free_ok(api);
-    TestAgreement_free_fail(api);
-
-    TestAgreement_agree_buffer(api);
+    // Test vectors and randomly generated values
+    test_SeosCryptoApi_Agreement_do_DH(api);
+    test_SeosCryptoApi_Agreement_do_ECDH(api);
+    test_SeosCryptoApi_Agreement_do_DH_rnd(api);
+    test_SeosCryptoApi_Agreement_do_ECDH_rnd(api);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
     if (api->mode == SeosCryptoApi_Mode_ROUTER)
@@ -533,10 +533,11 @@ TestAgreement_testAll(
         keyData_setExportable(keyDataList, allowExport);
         keySpec_setExportable(keySpecList, allowExport);
 
-        TestAgreement_compute_DH_ok(api);
-        TestAgreement_compute_DH_rnd_ok(api);
-        TestAgreement_compute_ECDH_ok(api);
-        TestAgreement_compute_ECDH_rnd_ok(api);
-        TestAgreement_key_fail(api);
+        test_SeosCryptoApi_Agreement_do_DH(api);
+        test_SeosCryptoApi_Agreement_do_DH_rnd(api);
+        test_SeosCryptoApi_Agreement_do_ECDH(api);
+        test_SeosCryptoApi_Agreement_do_ECDH_rnd(api);
+
+        test_SeosCryptoApi_Agreement_key_neg(api);
     }
 }

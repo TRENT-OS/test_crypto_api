@@ -154,7 +154,7 @@ do_hash(
 }
 
 static void
-TestDigest_hash_MD5(
+test_SeosCryptoApi_Digest_do_MD5(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -177,7 +177,7 @@ TestDigest_hash_MD5(
 }
 
 static void
-TestDigest_hash_SHA256(
+test_SeosCryptoApi_Digest_do_SHA256(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -243,7 +243,7 @@ do_clone(
 }
 
 static void
-TestDigest_clone_ok(
+test_SeosCryptoApi_Digest_clone_pos(
     SeosCryptoApi* api)
 {
     do_clone(api, SeosCryptoApi_Digest_ALG_MD5, &md5Vectors[0]);
@@ -253,7 +253,7 @@ TestDigest_clone_ok(
 }
 
 static void
-TestDigest_clone_fail(
+test_SeosCryptoApi_Digest_clone_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -296,7 +296,7 @@ TestDigest_clone_fail(
 }
 
 static void
-TestDigest_init_ok(
+test_SeosCryptoApi_Digest_init_pos(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -320,7 +320,7 @@ TestDigest_init_ok(
 }
 
 static void
-TestDigest_init_fail(
+test_SeosCryptoApi_Digest_init_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -343,7 +343,7 @@ TestDigest_init_fail(
 }
 
 static void
-TestDigest_free_ok(
+test_SeosCryptoApi_Digest_free_pos(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -359,7 +359,7 @@ TestDigest_free_ok(
 }
 
 static void
-TestDigest_free_fail(
+test_SeosCryptoApi_Digest_free_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -380,7 +380,7 @@ TestDigest_free_fail(
 }
 
 static void
-TestDigest_process_fail(
+test_SeosCryptoApi_Digest_process_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -410,7 +410,7 @@ TestDigest_process_fail(
 }
 
 static void
-TestDigest_finalize_fail(
+test_SeosCryptoApi_Digest_finalize_neg(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -457,7 +457,7 @@ TestDigest_finalize_fail(
 }
 
 static void
-TestDigest_process_buffer(
+test_SeosCryptoApi_Digest_process_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -486,7 +486,7 @@ TestDigest_process_buffer(
 }
 
 static void
-TestDigest_finalize_buffer(
+test_SeosCryptoApi_Digest_finalize_buffer(
     SeosCryptoApi* api)
 {
     seos_err_t err = SEOS_ERROR_GENERIC;
@@ -539,26 +539,27 @@ TestDigest_finalize_buffer(
 }
 
 void
-TestDigest_testAll(
+test_SeosCryptoApi_Digest(
     SeosCryptoApi* api)
 {
-    TestDigest_init_ok(api);
-    TestDigest_init_fail(api);
+    test_SeosCryptoApi_Digest_init_pos(api);
+    test_SeosCryptoApi_Digest_init_neg(api);
 
-    TestDigest_free_ok(api);
-    TestDigest_free_fail(api);
+    test_SeosCryptoApi_Digest_free_pos(api);
+    test_SeosCryptoApi_Digest_free_neg(api);
 
-    TestDigest_hash_SHA256(api);
-    TestDigest_hash_MD5(api);
-
-    TestDigest_clone_ok(api);
-    TestDigest_clone_fail(api);
+    test_SeosCryptoApi_Digest_clone_pos(api);
+    test_SeosCryptoApi_Digest_clone_neg(api);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    TestDigest_process_fail(api);
-    TestDigest_finalize_fail(api);
+    test_SeosCryptoApi_Digest_process_neg(api);
+    test_SeosCryptoApi_Digest_finalize_neg(api);
 
-    TestDigest_process_buffer(api);
-    TestDigest_finalize_buffer(api);
+    test_SeosCryptoApi_Digest_process_buffer(api);
+    test_SeosCryptoApi_Digest_finalize_buffer(api);
+
+    // Test vectors
+    test_SeosCryptoApi_Digest_do_SHA256(api);
+    test_SeosCryptoApi_Digest_do_MD5(api);
 }
