@@ -12,6 +12,7 @@
 #include <camkes.h>
 
 static PointerVector myObjects;
+static SeosCryptoApi myCrypto;
 
 // Private static functions ----------------------------------------------------
 
@@ -74,19 +75,27 @@ my_free(
                                        PointerVector_getBack(&myObjects));
         PointerVector_popBack(&myObjects);
         free(ptr);
-    } else {
+    }
+    else
+    {
         Debug_LOG_TRACE("Tried free'ing object that was not in list.");
     }
+}
+
+SeosCryptoApi*
+SeosCryptoRpcServer_getSeosCryptoApi(
+    void)
+{
+    // We have only a single instance
+    return &myCrypto;
 }
 
 // Public Functions -----------------------------------------------------------
 
 seos_err_t
-Crypto_openSession(
-    SeosCryptoApi_Ptr* api)
+Crypto_openSession()
 {
     seos_err_t err;
-    SeosCryptoApi* inst;
     SeosCryptoApi_Config cfg =
     {
         .mode = SeosCryptoApi_Mode_RPC_SERVER_WITH_LIBRARY,
@@ -100,29 +109,20 @@ Crypto_openSession(
         .server.dataPort = SeosCryptoDataport
     };
 
-    if ((inst = malloc(sizeof(SeosCryptoApi))) == NULL)
+    if (!PointerVector_ctor(&myObjects, 1))
     {
         return SEOS_ERROR_INSUFFICIENT_SPACE;
     }
-    if (!PointerVector_ctor(&myObjects, 1))
-    {
-        err = SEOS_ERROR_INSUFFICIENT_SPACE;
-        goto err0;
-    }
-    if ((err = SeosCryptoApi_init(inst, &cfg)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_init(&myCrypto, &cfg)) != SEOS_SUCCESS)
     {
         Debug_LOG_TRACE("SeosCryptoApi_init failed with %d", err);
-        goto err1;
+        goto err;
     }
-
-    *api = inst;
 
     return SEOS_SUCCESS;
 
-err1:
+err:
     PointerVector_dtor(&myObjects);
-err0:
-    free(inst);
     return err;
 }
 
@@ -134,8 +134,7 @@ Crypto_hasObject(
 }
 
 seos_err_t
-Crypto_closeSession(
-    SeosCryptoApi_Ptr api)
+Crypto_closeSession()
 {
     seos_err_t err;
 
@@ -143,13 +142,12 @@ Crypto_closeSession(
     // We are allowing the user to free an arbitrary memory pointer, so we
     // better trust the user or we do not implement something like this in
     // production!
-    if ((err = SeosCryptoApi_free(api)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_free(&myCrypto)) != SEOS_SUCCESS)
     {
         Debug_LOG_TRACE("SeosCryptoApi_free failed with %d", err);
     }
 
     PointerVector_dtor(&myObjects);
-    free(api);
 
     return err;
 }

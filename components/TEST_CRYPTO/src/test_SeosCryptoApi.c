@@ -116,20 +116,20 @@ int run()
     Debug_PRINTF("\n");
 
     // Test RPC CLIENT mode
-    TEST_SUCCESS(Crypto_openSession(&cfgClient.impl.client.api));
+    TEST_SUCCESS(Crypto_openSession());
     TEST_SUCCESS(SeosCryptoApi_init(&api, &cfgClient));
     test_SeosCryptoApi(&api);
     TEST_SUCCESS(SeosCryptoApi_free(&api));
-    TEST_SUCCESS(Crypto_closeSession(cfgClient.impl.client.api));
+    TEST_SUCCESS(Crypto_closeSession());
 
     Debug_PRINTF("\n");
 
     // Test ROUTER mode
-    TEST_SUCCESS(Crypto_openSession(&cfgRouter.impl.router.client.api));
+    TEST_SUCCESS(Crypto_openSession());
     TEST_SUCCESS(SeosCryptoApi_init(&api, &cfgRouter));
     test_SeosCryptoApi(&api);
     TEST_SUCCESS(SeosCryptoApi_free(&api));
-    TEST_SUCCESS(Crypto_closeSession(cfgRouter.impl.router.client.api));
+    TEST_SUCCESS(Crypto_closeSession());
 
     Debug_PRINTF("All tests successfully completed.\n");
 

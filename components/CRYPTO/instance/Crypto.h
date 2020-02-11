@@ -7,8 +7,7 @@
 #include "SeosCryptoApi.h"
 
 seos_err_t
-Crypto_openSession(
-    SeosCryptoApi_Ptr* api);
+Crypto_openSession();
 
 typedef void* Object_Ptr;
 
@@ -17,5 +16,4 @@ Crypto_hasObject(
     Object_Ptr ptr);
 
 seos_err_t
-Crypto_closeSession(
-    SeosCryptoApi_Ptr api);
+Crypto_closeSession();

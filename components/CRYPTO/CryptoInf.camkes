@@ -6,7 +6,7 @@ procedure CryptoInf {
     include "SeosCryptoApi.h";
     include "Crypto.h";
 
-    seos_err_t      openSession     (out SeosCryptoApi_Ptr api);
-    seos_err_t      closeSession    (in SeosCryptoApi_Ptr api);
+    seos_err_t      openSession     ();
+    seos_err_t      closeSession    ();
     int             hasObject       (in Object_Ptr ptr);
 };
