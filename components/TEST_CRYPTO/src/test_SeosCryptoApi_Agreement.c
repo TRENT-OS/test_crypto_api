@@ -6,8 +6,7 @@
 
 #include "ObjectLocation.h"
 #include "SharedKeys.h"
-
-#include "LibDebug/Debug.h"
+#include "TestMacros.h"
 
 #include <string.h>
 
@@ -26,8 +25,6 @@ static const unsigned char ecdhSharedResult[] =
 static bool allowExport;
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.agreement)
-#define Debug_PRINTF_TEST_OK(a) \
-    Debug_PRINTF("[mode=%i,exp=%s] %s: OK\n", a->mode, allowExport ? "true" : "false", __func__);
 
 static void
 test_SeosCryptoApi_Agreement_init_pos(
@@ -61,7 +58,7 @@ test_SeosCryptoApi_Agreement_init_pos(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -116,7 +113,7 @@ test_SeosCryptoApi_Agreement_init_neg(
     err = SeosCryptoApi_Key_free(&dhKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static seos_err_t
@@ -181,7 +178,7 @@ test_SeosCryptoApi_Agreement_do_DH(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -233,7 +230,7 @@ test_SeosCryptoApi_Agreement_do_DH_rnd(
     err = SeosCryptoApi_Key_free(&svPubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -264,7 +261,7 @@ test_SeosCryptoApi_Agreement_do_ECDH(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -312,7 +309,7 @@ test_SeosCryptoApi_Agreement_do_ECDH_rnd(
     err = SeosCryptoApi_Key_free(&svPubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -369,7 +366,7 @@ test_SeosCryptoApi_Agreement_agree_neg(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -391,7 +388,7 @@ test_SeosCryptoApi_Agreement_free_pos(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -418,7 +415,7 @@ test_SeosCryptoApi_Agreement_free_neg(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -467,7 +464,7 @@ test_SeosCryptoApi_Agreement_agree_buffer(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -499,7 +496,7 @@ test_SeosCryptoApi_Agreement_key_neg(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 void

@@ -6,8 +6,7 @@
 
 #include "SharedKeys.h"
 #include "ObjectLocation.h"
-
-#include "LibDebug/Debug.h"
+#include "TestMacros.h"
 
 #include <string.h>
 
@@ -30,8 +29,6 @@ static const char expectedRsaSignature[] =
 static bool allowExport;
 #define Debug_ASSERT_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.signature)
-#define Debug_PRINTF_TEST_OK(a) \
-    Debug_PRINTF("[mode=%i,exp=%s] %s: OK\n", a->mode, allowExport ? "true" : "false", __func__);
 
 static void
 test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(
@@ -66,7 +63,7 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -142,7 +139,7 @@ test_SeosCryptoApi_Signature_sign_neg(
     err = SeosCryptoApi_Key_free(&pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -174,7 +171,7 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(
     err = SeosCryptoApi_Key_free(&pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -242,7 +239,7 @@ test_SeosCryptoApi_Signature_verify_neg(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -293,7 +290,7 @@ test_SeosCryptoApi_Signature_init_pos(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -359,7 +356,7 @@ test_SeosCryptoApi_Signature_init_neg(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -385,7 +382,7 @@ test_SeosCryptoApi_Signature_free_pos(
     err = SeosCryptoApi_Key_free(&pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -412,7 +409,7 @@ test_SeosCryptoApi_Signature_free_neg(
     err = SeosCryptoApi_Signature_free(&obj);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -494,7 +491,7 @@ test_SeosCryptoApi_Signature_sign_buffer(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -536,7 +533,7 @@ test_SeosCryptoApi_Signature_verify_buffer(
     err = SeosCryptoApi_Key_free(&pubKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 static void
@@ -568,7 +565,7 @@ test_SeosCryptoApi_Signature_key_neg(
     err = SeosCryptoApi_Key_free(&prvKey);
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode, allowExport);
 }
 
 void

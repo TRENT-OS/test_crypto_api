@@ -4,12 +4,11 @@
 
 #include "SeosCryptoApi.h"
 
-#include "LibDebug/Debug.h"
+#include "TestMacros.h"
 
 #include <string.h>
 
-#define Debug_PRINTF_TEST_OK(a) \
-    Debug_PRINTF("[mode=%i] %s: OK\n", a->mode, __func__);
+// -----------------------------------------------------------------------------
 
 static void
 test_SeosCryptoApi_Rng_getBytes_pos(
@@ -21,7 +20,7 @@ test_SeosCryptoApi_Rng_getBytes_pos(
     err = SeosCryptoApi_Rng_getBytes(api,  0, data, sizeof(data));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode);
 }
 
 static void
@@ -47,7 +46,7 @@ test_SeosCryptoApi_Rng_getBytes_neg(
     err = SeosCryptoApi_Rng_getBytes(api, 0, data, 0);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode);
 }
 
 static void
@@ -60,7 +59,7 @@ test_SeosCryptoApi_Rng_reSeed_pos(
     err = SeosCryptoApi_Rng_reseed(api, seed, sizeof(seed));
     Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode);
 }
 
 static void
@@ -79,7 +78,7 @@ test_SeosCryptoApi_Rng_reSeed_neg(
     err = SeosCryptoApi_Rng_reseed(api, seed, 0);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode);
 }
 
 static void
@@ -101,7 +100,7 @@ test_SeosCryptoApi_Rng_reSeed_buffer(
     err = SeosCryptoApi_Rng_reseed(api, seedBuf, seedLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode);
 }
 
 static void
@@ -123,7 +122,7 @@ test_SeosCryptoApi_Rng_getBytes_buffer(
     err = SeosCryptoApi_Rng_getBytes(api, 0, rngBuf, rngLen);
     Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
 
-    Debug_PRINTF_TEST_OK(api);
+    TEST_OK(api->mode);
 }
 
 void
