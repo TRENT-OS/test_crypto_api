@@ -661,6 +661,46 @@ test_SeosCryptoApi_Key_loadParams_buffer(
     TEST_OK(api->mode, allowExport);
 }
 
+static void
+test_SeosCryptoApi_Key_migrate_pos(
+    SeosCryptoApi* api)
+{
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Key_RemotePtr ptr;
+
+    // Let the remote side load a key into its address space, then migrate
+    // it so it can be used through our API instance
+    TEST_SUCCESS(Crypto_loadKey(&ptr));
+    TEST_SUCCESS(SeosCryptoApi_Key_migrate(api, &key, ptr));
+
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+
+    TEST_OK(api->mode);
+}
+
+static void
+test_SeosCryptoApi_Key_migrate_neg(
+    SeosCryptoApi* api)
+{
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Key_RemotePtr ptr;
+
+    TEST_SUCCESS(Crypto_loadKey(&ptr));
+
+    // Empty ctx
+    TEST_INVAL_PARAM(SeosCryptoApi_Key_migrate(NULL, &key, ptr));
+
+    // Empty key
+    TEST_INVAL_PARAM(SeosCryptoApi_Key_migrate(api, NULL, ptr));
+
+    // Invalid remote pointer
+    TEST_INVAL_HANDLE(SeosCryptoApi_Key_migrate(api, &key, NULL));
+
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+
+    TEST_OK(api->mode);
+}
+
 void test_SeosCryptoApi_Key(
     SeosCryptoApi* api)
 {
@@ -707,5 +747,15 @@ void test_SeosCryptoApi_Key(
         test_SeosCryptoApi_Key_makePublic_pos(api);
         test_SeosCryptoApi_Key_getParams_pos(api);
         test_SeosCryptoApi_Key_loadParams_pos(api);
+    }
+
+    // Migration is only useful when done not locally, as we need to migrate
+    // a key created on the remote side to use it with the local API instance.
+    // NOTE: These test require the remote instance to be initialized.
+    if (api->mode == SeosCryptoApi_Mode_ROUTER ||
+        api->mode == SeosCryptoApi_Mode_RPC_CLIENT)
+    {
+        test_SeosCryptoApi_Key_migrate_pos(api);
+        test_SeosCryptoApi_Key_migrate_neg(api);
     }
 }

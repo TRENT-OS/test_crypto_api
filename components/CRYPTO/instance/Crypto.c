@@ -134,6 +134,38 @@ Crypto_hasObject(
 }
 
 seos_err_t
+Crypto_loadKey(
+    SeosCryptoApi_Key_RemotePtr* ptr)
+{
+    seos_err_t err;
+    SeosCryptoApi_Key key;
+    static SeosCryptoApi_Key_Data aesKey =
+    {
+        .type = SeosCryptoApi_Key_TYPE_AES,
+        .attribs.exportable = true,
+        .data.aes = {
+            .len   = 24,
+            .bytes = {
+                0x8e, 0x73, 0xb0, 0xf7, 0xda, 0x0e, 0x64, 0x52,
+                0xc8, 0x10, 0xf3, 0x2b, 0x80, 0x90, 0x79, 0xe5,
+                0x62, 0xf8, 0xea, 0xd2, 0x52, 0x2c, 0x6b, 0x7b
+            },
+        },
+    };
+
+    // Import key data into the Crypto API
+    if ((err = SeosCryptoApi_Key_import(&myCrypto, &key, &aesKey)) != SEOS_SUCCESS)
+    {
+        return err;
+    }
+
+    // Send back only the pointer to the LIB Key object
+    *ptr = SeosCryptoApi_Key_getPtr(&key);
+
+    return SEOS_SUCCESS;
+}
+
+seos_err_t
 Crypto_closeSession()
 {
     seos_err_t err;

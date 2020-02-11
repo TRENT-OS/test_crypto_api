@@ -8,5 +8,6 @@ procedure CryptoInf {
 
     seos_err_t      openSession     ();
     seos_err_t      closeSession    ();
+    seos_err_t      loadKey         (out SeosCryptoApi_Key_RemotePtr ptr);
     int             hasObject       (in Object_Ptr ptr);
 };

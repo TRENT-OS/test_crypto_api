@@ -16,4 +16,8 @@ Crypto_hasObject(
     Object_Ptr ptr);
 
 seos_err_t
+Crypto_loadKey(
+    SeosCryptoApi_Key_RemotePtr* ptr);
+
+seos_err_t
 Crypto_closeSession();
