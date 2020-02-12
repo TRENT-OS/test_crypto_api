@@ -530,6 +530,47 @@ test_SeosCryptoApi_Key_loadParams_neg(
     TEST_OK(api->mode, allowExport);
 }
 
+
+static void
+test_SeosCryptoApi_Key_getAttribs_pos(
+    SeosCryptoApi* api)
+{
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Key_Attribs attribs;
+
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aes128Data));
+
+    // Get attribs of key and make sure it matches the imported data
+    memset(&attribs, 0, sizeof(SeosCryptoApi_Key_Attribs));
+    TEST_SUCCESS(SeosCryptoApi_Key_getAttribs(&key, &attribs));
+    TEST_TRUE(!memcmp(&attribs, &aes128Data.attribs,
+                         sizeof(SeosCryptoApi_Key_Attribs)));
+
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+
+    TEST_OK(api->mode);
+}
+
+static void
+test_SeosCryptoApi_Key_getAttribs_neg(
+    SeosCryptoApi* api)
+{
+    SeosCryptoApi_Key key;
+    SeosCryptoApi_Key_Attribs attribs;
+
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aes128Data));
+
+    // Empty key object
+    TEST_INVAL_PARAM(SeosCryptoApi_Key_getAttribs(NULL, &attribs));
+
+    // Empty attrib buffer
+    TEST_INVAL_PARAM(SeosCryptoApi_Key_getAttribs(&key, NULL));
+
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+
+    TEST_OK(api->mode);
+}
+
 static void
 test_SeosCryptoApi_Key_free_pos(
     SeosCryptoApi* api)
@@ -644,6 +685,9 @@ void test_SeosCryptoApi_Key(
 
     test_SeosCryptoApi_Key_loadParams_pos(api);
     test_SeosCryptoApi_Key_loadParams_neg(api);
+
+    test_SeosCryptoApi_Key_getAttribs_pos(api);
+    test_SeosCryptoApi_Key_getAttribs_neg(api);
 
     test_SeosCryptoApi_Key_free_pos(api);
     test_SeosCryptoApi_Key_free_neg(api);
