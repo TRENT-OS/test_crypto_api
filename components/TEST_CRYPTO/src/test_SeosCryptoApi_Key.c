@@ -544,7 +544,7 @@ test_SeosCryptoApi_Key_getAttribs_pos(
     memset(&attribs, 0, sizeof(SeosCryptoApi_Key_Attribs));
     TEST_SUCCESS(SeosCryptoApi_Key_getAttribs(&key, &attribs));
     TEST_TRUE(!memcmp(&attribs, &aes128Data.attribs,
-                         sizeof(SeosCryptoApi_Key_Attribs)));
+                      sizeof(SeosCryptoApi_Key_Attribs)));
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 

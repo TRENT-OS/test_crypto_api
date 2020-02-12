@@ -9,18 +9,18 @@
 
 #include <string.h>
 
-#define MAX_VECTOR_SIZE 2048
+#define MAX_VECTOR_SIZE 1024
 typedef struct
 {
     size_t len;
-    unsigned char bytes[MAX_VECTOR_SIZE];
-} vector_t;
+    uint8_t bytes[MAX_VECTOR_SIZE];
+} ByteVector;
 
 typedef struct
 {
-    vector_t msg;
-    vector_t digest;
-} digestTestVector;
+    ByteVector msg;
+    ByteVector digest;
+} TestVector;
 
 #define TEST_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, true, o.digest)
@@ -28,7 +28,7 @@ typedef struct
 // -----------------------------------------------------------------------------
 
 #define NUM_MD5_TESTS 5
-static const digestTestVector md5Vectors[NUM_MD5_TESTS] =
+static const TestVector md5Vectors[NUM_MD5_TESTS] =
 {
     {
         .msg    = {
@@ -85,7 +85,7 @@ static const digestTestVector md5Vectors[NUM_MD5_TESTS] =
 // -----------------------------------------------------------------------------
 
 #define NUM_SHA256_TESTS 4
-static const digestTestVector sha256Vectors[NUM_SHA256_TESTS] =
+static const TestVector sha256Vectors[NUM_SHA256_TESTS] =
 {
     {
         .msg    = {
@@ -133,8 +133,8 @@ static const digestTestVector sha256Vectors[NUM_SHA256_TESTS] =
 
 static seos_err_t
 do_hash(
-    SeosCryptoApi_Digest*   obj,
-    const digestTestVector* vec)
+    SeosCryptoApi_Digest* obj,
+    const TestVector*     vec)
 {
     seos_err_t err;
     char digest[64];
@@ -200,7 +200,7 @@ static seos_err_t
 do_clone(
     SeosCryptoApi*                 api,
     const SeosCryptoApi_Digest_Alg algo,
-    const digestTestVector*        vec)
+    const TestVector*              vec)
 {
     seos_err_t err;
     SeosCryptoApi_Digest dstObj, srcObj;
@@ -250,7 +250,7 @@ static void
 test_SeosCryptoApi_Digest_clone_neg(
     SeosCryptoApi* api)
 {
-    const digestTestVector* vec = &md5Vectors[0];
+    const TestVector* vec = &md5Vectors[0];
     SeosCryptoApi_Digest dstObj, srcObj;
 
     // Create digest object and process something
@@ -360,7 +360,7 @@ test_SeosCryptoApi_Digest_process_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Digest obj;
-    const digestTestVector* vec = &md5Vectors[0];
+    const TestVector* vec = &md5Vectors[0];
 
     TEST_SUCCESS(SeosCryptoApi_Digest_init(api, &obj,
                                            SeosCryptoApi_Digest_ALG_MD5));
@@ -386,7 +386,7 @@ test_SeosCryptoApi_Digest_finalize_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Digest obj;
-    const digestTestVector* vec = &md5Vectors[0];
+    const TestVector* vec = &md5Vectors[0];
     char digest[64];
     size_t digestSize = sizeof(digest);
 
@@ -450,7 +450,7 @@ test_SeosCryptoApi_Digest_finalize_buffer(
 {
     SeosCryptoApi_Digest obj;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT],
-           outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+                         outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
 
     TEST_SUCCESS(SeosCryptoApi_Digest_init(api, &obj,

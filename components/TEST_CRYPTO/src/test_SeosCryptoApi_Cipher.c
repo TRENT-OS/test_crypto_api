@@ -10,22 +10,22 @@
 
 #include <string.h>
 
-#define MAX_VECTOR_SIZE 128
+#define MAX_VECTOR_SIZE 256
 typedef struct
 {
     size_t len;
-    unsigned char bytes[MAX_VECTOR_SIZE];
-} vector_t;
+    uint8_t bytes[MAX_VECTOR_SIZE];
+} ByteVector;
 
 typedef struct
 {
-    vector_t iv;
-    vector_t ad;
-    vector_t pt;
-    vector_t ct;
-    vector_t tag;
+    ByteVector iv;
+    ByteVector ad;
+    ByteVector pt;
+    ByteVector ct;
+    ByteVector tag;
     SeosCryptoApi_Key_Data key;
-} cipherTestVector;
+} TestVector;
 
 static bool allowExport;
 #define TEST_LOCATION(api, o) \
@@ -36,7 +36,7 @@ static bool allowExport;
 #define NUM_RAND_ITERATIONS 100
 
 #define NUM_AES_ECB_TESTS 3
-static cipherTestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
+static TestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
 {
     {
         .key = {
@@ -113,7 +113,7 @@ static cipherTestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
 // -----------------------------------------------------------------------------
 
 #define NUM_AES_CBC_TESTS 1
-static cipherTestVector aesCbcVectors[NUM_AES_CBC_TESTS] =
+static TestVector aesCbcVectors[NUM_AES_CBC_TESTS] =
 {
     {
         .key = {
@@ -153,7 +153,7 @@ static cipherTestVector aesCbcVectors[NUM_AES_CBC_TESTS] =
 // -----------------------------------------------------------------------------
 
 #define NUM_AES_GCM_TESTS 2
-static cipherTestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
+static TestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
 {
     {
         .key = {
@@ -244,8 +244,8 @@ do_AES_ECB(
     SeosCryptoApi*     api,
     int                algo,
     SeosCryptoApi_Key* key,
-    const vector_t*    din,
-    const vector_t*    dout)
+    const ByteVector*  din,
+    const ByteVector*  dout)
 {
     SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
@@ -343,9 +343,9 @@ do_AES_CBC(
     SeosCryptoApi*     api,
     int                algo,
     SeosCryptoApi_Key* key,
-    const vector_t*    iv,
-    const vector_t*    din,
-    const vector_t*    dout)
+    const ByteVector*  iv,
+    const ByteVector*  din,
+    const ByteVector*  dout)
 {
     SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
@@ -445,11 +445,11 @@ do_AES_GCM(
     SeosCryptoApi*     api,
     int                algo,
     SeosCryptoApi_Key* key,
-    const vector_t*    iv,
-    const vector_t*    ad,
-    const vector_t*    din,
-    const vector_t*    dout,
-    const vector_t*    tag)
+    const ByteVector*  iv,
+    const ByteVector*  ad,
+    const ByteVector*  din,
+    const ByteVector*  dout,
+    const ByteVector*  tag)
 {
     seos_err_t ret;
     SeosCryptoApi_Cipher obj;
@@ -538,8 +538,8 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key key;
-    const cipherTestVector* vec = &aesGcmVectors[0];
-    vector_t brokenTag;
+    const TestVector* vec = &aesGcmVectors[0];
+    ByteVector brokenTag;
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &vec->key));
 
@@ -612,7 +612,7 @@ test_SeosCryptoApi_Cipher_init_pos(
 {
     SeosCryptoApi_Cipher obj;
     SeosCryptoApi_Key key;
-    const vector_t* vec;
+    const ByteVector* vec;
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -671,7 +671,7 @@ test_SeosCryptoApi_Cipher_init_neg(
 {
     SeosCryptoApi_Cipher obj;
     SeosCryptoApi_Key key, pubKey;
-    const vector_t* vec;
+    const ByteVector* vec;
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -1017,7 +1017,7 @@ test_SeosCryptoApi_Cipher_process_buffer(
     SeosCryptoApi_Key key;
     SeosCryptoApi_Cipher obj;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
-           outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+                         outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));

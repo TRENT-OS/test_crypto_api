@@ -9,18 +9,18 @@
 
 #include <string.h>
 
-#define MAX_VECTOR_SIZE 2048
+#define MAX_VECTOR_SIZE 256
 typedef struct
 {
     size_t len;
-    unsigned char bytes[MAX_VECTOR_SIZE];
-} vector_t;
+    uint8_t bytes[MAX_VECTOR_SIZE];
+} ByteVector;
 
 typedef struct
 {
-    vector_t secret;
-    vector_t msg;
-    vector_t mac;
+    ByteVector secret;
+    ByteVector msg;
+    ByteVector mac;
 } macTestVector;
 
 #define TEST_LOCATION(api, o) \
@@ -345,7 +345,7 @@ test_SeosCryptoApi_Mac_finalize_buffer(
 {
     SeosCryptoApi_Mac obj;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT],
-           outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+                         outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
 
     TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
