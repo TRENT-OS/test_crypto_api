@@ -11,7 +11,7 @@
 
 #include "SeosCryptoApi.h"
 
-#include "LibDebug/Debug.h"
+#include "TestMacros.h"
 
 #include <camkes.h>
 #include <string.h>
@@ -55,7 +55,7 @@ test_SeosCryptoApi(
         strcpy(mode, "SeosCryptoApi_Mode_RPC_CLIENT");
         break;
     default:
-        Debug_ASSERT(1 == 0);
+        TEST_TRUE(1 == 0);
     }
 
     Debug_PRINTF("Testing Crypto API in %s mode:\n", mode);
@@ -73,7 +73,6 @@ test_SeosCryptoApi(
 
 int run()
 {
-    seos_err_t err = SEOS_ERROR_GENERIC;
     SeosCryptoApi api;
     SeosCryptoApi_Config cfgLib =
     {
@@ -110,37 +109,27 @@ int run()
     };
 
     // Test LIBRARY mode
-    err = SeosCryptoApi_init(&api, &cfgLib);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_init(&api, &cfgLib));
     test_SeosCryptoApi(&api);
-    err = SeosCryptoApi_free(&api);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_free(&api));
 
     Debug_PRINTF("\n");
 
     // Test RPC CLIENT mode
-    err = Crypto_openSession(&cfgClient.impl.client.api);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-    err = SeosCryptoApi_init(&api, &cfgClient);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    TEST_SUCCESS(Crypto_openSession(&cfgClient.impl.client.api));
+    TEST_SUCCESS(SeosCryptoApi_init(&api, &cfgClient));
     test_SeosCryptoApi(&api);
-    err = SeosCryptoApi_free(&api);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-    err = Crypto_closeSession(cfgClient.impl.client.api);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_free(&api));
+    TEST_SUCCESS(Crypto_closeSession(cfgClient.impl.client.api));
 
     Debug_PRINTF("\n");
 
     // Test ROUTER mode
-    err = Crypto_openSession(&cfgRouter.impl.router.client.api);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-    err = SeosCryptoApi_init(&api, &cfgRouter);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    TEST_SUCCESS(Crypto_openSession(&cfgRouter.impl.router.client.api));
+    TEST_SUCCESS(SeosCryptoApi_init(&api, &cfgRouter));
     test_SeosCryptoApi(&api);
-    err = SeosCryptoApi_free(&api);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
-    err = Crypto_closeSession(cfgRouter.impl.router.client.api);
-    Debug_ASSERT_PRINTFLN(err == SEOS_SUCCESS, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_free(&api));
+    TEST_SUCCESS(Crypto_closeSession(cfgRouter.impl.router.client.api));
 
     Debug_PRINTF("All tests successfully completed.\n");
 

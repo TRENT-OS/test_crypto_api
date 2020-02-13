@@ -27,7 +27,7 @@ static const char expectedRsaSignature[] =
 };
 
 static bool allowExport;
-#define Debug_ASSERT_LOCATION(api, o) \
+#define TEST_LOCATION(api, o) \
     Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.signature)
 
 static void
@@ -36,32 +36,25 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
     char signature[256];
     size_t signatureSize = sizeof(signature);
 
-    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
 
     // For signing we only need a private key
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE,
+                                              &prvKey, NULL));
+    TEST_LOCATION(api, obj);
 
-    err = SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
-                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT(!memcmp(expectedRsaSignature, signature,
+    TEST_SUCCESS(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+                                              signature, &signatureSize));
+    TEST_TRUE(!memcmp(expectedRsaSignature, signature,
                          sizeof(expectedRsaSignature)));
 
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-
-    err = SeosCryptoApi_Key_free(&prvKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -72,72 +65,57 @@ test_SeosCryptoApi_Signature_sign_neg(
 {
     SeosCryptoApi_Key prvKey, pubKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
     char signature[256];
     size_t signatureSize = sizeof(signature);
 
-    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
 
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE,
+                                              &prvKey, NULL));
+    TEST_LOCATION(api, obj);
 
     // Use empty context
-    err = SeosCryptoApi_Signature_sign(NULL, msgData, strlen(msgData),
-                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(NULL, msgData, strlen(msgData),
+                                                  signature, &signatureSize));
 
     // Use empty data
-    err = SeosCryptoApi_Signature_sign(&obj, NULL, strlen(msgData), signature,
-                                       &signatureSize);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(&obj, NULL, strlen(msgData),
+                                                  signature, &signatureSize));
 
     // Use zero length data
-    err = SeosCryptoApi_Signature_sign(&obj, msgData, 0, signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(&obj, msgData, 0, signature,
+                                                  &signatureSize));
 
     // Use NULL output buffer
-    err = SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData), NULL,
-                                       &signatureSize);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+                                                  NULL, &signatureSize));
 
     // Use NULL output size buffer
-    err = SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData), signature,
-                                       NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+                                                  signature, NULL));
 
     // Use too small output buffer
     signatureSize = 10;
-    err = SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData), signature,
-                                       &signatureSize);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
+    TEST_TOO_SMALL(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+                                                signature, &signatureSize));
 
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
     // Try signing with only a public key
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, &pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
-    err = SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
-                                       signature, &signatureSize);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                              &pubKey));
+    TEST_LOCATION(api, obj);
+    TEST_ABORTED(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+                                              signature, &signatureSize));
 
-    err = SeosCryptoApi_Key_free(&prvKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(&pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -148,28 +126,20 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
 
     // For signing we only need a public key
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, &pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                              &pubKey));
+    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
+                                                expectedRsaSignature, sizeof(expectedRsaSignature)));
 
-    err = SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
-                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-
-    err = SeosCryptoApi_Key_free(&pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -180,64 +150,49 @@ test_SeosCryptoApi_Signature_verify_neg(
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, &pubKey);
-    Debug_ASSERT_LOCATION(api, obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                              &pubKey));
+    TEST_LOCATION(api, obj)
 
     // Use empty context
-    err = SeosCryptoApi_Signature_verify(NULL, msgData, strlen(msgData),
-                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(NULL, msgData, strlen(msgData),
+                                                    expectedRsaSignature, sizeof(expectedRsaSignature)));
 
     // Use empty msg buffer
-    err = SeosCryptoApi_Signature_verify(&obj, NULL, strlen(msgData),
-                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(&obj, NULL, strlen(msgData),
+                                                    expectedRsaSignature, sizeof(expectedRsaSignature)));
 
     // Use zero lenght input
-    err = SeosCryptoApi_Signature_verify(&obj, msgData, 0,
-                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(&obj, msgData, 0,
+                                                    expectedRsaSignature, sizeof(expectedRsaSignature)));
 
     // Use empty signature buffer
-    err = SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
-                                         NULL, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
+                                                    NULL, sizeof(expectedRsaSignature)));
 
     // Use zero length signature
-    err = SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
-                                         expectedRsaSignature, 0);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
+                                                    expectedRsaSignature, 0));
 
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
     // Try verification if we have only private key
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, NULL);
-    Debug_ASSERT_LOCATION(api, obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
-                                         expectedRsaSignature, sizeof(expectedRsaSignature));
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE,
+                                              &prvKey, NULL));
+    TEST_LOCATION(api, obj)
+    TEST_ABORTED(SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
+                                                expectedRsaSignature, sizeof(expectedRsaSignature)));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
-    err = SeosCryptoApi_Key_free(&pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(&prvKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -248,47 +203,36 @@ test_SeosCryptoApi_Signature_init_pos(
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
 
     // Init just with prv key
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, NULL);
-    Debug_ASSERT_LOCATION(api, obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE,
+                                              &prvKey, NULL));
+    TEST_LOCATION(api, obj)
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
     // Init just with prv key
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, &pubKey);
-    Debug_ASSERT_LOCATION(api, obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                              &pubKey));
+    TEST_LOCATION(api, obj)
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
     // Use both keys
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, &pubKey);
-    Debug_ASSERT_LOCATION(api, obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE,
+                                              &prvKey, &pubKey));
+    TEST_LOCATION(api, obj)
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
-    err = SeosCryptoApi_Key_free(&pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(&prvKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -299,62 +243,51 @@ test_SeosCryptoApi_Signature_init_neg(
 {
     SeosCryptoApi_Key key, prvKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_Key_generate(api, &key, &aes128Spec);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
 
     // Use empty context
-    err = SeosCryptoApi_Signature_init(NULL, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(NULL, &obj,
+                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                  SeosCryptoApi_Digest_ALG_NONE,
+                                                  &prvKey, NULL));
 
     // Use empty sig handle
-    err = SeosCryptoApi_Signature_init(api, NULL,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(api, NULL,
+                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                  SeosCryptoApi_Digest_ALG_NONE,
+                                                  &prvKey, NULL));
 
     // Use wrong algorithm
-    err = SeosCryptoApi_Signature_init(api, &obj, 666,
-                                       SeosCryptoApi_Digest_ALG_NONE, &prvKey, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
+    TEST_NOT_SUPP(SeosCryptoApi_Signature_init(api, &obj, 666,
+                                               SeosCryptoApi_Digest_ALG_NONE, &prvKey, NULL));
 
     // Use wrong digest algorithm
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15, 666, &prvKey, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_NOT_SUPPORTED == err, "err %d", err);
+    TEST_NOT_SUPP(SeosCryptoApi_Signature_init(api, &obj,
+                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                               666, &prvKey, NULL));
 
     // Use wrong type of key for prv
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &key, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(api, &obj,
+                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                  SeosCryptoApi_Digest_ALG_NONE, &key,
+                                                  NULL));
 
     // Use wrong type of key for prv
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, &key);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(api, &obj,
+                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                  SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                                  &key));
 
     // Use no keys
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(api, &obj,
+                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                  SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                                  NULL));
 
-    err = SeosCryptoApi_Key_free(&key);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(&prvKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -365,22 +298,17 @@ test_SeosCryptoApi_Signature_free_pos(
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
 
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, &pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                              &pubKey));
+    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
-    err = SeosCryptoApi_Key_free(&pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -391,23 +319,18 @@ test_SeosCryptoApi_Signature_free_neg(
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
 
-    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, &pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                              &pubKey));
+    TEST_LOCATION(api, obj);
 
     // Empty context
-    err = SeosCryptoApi_Signature_free(NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_PARAMETER == err, "err %d", err);
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_free(NULL));
 
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -418,78 +341,63 @@ test_SeosCryptoApi_Signature_sign_buffer(
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
     static unsigned int hashBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
            sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t hashLen, sigLen;
 
-    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE,
+                                              &prvKey, NULL));
+    TEST_LOCATION(api, obj);
 
     // Should go through but then return ABORTED because crypto fails
     hashLen = SeosCryptoApi_SIZE_DATAPORT;
     sigLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
-                                       &sigLen);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
+    TEST_ABORTED(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
+                                              &sigLen));
 
     // Should fail because input is too long
     hashLen = SeosCryptoApi_SIZE_DATAPORT + 1;
     sigLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
-                                       &sigLen);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
+                                                   &sigLen));
 
     // Should fail because output is too long
     hashLen = SeosCryptoApi_SIZE_DATAPORT;
     sigLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    err = SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
-                                       &sigLen);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
+                                                   &sigLen));
 
     // Should fail but give us the required output size which is the size of the
     // modulus of the private key, e.g., |N| = |P| + |Q|
     hashLen = SeosCryptoApi_Digest_SIZE_MD5;
     sigLen = 10;
-    err = SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
-                                       &sigLen);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_BUFFER_TOO_SMALL == err, "err %d", err);
-    Debug_ASSERT(sigLen == (rsa1024PrvData.data.rsa.prv.pLen +
+    TEST_TOO_SMALL(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
+                                                &sigLen));
+    TEST_TRUE(sigLen == (rsa1024PrvData.data.rsa.prv.pLen +
                             rsa1024PrvData.data.rsa.prv.qLen));
 
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(&prvKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, NULL);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE,
+                                              &prvKey, NULL));
+    TEST_LOCATION(api, obj);
     // Sign with input/output buffer being the same
     memcpy(hashBuf, msgData, strlen(msgData));
     hashLen = strlen(msgData);
     sigLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Signature_sign(&obj,
-                                       hashBuf, hashLen,
-                                       hashBuf, &sigLen);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT(sigLen == sizeof(expectedRsaSignature));
-    Debug_ASSERT(!memcmp(expectedRsaSignature, hashBuf, sigLen));
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(&prvKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, hashBuf,
+                                              &sigLen));
+    TEST_TRUE(sigLen == sizeof(expectedRsaSignature));
+    TEST_TRUE(!memcmp(expectedRsaSignature, hashBuf, sigLen));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -500,38 +408,31 @@ test_SeosCryptoApi_Signature_verify_buffer(
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
     static unsigned int hashBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
            sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t hashLen, sigLen;
 
-    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       NULL, &pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    Debug_ASSERT_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
+                                              &pubKey));
+    TEST_LOCATION(api, obj);
 
     // Should go through but fail with ABORTED because crypto fails
     sigLen = (rsa1024PrvData.data.rsa.prv.pLen + rsa1024PrvData.data.rsa.prv.qLen);
     hashLen = SeosCryptoApi_SIZE_DATAPORT - sigLen;
-    err = SeosCryptoApi_Signature_verify(&obj, hashBuf, hashLen, sigBuf,
-                                         sigLen);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_ABORTED == err, "err %d", err);
+    TEST_ABORTED(SeosCryptoApi_Signature_verify(&obj, hashBuf, hashLen, sigBuf,
+                                                sigLen));
 
     // Should fail because the total of both is too big for internal buffer
     hashLen = 16;
     sigLen = SeosCryptoApi_SIZE_DATAPORT;
-    err = SeosCryptoApi_Signature_verify(&obj, hashBuf, hashLen, sigBuf,
-                                         sigLen);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INSUFFICIENT_SPACE == err, "err %d", err);
+    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_verify(&obj, hashBuf, hashLen, sigBuf,
+                                                     sigLen));
 
-    err = SeosCryptoApi_Signature_free(&obj);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(&pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
 
     TEST_OK(api->mode, allowExport);
 }
@@ -542,28 +443,22 @@ test_SeosCryptoApi_Signature_key_neg(
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Signature obj;
-    seos_err_t err = SEOS_ERROR_GENERIC;
 
     // Test with both keys having different exportable attributes
     rsa1024PrvData.attribs.exportable = false;
     rsa1024PubData.attribs.exportable = true;
 
-    err = SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
 
     // Should fail due to different key localities
-    err = SeosCryptoApi_Signature_init(api, &obj,
-                                       SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                       SeosCryptoApi_Digest_ALG_NONE,
-                                       &prvKey, &pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_ERROR_INVALID_HANDLE == err, "err %d", err);
+    TEST_INVAL_HANDLE(SeosCryptoApi_Signature_init(api, &obj,
+                                                   SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                   SeosCryptoApi_Digest_ALG_NONE,
+                                                   &prvKey, &pubKey));
 
-    err = SeosCryptoApi_Key_free(&pubKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
-    err = SeosCryptoApi_Key_free(&prvKey);
-    Debug_ASSERT_PRINTFLN(SEOS_SUCCESS == err, "err %d", err);
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
     TEST_OK(api->mode, allowExport);
 }

@@ -55,3 +55,6 @@
     Debug_ASSERT(fn == SEOS_ERROR_GENERIC)
 #define TEST_SUCCESS(fn) \
     Debug_ASSERT(fn == SEOS_SUCCESS)
+// Ensure a statement is true
+#define TEST_TRUE(st) \
+    Debug_ASSERT(st)
