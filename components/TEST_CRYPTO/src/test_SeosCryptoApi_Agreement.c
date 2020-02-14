@@ -35,6 +35,8 @@ test_SeosCryptoApi_Agreement_init_pos(
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
 
+    TEST_START(api->mode, allowExport);
+
     // Regular init with DH priv key
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
     TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
@@ -51,7 +53,7 @@ test_SeosCryptoApi_Agreement_init_pos(
     TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -60,6 +62,8 @@ test_SeosCryptoApi_Agreement_init_neg(
 {
     SeosCryptoApi_Key ecKey, dhKey;
     SeosCryptoApi_Agreement obj;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &dhKey, &dh101PubData));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &ecKey, &secp256r1PubData));
@@ -94,7 +98,7 @@ test_SeosCryptoApi_Agreement_init_neg(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&ecKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&dhKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static seos_err_t
@@ -137,6 +141,8 @@ test_SeosCryptoApi_Agreement_do_DH(
     unsigned char clientShared[64];
     size_t n;
 
+    TEST_START(api->mode, allowExport);
+
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &dh101PubData));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
 
@@ -150,7 +156,7 @@ test_SeosCryptoApi_Agreement_do_DH(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -161,6 +167,8 @@ test_SeosCryptoApi_Agreement_do_DH_rnd(
     SeosCryptoApi_Key svPubKey, svPrvKey;
     unsigned char clShared[64], svShared[64];
     size_t n;
+
+    TEST_START(api->mode, allowExport);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -193,7 +201,7 @@ test_SeosCryptoApi_Agreement_do_DH_rnd(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&svPubKey));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -203,6 +211,8 @@ test_SeosCryptoApi_Agreement_do_ECDH(
     SeosCryptoApi_Key pubKey, prvKey;
     unsigned char clientShared[64];
     size_t n;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &secp256r1PubData));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &secp256r1PrvData));
@@ -217,7 +227,7 @@ test_SeosCryptoApi_Agreement_do_ECDH(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -228,6 +238,8 @@ test_SeosCryptoApi_Agreement_do_ECDH_rnd(
     SeosCryptoApi_Key svPubKey, svPrvKey;
     unsigned char clShared[64], svShared[64];
     size_t n;
+
+    TEST_START(api->mode, allowExport);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -257,7 +269,7 @@ test_SeosCryptoApi_Agreement_do_ECDH_rnd(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&svPubKey));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -268,6 +280,8 @@ test_SeosCryptoApi_Agreement_agree_neg(
     SeosCryptoApi_Agreement obj;
     unsigned char clientShared[64];
     size_t n;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &secp256r1PubData));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &secp256r1PrvData));
@@ -304,7 +318,7 @@ test_SeosCryptoApi_Agreement_agree_neg(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -314,6 +328,8 @@ test_SeosCryptoApi_Agreement_free_pos(
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
 
+    TEST_START(api->mode, allowExport);
+
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
     TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
                                               SeosCryptoApi_Agreement_ALG_DH, &prvKey));
@@ -321,7 +337,7 @@ test_SeosCryptoApi_Agreement_free_pos(
     TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -330,6 +346,8 @@ test_SeosCryptoApi_Agreement_free_neg(
 {
     SeosCryptoApi_Key prvKey;
     SeosCryptoApi_Agreement obj;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
     TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
@@ -342,7 +360,7 @@ test_SeosCryptoApi_Agreement_free_neg(
     TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -353,6 +371,8 @@ test_SeosCryptoApi_Agreement_agree_buffer(
     SeosCryptoApi_Agreement obj;
     static unsigned char sharedBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t sharedLen;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &dh101PubData));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
@@ -384,7 +404,7 @@ test_SeosCryptoApi_Agreement_agree_buffer(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -394,6 +414,8 @@ test_SeosCryptoApi_Agreement_key_neg(
     SeosCryptoApi_Key pubKey, prvKey;
     unsigned char clientShared[64];
     size_t n;
+
+    TEST_START(api->mode, allowExport);
 
     // Test with both keys having different exportable attributes
     secp256r1PrvData.attribs.exportable = false;
@@ -411,7 +433,7 @@ test_SeosCryptoApi_Agreement_key_neg(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 void

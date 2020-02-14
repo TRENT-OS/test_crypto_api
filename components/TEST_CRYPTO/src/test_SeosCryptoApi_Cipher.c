@@ -268,6 +268,8 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_enc(
     SeosCryptoApi_Key key;
     size_t i;
 
+    TEST_START(api->mode, allowExport);
+
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
         TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesEcbVectors[i].key));
@@ -276,7 +278,7 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_enc(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -286,6 +288,8 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_dec(
     SeosCryptoApi_Key key;
     size_t i;
 
+    TEST_START(api->mode, allowExport);
+
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
         TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesEcbVectors[i].key));
@@ -294,7 +298,7 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_dec(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -305,6 +309,8 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_rnd(
     SeosCryptoApi_Key key;
     uint8_t pt[16], ct[16], tmp[16];
     size_t len;
+
+    TEST_START(api->mode, allowExport);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -335,7 +341,7 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_rnd(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static seos_err_t
@@ -369,6 +375,8 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_enc(
     SeosCryptoApi_Key key;
     size_t i;
 
+    TEST_START(api->mode, allowExport);
+
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
         TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesCbcVectors[i].key));
@@ -377,7 +385,7 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_enc(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -387,6 +395,8 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_dec(
     SeosCryptoApi_Key key;
     size_t i;
 
+    TEST_START(api->mode, allowExport);
+
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
         TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesCbcVectors[i].key));
@@ -395,7 +405,7 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_dec(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -406,6 +416,8 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_rnd(
     SeosCryptoApi_Key key;
     uint8_t pt[16], ct[16], tmp[16], iv[16];
     size_t len;
+
+    TEST_START(api->mode, allowExport);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -437,7 +449,7 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_rnd(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static seos_err_t
@@ -502,6 +514,8 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_enc(
     SeosCryptoApi_Key key;
     size_t i;
 
+    TEST_START(api->mode, allowExport);
+
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
         TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesGcmVectors[i].key));
@@ -511,7 +525,7 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_enc(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -520,6 +534,8 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(
 {
     SeosCryptoApi_Key key;
     size_t i;
+
+    TEST_START(api->mode, allowExport);
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
@@ -530,7 +546,7 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -540,6 +556,8 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(
     SeosCryptoApi_Key key;
     const TestVector* vec = &aesGcmVectors[0];
     ByteVector brokenTag;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &vec->key));
 
@@ -554,7 +572,7 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -565,6 +583,8 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_rnd(
     SeosCryptoApi_Key key;
     uint8_t pt[16], ct[16], tmp[16], iv[12], tag[16], ad[16];
     size_t len;
+
+    TEST_START(api->mode, allowExport);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -603,7 +623,7 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_rnd(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -613,6 +633,8 @@ test_SeosCryptoApi_Cipher_init_pos(
     SeosCryptoApi_Cipher obj;
     SeosCryptoApi_Key key;
     const ByteVector* vec;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -662,7 +684,7 @@ test_SeosCryptoApi_Cipher_init_pos(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -672,6 +694,8 @@ test_SeosCryptoApi_Cipher_init_neg(
     SeosCryptoApi_Cipher obj;
     SeosCryptoApi_Key key, pubKey;
     const ByteVector* vec;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -728,7 +752,7 @@ test_SeosCryptoApi_Cipher_init_neg(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -737,6 +761,8 @@ test_SeosCryptoApi_Cipher_free_pos(
 {
     SeosCryptoApi_Cipher obj;
     SeosCryptoApi_Key key;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
     TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
@@ -749,7 +775,7 @@ test_SeosCryptoApi_Cipher_free_pos(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -758,6 +784,8 @@ test_SeosCryptoApi_Cipher_free_neg(
 {
     SeosCryptoApi_Cipher obj;
     SeosCryptoApi_Key key;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
     TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
@@ -771,7 +799,7 @@ test_SeosCryptoApi_Cipher_free_neg(
     TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -780,6 +808,8 @@ test_SeosCryptoApi_Cipher_start_neg(
 {
     SeosCryptoApi_Key key;
     SeosCryptoApi_Cipher obj;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -807,7 +837,7 @@ test_SeosCryptoApi_Cipher_start_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -818,6 +848,8 @@ test_SeosCryptoApi_Cipher_process_neg(
     SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
     size_t n = sizeof(buf);
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -874,7 +906,7 @@ test_SeosCryptoApi_Cipher_process_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -885,6 +917,8 @@ test_SeosCryptoApi_Cipher_finalize_neg(
     SeosCryptoApi_Cipher obj;
     unsigned char buf[128];
     size_t n = sizeof(buf);
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -941,7 +975,7 @@ test_SeosCryptoApi_Cipher_finalize_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -952,6 +986,8 @@ test_SeosCryptoApi_Cipher_init_buffer(
     SeosCryptoApi_Cipher obj;
     static unsigned char ivBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t ivLen;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -979,7 +1015,7 @@ test_SeosCryptoApi_Cipher_init_buffer(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -990,6 +1026,8 @@ test_SeosCryptoApi_Cipher_start_buffer(
     SeosCryptoApi_Cipher obj;
     static unsigned char ivBuf[16], inputBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
     TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
@@ -1007,7 +1045,7 @@ test_SeosCryptoApi_Cipher_start_buffer(
 
     TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1019,6 +1057,8 @@ test_SeosCryptoApi_Cipher_process_buffer(
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
                          outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
     TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
@@ -1069,7 +1109,7 @@ test_SeosCryptoApi_Cipher_process_buffer(
     TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1081,6 +1121,8 @@ test_SeosCryptoApi_Cipher_finalize_buffer(
     unsigned char inBuf[16], outBuf[16], iv[12];
     static unsigned char tagBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t tagLen;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
 
@@ -1122,7 +1164,7 @@ test_SeosCryptoApi_Cipher_finalize_buffer(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 void

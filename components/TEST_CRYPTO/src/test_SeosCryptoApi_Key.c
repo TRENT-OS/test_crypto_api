@@ -39,6 +39,8 @@ static void
 test_SeosCryptoApi_Key_import_pos(
     SeosCryptoApi* api)
 {
+    TEST_START(api->mode, allowExport);
+
     // Import 128-bit AES key
     TEST_SUCCESS(do_import(api, &aes128Data));
 
@@ -66,7 +68,7 @@ test_SeosCryptoApi_Key_import_pos(
     // Import SECP256r1 prvkey
     TEST_SUCCESS(do_import(api, &secp256r1PrvData));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -74,6 +76,8 @@ test_SeosCryptoApi_Key_import_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key key;
+
+    TEST_START(api->mode, allowExport);
 
     // Empty api
     TEST_INVAL_PARAM(SeosCryptoApi_Key_import(NULL, &key, &aes128Data));
@@ -93,7 +97,7 @@ test_SeosCryptoApi_Key_import_neg(
     // Invalid RSA key (too big)
     TEST_INVAL_PARAM(SeosCryptoApi_Key_import(api, &key, &rsaLargeData));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static seos_err_t
@@ -124,6 +128,8 @@ static void
 test_SeosCryptoApi_Key_export_pos(
     SeosCryptoApi* api)
 {
+    TEST_START(api->mode, allowExport);
+
     // Export 128-bit AES key
     TEST_SUCCESS(do_export(api, &aes128Data));
 
@@ -151,7 +157,7 @@ test_SeosCryptoApi_Key_export_pos(
     // Export SECP256r1 prvkey
     TEST_SUCCESS(do_export(api, &secp256r1PrvData));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -169,6 +175,8 @@ test_SeosCryptoApi_Key_export_neg(
             .params.bits = 128
         }
     };
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aes128Data));
 
@@ -203,7 +211,7 @@ test_SeosCryptoApi_Key_export_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static seos_err_t
@@ -255,6 +263,8 @@ static void
 test_SeosCryptoApi_Key_generate_pos(
     SeosCryptoApi* api)
 {
+    TEST_START(api->mode, allowExport);
+
     // Generate 128-bit AES key
     TEST_SUCCESS(do_generate(api, &aes128Spec));
 
@@ -276,7 +286,7 @@ test_SeosCryptoApi_Key_generate_pos(
     // Generate SECP256r1 privkey
     TEST_SUCCESS(do_generate(api, &secp256r1Spec));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -284,6 +294,8 @@ test_SeosCryptoApi_Key_generate_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key key;
+
+    TEST_START(api->mode, allowExport);
 
     // Empty api
     TEST_INVAL_PARAM(SeosCryptoApi_Key_generate(NULL, &key, &aes128Spec));
@@ -303,7 +315,7 @@ test_SeosCryptoApi_Key_generate_neg(
     // Wrong key size: 63-bit DH key
     TEST_NOT_SUPP(SeosCryptoApi_Key_generate(api, &key, &dh63bSpec));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static seos_err_t
@@ -362,6 +374,8 @@ static void
 test_SeosCryptoApi_Key_makePublic_pos(
     SeosCryptoApi* api)
 {
+    TEST_START(api->mode, allowExport);
+
     // Make DH pubkey, with privkey from bit spec
     TEST_SUCCESS(do_makePublic(api, &dh64bSpec));
 
@@ -374,7 +388,7 @@ test_SeosCryptoApi_Key_makePublic_pos(
     // Make SECP256r1 pubkey
     TEST_SUCCESS(do_makePublic(api, &secp256r1Spec));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -382,6 +396,8 @@ test_SeosCryptoApi_Key_makePublic_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key key, pubKey;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &dh64bSpec));
 
@@ -404,7 +420,7 @@ test_SeosCryptoApi_Key_makePublic_neg(
     TEST_INVAL_PARAM(SeosCryptoApi_Key_makePublic(&pubKey, &key, NULL));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -415,6 +431,8 @@ test_SeosCryptoApi_Key_getParams_pos(
     SeosCryptoApi_Key key;
     SeosCryptoApi_Key_DhParams dhParams;
     SeosCryptoApi_Key_Data expData;
+
+    TEST_START(api->mode, allowExport);
 
     // Generate params for DH
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &dh101pSpec));
@@ -433,7 +451,7 @@ test_SeosCryptoApi_Key_getParams_pos(
     }
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -443,6 +461,8 @@ test_SeosCryptoApi_Key_getParams_neg(
     size_t n;
     SeosCryptoApi_Key key;
     SeosCryptoApi_Key_DhParams dhParams;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &dh64bSpec));
     TEST_LOCATION(api, key);
@@ -463,7 +483,7 @@ test_SeosCryptoApi_Key_getParams_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -472,6 +492,8 @@ test_SeosCryptoApi_Key_loadParams_pos(
 {
     size_t n;
     SeosCryptoApi_Key_EccParams eccParams;
+
+    TEST_START(api->mode, allowExport);
 
     // Load SECP192r1
     n = sizeof(eccParams);
@@ -492,7 +514,7 @@ test_SeosCryptoApi_Key_loadParams_pos(
                                               &eccParams, &n));
     TEST_TRUE(n == sizeof(eccParams));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -501,6 +523,8 @@ test_SeosCryptoApi_Key_loadParams_neg(
 {
     size_t n;
     SeosCryptoApi_Key_EccParams eccParams;
+
+    TEST_START(api->mode, allowExport);
 
     // Empty context
     n = sizeof(eccParams);
@@ -527,7 +551,7 @@ test_SeosCryptoApi_Key_loadParams_neg(
                                                 SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
                                                 &eccParams, &n));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 
@@ -537,6 +561,8 @@ test_SeosCryptoApi_Key_getAttribs_pos(
 {
     SeosCryptoApi_Key key;
     SeosCryptoApi_Key_Attribs attribs;
+
+    TEST_START(api->mode);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aes128Data));
 
@@ -548,7 +574,7 @@ test_SeosCryptoApi_Key_getAttribs_pos(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 static void
@@ -557,6 +583,8 @@ test_SeosCryptoApi_Key_getAttribs_neg(
 {
     SeosCryptoApi_Key key;
     SeosCryptoApi_Key_Attribs attribs;
+
+    TEST_START(api->mode);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aes128Data));
 
@@ -568,7 +596,7 @@ test_SeosCryptoApi_Key_getAttribs_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 static void
@@ -577,11 +605,13 @@ test_SeosCryptoApi_Key_free_pos(
 {
     SeosCryptoApi_Key key;
 
+    TEST_START(api->mode, allowExport);
+
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
     TEST_LOCATION(api, key);
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -589,6 +619,8 @@ test_SeosCryptoApi_Key_free_neg(
     SeosCryptoApi* api)
 {
     SeosCryptoApi_Key key;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
     TEST_LOCATION(api, key);
@@ -598,7 +630,7 @@ test_SeosCryptoApi_Key_free_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -608,6 +640,8 @@ test_SeosCryptoApi_Key_getParams_buffer(
     SeosCryptoApi_Key key;
     static unsigned char paramBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t paramLen;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &dh101pSpec));
     TEST_LOCATION(api, key);
@@ -628,7 +662,7 @@ test_SeosCryptoApi_Key_getParams_buffer(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -637,6 +671,8 @@ test_SeosCryptoApi_Key_loadParams_buffer(
 {
     static unsigned char paramBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t paramLen;
+
+    TEST_START(api->mode, allowExport);
 
     // Should be OK
     paramLen = SeosCryptoApi_SIZE_DATAPORT;
@@ -658,7 +694,7 @@ test_SeosCryptoApi_Key_loadParams_buffer(
                                                    SeosCryptoApi_Key_PARAM_ECC_SECP192R1,
                                                    paramBuf, &paramLen));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -668,6 +704,8 @@ test_SeosCryptoApi_Key_migrate_pos(
     SeosCryptoApi_Key key;
     SeosCryptoApi_Key_RemotePtr ptr;
 
+    TEST_START(api->mode);
+
     // Let the remote side load a key into its address space, then migrate
     // it so it can be used through our API instance
     TEST_SUCCESS(Crypto_loadKey(&ptr));
@@ -675,7 +713,7 @@ test_SeosCryptoApi_Key_migrate_pos(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 static void
@@ -684,6 +722,8 @@ test_SeosCryptoApi_Key_migrate_neg(
 {
     SeosCryptoApi_Key key;
     SeosCryptoApi_Key_RemotePtr ptr;
+
+    TEST_START(api->mode);
 
     TEST_SUCCESS(Crypto_loadKey(&ptr));
 
@@ -698,7 +738,7 @@ test_SeosCryptoApi_Key_migrate_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 void test_SeosCryptoApi_Key(

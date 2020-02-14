@@ -106,6 +106,8 @@ test_SeosCryptoApi_init_neg()
     SeosCryptoApi api;
     SeosCryptoApi_Config badCfg;
 
+    TEST_START();
+
     // Set these up here as the dataport is not const, so that the configs
     // should actually work
     cfgClient.impl.client.dataPort = SeosCryptoDataport;
@@ -157,16 +159,18 @@ test_SeosCryptoApi_init_neg()
     badCfg.impl.router.client.dataPort = NULL;
     TEST_INVAL_PARAM(SeosCryptoApi_init(&api, &badCfg));
 
-    TEST_OK();
+    TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_free_neg()
 {
+    TEST_START();
+
     // No context
     TEST_INVAL_PARAM(SeosCryptoApi_free(NULL));
 
-    TEST_OK();
+    TEST_FINISH();
 }
 
 // Public Functions -----------------------------------------------------------

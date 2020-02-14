@@ -841,6 +841,8 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(
     TestVector* vec;
     SeosCryptoApi_Key key;
 
+    TEST_START(api->mode, allowExport);
+
     for (size_t i = 0; i < NUM_PKCS1_V15_VECTORS; i++)
     {
         vec = &pkcs1V15Vectors[i];
@@ -850,7 +852,7 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -859,6 +861,8 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_verify(
 {
     TestVector* vec;
     SeosCryptoApi_Key key;
+
+    TEST_START(api->mode, allowExport);
 
     for (size_t i = 0; i < NUM_PKCS1_V21_VECTORS; i++)
     {
@@ -869,7 +873,7 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_verify(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static seos_err_t
@@ -909,6 +913,8 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(
     SeosCryptoApi_Key key;
     TestVector* vec;
 
+    TEST_START(api->mode, allowExport);
+
     for (size_t i = 0; i < NUM_PKCS1_V15_VECTORS; i++)
     {
         vec = &pkcs1V15Vectors[i];
@@ -918,7 +924,7 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(
         TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static seos_err_t
@@ -976,6 +982,8 @@ static void
 test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_rnd(
     SeosCryptoApi* api)
 {
+    TEST_START(api->mode, allowExport);
+
     for (size_t i = 0; i < NUM_PKCS1_V15_RND_TESTS; i++)
     {
         TEST_SUCCESS(do_RSA_rnd(api, SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
@@ -984,13 +992,15 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_rnd(
                                 pkcs1V15RndParams[i].hashBytes));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_rnd(
     SeosCryptoApi* api)
 {
+    TEST_START(api->mode, allowExport);
+
     for (size_t i = 0; i < NUM_PKCS1_V21_RND_TESTS; i++)
     {
         TEST_SUCCESS(do_RSA_rnd(api, SeosCryptoApi_Signature_ALG_RSA_PKCS1_V21,
@@ -999,7 +1009,7 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_rnd(
                                 pkcs1V21RndParams[i].hashBytes));
     }
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1010,6 +1020,8 @@ test_SeosCryptoApi_Signature_sign_neg(
     SeosCryptoApi_Signature obj;
     char signature[256], msgData[] = "test";
     size_t signatureSize = sizeof(signature);
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
@@ -1060,7 +1072,7 @@ test_SeosCryptoApi_Signature_sign_neg(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1071,6 +1083,8 @@ test_SeosCryptoApi_Signature_verify_neg(
     SeosCryptoApi_Signature obj;
     char msgData[] = "test";
     uint8_t sig[1024];
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
@@ -1115,7 +1129,7 @@ test_SeosCryptoApi_Signature_verify_neg(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1124,6 +1138,8 @@ test_SeosCryptoApi_Signature_init_pos(
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Signature obj;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
@@ -1155,7 +1171,7 @@ test_SeosCryptoApi_Signature_init_pos(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1164,6 +1180,8 @@ test_SeosCryptoApi_Signature_init_neg(
 {
     SeosCryptoApi_Key key, prvKey;
     SeosCryptoApi_Signature obj;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
@@ -1210,7 +1228,7 @@ test_SeosCryptoApi_Signature_init_neg(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1219,6 +1237,8 @@ test_SeosCryptoApi_Signature_free_pos(
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
 
@@ -1231,7 +1251,7 @@ test_SeosCryptoApi_Signature_free_pos(
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1240,6 +1260,8 @@ test_SeosCryptoApi_Signature_free_neg(
 {
     SeosCryptoApi_Key pubKey;
     SeosCryptoApi_Signature obj;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
     TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
@@ -1253,7 +1275,7 @@ test_SeosCryptoApi_Signature_free_neg(
 
     TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1265,6 +1287,8 @@ test_SeosCryptoApi_Signature_sign_buffer(
     static unsigned int hashBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
            sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t hashLen, sigLen;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
     TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
@@ -1303,7 +1327,7 @@ test_SeosCryptoApi_Signature_sign_buffer(
     TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1315,6 +1339,8 @@ test_SeosCryptoApi_Signature_verify_buffer(
     static unsigned int hashBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
            sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t hashLen, sigLen;
+
+    TEST_START(api->mode, allowExport);
 
     TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
     TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
@@ -1338,7 +1364,7 @@ test_SeosCryptoApi_Signature_verify_buffer(
     TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 static void
@@ -1347,6 +1373,8 @@ test_SeosCryptoApi_Signature_key_neg(
 {
     SeosCryptoApi_Key pubKey, prvKey;
     SeosCryptoApi_Signature obj;
+
+    TEST_START(api->mode, allowExport);
 
     // Test with both keys having different exportable attributes
     rsa1024PrvData.attribs.exportable = false;
@@ -1364,7 +1392,7 @@ test_SeosCryptoApi_Signature_key_neg(
     TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
     TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
 
-    TEST_OK(api->mode, allowExport);
+    TEST_FINISH();
 }
 
 void

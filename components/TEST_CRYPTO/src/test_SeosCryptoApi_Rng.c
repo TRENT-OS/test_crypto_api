@@ -16,9 +16,11 @@ test_SeosCryptoApi_Rng_getBytes_pos(
 {
     char data[16];
 
+    TEST_START(api->mode);
+
     TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(api,  0, data, sizeof(data)));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 static void
@@ -26,6 +28,8 @@ test_SeosCryptoApi_Rng_getBytes_neg(
     SeosCryptoApi* api)
 {
     char data[16];
+
+    TEST_START(api->mode);
 
     // Empty context
     TEST_INVAL_PARAM(SeosCryptoApi_Rng_getBytes(NULL, 0, data, sizeof(data)));
@@ -39,7 +43,7 @@ test_SeosCryptoApi_Rng_getBytes_neg(
     // Zero-length buffer
     TEST_INVAL_PARAM(SeosCryptoApi_Rng_getBytes(api, 0, data, 0));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 static void
@@ -48,9 +52,11 @@ test_SeosCryptoApi_Rng_reSeed_pos(
 {
     char seed[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
+    TEST_START(api->mode);
+
     TEST_SUCCESS(SeosCryptoApi_Rng_reseed(api, seed, sizeof(seed)));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 static void
@@ -58,6 +64,8 @@ test_SeosCryptoApi_Rng_reSeed_neg(
     SeosCryptoApi* api)
 {
     char seed[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+
+    TEST_START(api->mode);
 
     // Empty context
     TEST_INVAL_PARAM(SeosCryptoApi_Rng_reseed(NULL, seed, sizeof(seed)));
@@ -68,7 +76,7 @@ test_SeosCryptoApi_Rng_reSeed_neg(
     // Zero len buffer
     TEST_INVAL_PARAM(SeosCryptoApi_Rng_reseed(api, seed, 0));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 static void
@@ -77,6 +85,8 @@ test_SeosCryptoApi_Rng_reSeed_buffer(
 {
     static unsigned char seedBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t seedLen;
+
+    TEST_START(api->mode);
 
     // Should go through, but will fail with aborted as RNG can only accept
     // limited amount of inputs per reseed
@@ -87,7 +97,7 @@ test_SeosCryptoApi_Rng_reSeed_buffer(
     seedLen = SeosCryptoApi_SIZE_DATAPORT + 1;
     TEST_INSUFF_SPACE(SeosCryptoApi_Rng_reseed(api, seedBuf, seedLen));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 static void
@@ -96,6 +106,8 @@ test_SeosCryptoApi_Rng_getBytes_buffer(
 {
     static unsigned char rngBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t rngLen;
+
+    TEST_START(api->mode);
 
     // Should go through, but will fail with aborted as RNG can only provide a
     // limited amount of bytes per call
@@ -106,7 +118,7 @@ test_SeosCryptoApi_Rng_getBytes_buffer(
     rngLen = SeosCryptoApi_SIZE_DATAPORT + 1;
     TEST_INSUFF_SPACE(SeosCryptoApi_Rng_getBytes(api, 0, rngBuf, rngLen));
 
-    TEST_OK(api->mode);
+    TEST_FINISH();
 }
 
 void
