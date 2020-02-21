@@ -115,8 +115,8 @@ agreeOnKey(
 
     memset(buf, 0, *bufSize);
 
-    // We have a prvKey key (and a pubKey one) and want to use to to agree on a shared
-    // secret to perform symmetric cryptography
+    // We have a prvKey key (and a pubKey one) and want to use it to agree on a
+    // shared secret to perform symmetric cryptography
     TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj, algo, prvKey));
     TEST_LOCATION(api, obj);
 
