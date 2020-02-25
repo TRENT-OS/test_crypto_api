@@ -89,7 +89,7 @@ test_SeosCryptoApi(
         TEST_TRUE(1 == 0);
     }
 
-    Debug_PRINTF("Testing Crypto API in %s mode:\n", mode);
+    Debug_LOG_INFO("Testing Crypto API in %s mode:", mode);
 
     test_SeosCryptoApi_Agreement(api);
     test_SeosCryptoApi_Cipher(api);
@@ -184,14 +184,14 @@ int run()
     test_SeosCryptoApi_init_neg();
     test_SeosCryptoApi_free_neg();
 
-    Debug_PRINTF("\n");
+    Debug_LOG_INFO("");
 
     // Test LIBRARY mode
     TEST_SUCCESS(SeosCryptoApi_init(&api, &cfgLib));
     test_SeosCryptoApi(&api);
     TEST_SUCCESS(SeosCryptoApi_free(&api));
 
-    Debug_PRINTF("\n");
+    Debug_LOG_INFO("");
 
     cfgClient.impl.client.dataPort = SeosCryptoDataport;
 
@@ -202,7 +202,7 @@ int run()
     TEST_SUCCESS(SeosCryptoApi_free(&api));
     TEST_SUCCESS(Crypto_closeSession());
 
-    Debug_PRINTF("\n");
+    Debug_LOG_INFO("");
 
     cfgRouter.impl.router.client = cfgClient.impl.client;
     cfgRouter.impl.router.lib = cfgLib.impl.lib;
@@ -214,7 +214,7 @@ int run()
     TEST_SUCCESS(SeosCryptoApi_free(&api));
     TEST_SUCCESS(Crypto_closeSession());
 
-    Debug_PRINTF("All tests successfully completed.\n");
+    Debug_LOG_INFO("All tests successfully completed.");
 
     return 0;
 }
