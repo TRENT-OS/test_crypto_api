@@ -9,7 +9,7 @@
 #include <string.h>
 #include <assert.h>
 
-#define MAX_MSG_LEN 256
+#define MAX_MSG_LEN 512
 
 // We use this to keep track of the name of the test that is is currently being
 // executed, see below...
