@@ -2,14 +2,14 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 
-import <seos_if_seosCryptoRpcServer.camkes>;
+import <seos_if_cryptoApi.camkes>;
 
 import "CryptoInf.camkes";
 
 component CRYPTO {
     // SeosCryptoRpc Interface
     dataport    Buf                         SeosCryptoDataport;
-    provides    seos_if_seosCryptoRpcServer SeosCryptoRpcServer;
+    provides    seos_if_cryptoApi           SeosCryptoRpc_Server;
 
     // Interface to Crypto component
     provides    CryptoInf                   Crypto;

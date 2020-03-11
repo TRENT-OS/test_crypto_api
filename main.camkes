@@ -13,7 +13,7 @@ assembly {
         component   CRYPTO              crypto;
 
         connection seL4SharedData       shared  (from test_crypto.SeosCryptoDataport,   to crypto.SeosCryptoDataport);
-        connection seL4RPCCall          call_0  (from test_crypto.SeosCryptoRpcServer,  to crypto.SeosCryptoRpcServer);
+        connection seL4RPCCall          call_0  (from test_crypto.SeosCryptoRpc_Server, to crypto.SeosCryptoRpc_Server);
         connection seL4RPCCall          call_1  (from test_crypto.Crypto,               to crypto.Crypto);
     }
 }
