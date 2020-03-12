@@ -755,7 +755,7 @@ test_SeosCryptoApi_Key_migrate_pos(
 
     // Let the remote side load a key into its address space, then migrate
     // it so it can be used through our API instance
-    TEST_SUCCESS(Crypto_loadKey(&ptr));
+    TEST_SUCCESS(CryptoRpcServer_loadKey(&ptr));
     TEST_SUCCESS(SeosCryptoApi_migrateObject(&hKey, hCrypto, ptr));
 
     TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
@@ -774,7 +774,7 @@ test_SeosCryptoApi_Key_migrate_neg(
 
     TEST_START(mode, expo);
 
-    TEST_SUCCESS(Crypto_loadKey(&ptr));
+    TEST_SUCCESS(CryptoRpcServer_loadKey(&ptr));
 
     // Empty key
     TEST_INVAL_PARAM(SeosCryptoApi_migrateObject(NULL, hCrypto, ptr));

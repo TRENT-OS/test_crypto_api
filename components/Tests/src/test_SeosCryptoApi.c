@@ -212,11 +212,11 @@ int run()
     cfgClient.impl.client.dataPort = SeosCryptoDataport;
 
     // Test RPC CLIENT mode
-    TEST_SUCCESS(Crypto_openSession());
+    TEST_SUCCESS(CryptoRpcServer_openSession());
     TEST_SUCCESS(SeosCryptoApi_init(&hCrypto, &cfgClient));
     test_SeosCryptoApi(hCrypto);
     TEST_SUCCESS(SeosCryptoApi_free(hCrypto));
-    TEST_SUCCESS(Crypto_closeSession());
+    TEST_SUCCESS(CryptoRpcServer_closeSession());
 
     Debug_LOG_INFO("");
 
@@ -224,11 +224,11 @@ int run()
     cfgAuto.impl.router.lib = cfgLib.impl.lib;
 
     // Test ROUTER mode
-    TEST_SUCCESS(Crypto_openSession());
+    TEST_SUCCESS(CryptoRpcServer_openSession());
     TEST_SUCCESS(SeosCryptoApi_init(&hCrypto, &cfgAuto));
     test_SeosCryptoApi(hCrypto);
     TEST_SUCCESS(SeosCryptoApi_free(hCrypto));
-    TEST_SUCCESS(Crypto_closeSession());
+    TEST_SUCCESS(CryptoRpcServer_closeSession());
 
     Debug_LOG_INFO("All tests successfully completed.");
 

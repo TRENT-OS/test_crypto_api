@@ -12,19 +12,19 @@ seos_use_libs(
 
 project(tests_crypto_api C)
 
-DeclareCAmkESComponent(TEST_CRYPTO
+DeclareCAmkESComponent(test_SeosCryptoApi
     INCLUDES
         common
-        components/CRYPTO/instance
+        components/CryptoRpcServer/src
     SOURCES
-        components/TEST_CRYPTO/src/test_SeosCryptoApi.c
-        components/TEST_CRYPTO/src/test_SeosCryptoApi_Signature.c
-        components/TEST_CRYPTO/src/test_SeosCryptoApi_Cipher.c
-        components/TEST_CRYPTO/src/test_SeosCryptoApi_Rng.c
-        components/TEST_CRYPTO/src/test_SeosCryptoApi_Digest.c
-        components/TEST_CRYPTO/src/test_SeosCryptoApi_Mac.c
-        components/TEST_CRYPTO/src/test_SeosCryptoApi_Agreement.c
-        components/TEST_CRYPTO/src/test_SeosCryptoApi_Key.c
+        components/Tests/src/test_SeosCryptoApi.c
+        components/Tests/src/test_SeosCryptoApi_Signature.c
+        components/Tests/src/test_SeosCryptoApi_Cipher.c
+        components/Tests/src/test_SeosCryptoApi_Rng.c
+        components/Tests/src/test_SeosCryptoApi_Digest.c
+        components/Tests/src/test_SeosCryptoApi_Mac.c
+        components/Tests/src/test_SeosCryptoApi_Agreement.c
+        components/Tests/src/test_SeosCryptoApi_Key.c
     C_FLAGS
         -Wall -Werror
     LIBS
@@ -32,12 +32,12 @@ DeclareCAmkESComponent(TEST_CRYPTO
         seos_crypto_with_rpc_client
 )
 
-DeclareCAmkESComponent(CRYPTO
+DeclareCAmkESComponent(CryptoRpcServer
     INCLUDES
         common
-        components/CRYPTO/instance
+        components/CryptoRpcServer/src
     SOURCES
-        components/CRYPTO/instance/Crypto.c
+        components/CryptoRpcServer/src/CryptoRpcServer.c
     C_FLAGS
         -Wall -Werror
     LIBS

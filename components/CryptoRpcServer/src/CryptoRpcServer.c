@@ -4,7 +4,7 @@
 
 #include "SeosCryptoApi.h"
 
-#include "Crypto.h"
+#include "CryptoRpcServer.h"
 
 #include "LibDebug/Debug.h"
 #include "LibUtil/PointerVector.h"
@@ -94,7 +94,7 @@ SeosCryptoRpc_Server_getSeosCryptoApi(
 // Public Functions -----------------------------------------------------------
 
 seos_err_t
-Crypto_openSession()
+CryptoRpcServer_openSession()
 {
     seos_err_t err;
     SeosCryptoApi_Config cfg =
@@ -128,14 +128,14 @@ err:
 }
 
 int
-Crypto_hasObject(
+CryptoRpcServer_hasObject(
     SeosCryptoLib_Object ptr)
 {
     return (findObject(ptr) != -1) ? 1 : 0;
 }
 
 seos_err_t
-Crypto_loadKey(
+CryptoRpcServer_loadKey(
     SeosCryptoLib_Object* ptr)
 {
     seos_err_t err;
@@ -167,7 +167,7 @@ Crypto_loadKey(
 }
 
 seos_err_t
-Crypto_closeSession()
+CryptoRpcServer_closeSession()
 {
     seos_err_t err;
 

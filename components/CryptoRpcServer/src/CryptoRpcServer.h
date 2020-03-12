@@ -7,15 +7,15 @@
 #include "SeosCryptoApi.h"
 
 seos_err_t
-Crypto_openSession();
+CryptoRpcServer_openSession();
 
 int
-Crypto_hasObject(
+CryptoRpcServer_hasObject(
     SeosCryptoLib_Object ptr);
 
 seos_err_t
-Crypto_loadKey(
+CryptoRpcServer_loadKey(
     SeosCryptoLib_Object* ptr);
 
 seos_err_t
-Crypto_closeSession();
+CryptoRpcServer_closeSession();

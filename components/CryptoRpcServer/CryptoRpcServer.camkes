@@ -1,0 +1,36 @@
+/**
+ * Copyright (C) 2019, Hensoldt Cyber GmbH
+ */
+
+import <seos_if_cryptoApi.camkes>;
+
+procedure CryptoRpcServerInf {
+    include     "SeosCryptoApi.h";
+    include     "CryptoRpcServer.h";
+
+    seos_err_t
+    openSession(
+    );
+
+    seos_err_t
+    closeSession(
+    );
+
+    seos_err_t
+    loadKey(
+        out SeosCryptoLib_Object ptr
+    );
+
+    int hasObject (
+        in SeosCryptoLib_Object ptr
+    );
+};
+
+component CryptoRpcServer {
+    // SeosCryptoRpc Interface
+    dataport    Buf                         SeosCryptoDataport;
+    provides    seos_if_cryptoApi           SeosCryptoRpc_Server;
+
+    // Interface to CryptoRpcServer component
+    provides    CryptoRpcServerInf          CryptoRpcServer;
+}

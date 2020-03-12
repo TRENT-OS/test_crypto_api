@@ -5,7 +5,7 @@
 #pragma once
 
 #include "SeosCryptoApi.h"
-#include "Crypto.h"
+#include "CryptoRpcServer.h"
 
 #include "TestMacros.h"
 
@@ -14,21 +14,21 @@
     void *p = SeosCryptoApi_getObject(o);               \
     if(m == SeosCryptoApi_Mode_LIBRARY ||               \
        (m == SeosCryptoApi_Mode_ROUTER && e)) {         \
-        TEST_TRUE(!Crypto_hasObject(p));                \
+        TEST_TRUE(!CryptoRpcServer_hasObject(p));       \
     } else if(m == SeosCryptoApi_Mode_RPC_CLIENT ||     \
               (m == SeosCryptoApi_Mode_ROUTER && !e)) { \
-        TEST_TRUE(Crypto_hasObject(p));                 \
+        TEST_TRUE(CryptoRpcServer_hasObject(p));        \
     }                                                   \
 }
 
 // Test location of object pointer based on api mode only (used with objects
 // which have no key attached and are thus independent of their exportability)
-#define TEST_LOCACTION(m, o) {              \
-    void *p = SeosCryptoApi_getObject(o);   \
-    if(m == SeosCryptoApi_Mode_LIBRARY ||   \
-       (m == SeosCryptoApi_Mode_ROUTER)) {  \
-        TEST_TRUE(!Crypto_hasObject(p));    \
-    } else {                                \
-        TEST_TRUE(Crypto_hasObject(p));     \
-    }                                       \
+#define TEST_LOCACTION(m, o) {                      \
+    void *p = SeosCryptoApi_getObject(o);           \
+    if(m == SeosCryptoApi_Mode_LIBRARY ||           \
+       (m == SeosCryptoApi_Mode_ROUTER)) {          \
+        TEST_TRUE(!CryptoRpcServer_hasObject(p));   \
+    } else {                                        \
+        TEST_TRUE(CryptoRpcServer_hasObject(p));    \
+    }                                               \
 }

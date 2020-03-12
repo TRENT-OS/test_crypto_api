@@ -4,15 +4,15 @@
 
 import <seos_if_cryptoApi.camkes>;
 
-import "../../components/CRYPTO/CryptoInf.camkes";
+import "../../components/CryptoRpcServer/CryptoRpcServer.camkes";
 
-component TEST_CRYPTO {
+component test_SeosCryptoApi {
     control;
 
     // SeosCryptoRpc Interface
     dataport    Buf                         SeosCryptoDataport;
     uses        seos_if_cryptoApi           SeosCryptoRpc_Server;
 
-    // Interface to Crypto component
-    uses        CryptoInf                   Crypto;
+    // Interface to RPC component
+    uses        CryptoRpcServerInf          CryptoRpcServer;
 }
