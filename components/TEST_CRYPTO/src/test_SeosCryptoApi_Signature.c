@@ -803,53 +803,54 @@ static SeosCryptoApi_Key_Data* testKeyDataList[] =
 
 // -----------------------------------------------------------------------------
 
-static bool allowExport;
-#define TEST_LOCATION(api, o) \
-    Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.signature)
-
 static seos_err_t
 do_RSA_verify(
-    SeosCryptoApi*     api,
-    int                sigType,
-    int                hashType,
-    SeosCryptoApi_Key* pubKey,
-    const ByteVector*  hash,
-    const ByteVector*  sig)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo,
+    SeosCryptoApi_KeyH       hPubKey,
+    int                      sigType,
+    int                      hashType,
+    const ByteVector*        hash,
+    const ByteVector*        sig)
 {
     seos_err_t err;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_SignatureH hSig;
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj, sigType, hashType, NULL,
-                                              pubKey));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, hPubKey,
+                                              sigType, hashType));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
-    if ((err = SeosCryptoApi_Signature_verify(&obj, hash->bytes, hash->len,
+    if ((err = SeosCryptoApi_Signature_verify(hSig, hash->bytes, hash->len,
                                               sig->bytes, sig->len)))
     {
         return err;
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
 
     return SEOS_SUCCESS;
 }
 
 static void
 test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
     TestVector* vec;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hPubKey;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_VECTORS; i++)
     {
         vec = &pkcs1V15Vectors[i];
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &vec->pubKey));
-        TEST_SUCCESS(do_RSA_verify(api, SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                   vec->hashType, &key, &vec->hash, &vec->sig));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &vec->pubKey));
+        TEST_SUCCESS(do_RSA_verify(hCrypto, mode, expo, hPubKey,
+                                   SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                   vec->hashType, &vec->hash, &vec->sig));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
     }
 
     TEST_FINISH();
@@ -857,20 +858,23 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(
 
 static void
 test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_verify(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
     TestVector* vec;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hPubKey;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_PKCS1_V21_VECTORS; i++)
     {
         vec = &pkcs1V21Vectors[i];
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &vec->pubKey));
-        TEST_SUCCESS(do_RSA_verify(api, SeosCryptoApi_Signature_ALG_RSA_PKCS1_V21,
-                                   vec->hashType, &key, &vec->hash, &vec->sig));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &vec->pubKey));
+        TEST_SUCCESS(do_RSA_verify(hCrypto, mode, expo, hPubKey,
+                                   SeosCryptoApi_Signature_ALG_RSA_PKCS1_V21,
+                                   vec->hashType, &vec->hash, &vec->sig));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
     }
 
     TEST_FINISH();
@@ -878,50 +882,55 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_verify(
 
 static seos_err_t
 do_RSA_sign(
-    SeosCryptoApi*     api,
-    int                sigType,
-    int                hashType,
-    SeosCryptoApi_Key* prvKey,
-    const ByteVector*  hash,
-    const ByteVector*  sig)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo,
+    SeosCryptoApi_KeyH       hPrvKey,
+    int                      sigType,
+    int                      hashType,
+    const ByteVector*        hash,
+    const ByteVector*        sig)
 {
     seos_err_t err;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_SignatureH hSig;
     uint8_t buf[512];
     size_t bufLen = sizeof(buf);
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj, sigType, hashType, prvKey,
-                                              NULL));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, NULL,
+                                              sigType, hashType));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
-    if ((err = SeosCryptoApi_Signature_sign(&obj, hash->bytes, hash->len, buf,
+    if ((err = SeosCryptoApi_Signature_sign(hSig, hash->bytes, hash->len, buf,
                                             &bufLen)))
     {
         return err;
     }
 
     TEST_TRUE(!memcmp(sig->bytes, buf, bufLen));
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
 
     return SEOS_SUCCESS;
 }
 
 static void
 test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hPrvKey;
     TestVector* vec;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_VECTORS; i++)
     {
         vec = &pkcs1V15Vectors[i];
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &vec->prvKey));
-        TEST_SUCCESS(do_RSA_sign(api, SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                 vec->hashType, &key, &vec->hash, &vec->sig));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &vec->prvKey));
+        TEST_SUCCESS(do_RSA_sign(hCrypto, mode, expo, hPrvKey,
+                                 SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                 vec->hashType, &vec->hash, &vec->sig));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
     }
 
     TEST_FINISH();
@@ -929,15 +938,17 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(
 
 static seos_err_t
 do_RSA_rnd(
-    SeosCryptoApi*              api,
+    SeosCryptoApiH              hCrypto,
+    const SeosCryptoApi_Mode    mode,
+    const bool                  expo,
     SeosCryptoApi_Signature_Alg sigType,
     size_t                      keyBits,
     SeosCryptoApi_Digest_Alg    hashType,
     size_t                      hashBytes)
 {
     seos_err_t err;
-    SeosCryptoApi_Signature obj;
-    SeosCryptoApi_Key prvKey, pubKey;
+    SeosCryptoApi_SignatureH hSig;
+    SeosCryptoApi_KeyH hPrvKey, hPubKey;
     uint8_t hash[256], sig[512];
     size_t sigLen = sizeof(sig);
     static SeosCryptoApi_Key_Spec rsaSpec =
@@ -947,46 +958,49 @@ do_RSA_rnd(
     };
 
     rsaSpec.key.params.bits = keyBits;
-    rsaSpec.key.attribs.exportable = allowExport;
+    rsaSpec.key.attribs.exportable = expo;
 
     // Generate random key pair and hash
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &prvKey, &rsaSpec));
-    TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&pubKey, &prvKey,
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hPrvKey, hCrypto, &rsaSpec));
+    TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&hPubKey, hCrypto, hPrvKey,
                                               &rsaSpec.key.attribs));
-    TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(api, 0, hash, hashBytes));
+    TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(hCrypto, 0, hash, hashBytes));
 
     // We use MD5 here as that fits with the sig size and key size for both
     // types of padding
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj, sigType, hashType, &prvKey,
-                                              &pubKey));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, hPubKey,
+                                              sigType, hashType));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
     // Sign
-    TEST_SUCCESS(SeosCryptoApi_Signature_sign(&obj, hash, hashBytes, sig, &sigLen));
+    TEST_SUCCESS(SeosCryptoApi_Signature_sign(hSig, hash, hashBytes, sig, &sigLen));
 
     // Verify
-    if ((err = SeosCryptoApi_Signature_verify(&obj, hash, hashBytes, sig,
+    if ((err = SeosCryptoApi_Signature_verify(hSig, hash, hashBytes, sig,
                                               sigLen)) != SEOS_SUCCESS)
     {
         return err;
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
 
     return SEOS_SUCCESS;
 }
 
 static void
 test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_rnd(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_RND_TESTS; i++)
     {
-        TEST_SUCCESS(do_RSA_rnd(api, SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+        TEST_SUCCESS(do_RSA_rnd(hCrypto, mode, expo,
+                                SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
                                 pkcs1V15RndParams[i].keyBits,
                                 pkcs1V15RndParams[i].hashType,
                                 pkcs1V15RndParams[i].hashBytes));
@@ -997,13 +1011,16 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_rnd(
 
 static void
 test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_rnd(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_PKCS1_V21_RND_TESTS; i++)
     {
-        TEST_SUCCESS(do_RSA_rnd(api, SeosCryptoApi_Signature_ALG_RSA_PKCS1_V21,
+        TEST_SUCCESS(do_RSA_rnd(hCrypto, mode, expo,
+                                SeosCryptoApi_Signature_ALG_RSA_PKCS1_V21,
                                 pkcs1V21RndParams[i].keyBits,
                                 pkcs1V21RndParams[i].hashType,
                                 pkcs1V21RndParams[i].hashBytes));
@@ -1014,436 +1031,445 @@ test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_rnd(
 
 static void
 test_SeosCryptoApi_Signature_sign_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key prvKey, pubKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPrvKey, hPubKey;
+    SeosCryptoApi_SignatureH hSig;
     char signature[256], msgData[] = "test";
     size_t signatureSize = sizeof(signature);
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &rsa1024PubData));
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, NULL,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE,
-                                              &prvKey, NULL));
-    TEST_LOCATION(api, obj);
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
     // Use empty context
     TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(NULL, msgData, strlen(msgData),
                                                   signature, &signatureSize));
 
     // Use empty data
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(&obj, NULL, strlen(msgData),
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(hSig, NULL, strlen(msgData),
                                                   signature, &signatureSize));
 
     // Use zero length data
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(&obj, msgData, 0, signature,
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(hSig, msgData, 0, signature,
                                                   &signatureSize));
 
     // Use NULL output buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(hSig, msgData, strlen(msgData),
                                                   NULL, &signatureSize));
 
     // Use NULL output size buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_sign(hSig, msgData, strlen(msgData),
                                                   signature, NULL));
 
     // Use too small output buffer
     signatureSize = 10;
-    TEST_TOO_SMALL(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+    TEST_TOO_SMALL(SeosCryptoApi_Signature_sign(hSig, msgData, strlen(msgData),
                                                 signature, &signatureSize));
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
 
     // Try signing with only a public key
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, hPubKey,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
-                                              &pubKey));
-    TEST_LOCATION(api, obj);
-    TEST_ABORTED(SeosCryptoApi_Signature_sign(&obj, msgData, strlen(msgData),
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_ABORTED(SeosCryptoApi_Signature_sign(hSig, msgData, strlen(msgData),
                                               signature, &signatureSize));
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_verify_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey, prvKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
+    SeosCryptoApi_SignatureH hSig;
     char msgData[] = "test";
     uint8_t sig[1024];
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, hPubKey,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
-                                              &pubKey));
-    TEST_LOCATION(api, obj)
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
     // Use empty context
     TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(NULL, msgData, strlen(msgData),
                                                     sig, sizeof(sig)));
 
     // Use empty msg buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(&obj, NULL, strlen(msgData),
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(hSig, NULL, strlen(msgData),
                                                     sig, sizeof(sig)));
 
     // Use zero lenght input
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(&obj, msgData, 0, sig,
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(hSig, msgData, 0, sig,
                                                     sizeof(sig)));
 
     // Use empty signature buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(hSig, msgData, strlen(msgData),
                                                     NULL, sizeof(sig)));
 
     // Use zero length signature
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData),
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_verify(hSig, msgData, strlen(msgData),
                                                     sig, 0));
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
 
     // Try verification if we have only private key
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, NULL,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE,
-                                              &prvKey, NULL));
-    TEST_LOCATION(api, obj)
-    TEST_ABORTED(SeosCryptoApi_Signature_verify(&obj, msgData, strlen(msgData), sig,
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_ABORTED(SeosCryptoApi_Signature_verify(hSig, msgData, strlen(msgData), sig,
                                                 sizeof(sig)));
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_init_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey, prvKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
+    SeosCryptoApi_SignatureH hSig;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
-
-    // Init just with prv key
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
-                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE,
-                                              &prvKey, NULL));
-    TEST_LOCATION(api, obj)
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &rsa1024PubData));
 
     // Init just with prv key
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, NULL,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
-                                              &pubKey));
-    TEST_LOCATION(api, obj)
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
+
+    // Init just with prv key
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, hPubKey,
+                                              SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
 
     // Use both keys
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, hPubKey,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE,
-                                              &prvKey, &pubKey));
-    TEST_LOCATION(api, obj)
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_init_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key, prvKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
+    SeosCryptoApi_SignatureH hSig;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hPubKey, hCrypto, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &rsa1024PrvData));
+
+    // Use empty handle
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(NULL, hCrypto, hPrvKey, NULL,
+                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                  SeosCryptoApi_Digest_ALG_NONE));
 
     // Use empty context
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(NULL, &obj,
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(&hSig, NULL, hPrvKey, NULL,
                                                   SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                                  SeosCryptoApi_Digest_ALG_NONE,
-                                                  &prvKey, NULL));
-
-    // Use empty sig handle
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(api, NULL,
-                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                                  SeosCryptoApi_Digest_ALG_NONE,
-                                                  &prvKey, NULL));
-
-    // Use wrong algorithm
-    TEST_NOT_SUPP(SeosCryptoApi_Signature_init(api, &obj, 666,
-                                               SeosCryptoApi_Digest_ALG_NONE, &prvKey, NULL));
-
-    // Use wrong digest algorithm
-    TEST_NOT_SUPP(SeosCryptoApi_Signature_init(api, &obj,
-                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                               666, &prvKey, NULL));
-
-    // Use wrong type of key for prv
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(api, &obj,
-                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                                  SeosCryptoApi_Digest_ALG_NONE, &key,
-                                                  NULL));
-
-    // Use wrong type of key for prv
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(api, &obj,
-                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                                  SeosCryptoApi_Digest_ALG_NONE, NULL,
-                                                  &key));
+                                                  SeosCryptoApi_Digest_ALG_NONE));
 
     // Use no keys
-    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, NULL,
                                                   SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                                  SeosCryptoApi_Digest_ALG_NONE, NULL,
-                                                  NULL));
+                                                  SeosCryptoApi_Digest_ALG_NONE));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    // Use wrong type of key for prv
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPubKey, NULL,
+                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                  SeosCryptoApi_Digest_ALG_NONE));
+
+    // Use wrong type of key for prv
+    TEST_INVAL_PARAM(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, hPubKey,
+                                                  SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                                  SeosCryptoApi_Digest_ALG_NONE));
+
+    // Use wrong algorithm
+    TEST_NOT_SUPP(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, NULL, 666,
+                                               SeosCryptoApi_Digest_ALG_NONE));
+
+    // Use wrong digest algorithm
+    TEST_NOT_SUPP(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, NULL,
+                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
+                                               666));
+
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_free_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPubKey;
+    SeosCryptoApi_SignatureH hSig;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
-
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, hPubKey,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
-                                              &pubKey));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
+
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_free_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPubKey;
+    SeosCryptoApi_SignatureH hSig;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, hPubKey,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
-                                              &pubKey));
-    TEST_LOCATION(api, obj);
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
     // Empty context
     TEST_INVAL_PARAM(SeosCryptoApi_Signature_free(NULL));
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_sign_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key prvKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPrvKey;
+    SeosCryptoApi_SignatureH hSig;
     static unsigned int hashBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
-           sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+                        sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t hashLen, sigLen;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, NULL,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE,
-                                              &prvKey, NULL));
-    TEST_LOCATION(api, obj);
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
     // Should go through but then return ABORTED because crypto fails
     hashLen = SeosCryptoApi_SIZE_DATAPORT;
     sigLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_ABORTED(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
+    TEST_ABORTED(SeosCryptoApi_Signature_sign(hSig, hashBuf, hashLen, sigBuf,
                                               &sigLen));
 
     // Should fail because input is too long
     hashLen = SeosCryptoApi_SIZE_DATAPORT + 1;
     sigLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
+    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_sign(hSig, hashBuf, hashLen, sigBuf,
                                                    &sigLen));
 
     // Should fail because output is too long
     hashLen = SeosCryptoApi_SIZE_DATAPORT;
     sigLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
+    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_sign(hSig, hashBuf, hashLen, sigBuf,
                                                    &sigLen));
 
     // Should fail but give us the required output size which is the size of the
     // modulus of the private key, e.g., |N| = |P| + |Q|
     hashLen = SeosCryptoApi_Digest_SIZE_MD5;
     sigLen = 10;
-    TEST_TOO_SMALL(SeosCryptoApi_Signature_sign(&obj, hashBuf, hashLen, sigBuf,
+    TEST_TOO_SMALL(SeosCryptoApi_Signature_sign(hSig, hashBuf, hashLen, sigBuf,
                                                 &sigLen));
     TEST_TRUE(sigLen == (rsa1024PrvData.data.rsa.prv.pLen +
                          rsa1024PrvData.data.rsa.prv.qLen));
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_verify_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPubKey;
+    SeosCryptoApi_SignatureH hSig;
     static unsigned int hashBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
-           sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+                        sigBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t hashLen, sigLen;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
-    TEST_SUCCESS(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Signature_init(&hSig, hCrypto, NULL, hPubKey,
                                               SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                              SeosCryptoApi_Digest_ALG_NONE, NULL,
-                                              &pubKey));
-    TEST_LOCATION(api, obj);
+                                              SeosCryptoApi_Digest_ALG_NONE));
+    TEST_LOCACTION_EXP(mode, expo, hSig);
 
     // Should go through but fail with ABORTED because crypto fails
     sigLen = (rsa1024PrvData.data.rsa.prv.pLen + rsa1024PrvData.data.rsa.prv.qLen);
     hashLen = SeosCryptoApi_SIZE_DATAPORT - sigLen;
-    TEST_ABORTED(SeosCryptoApi_Signature_verify(&obj, hashBuf, hashLen, sigBuf,
+    TEST_ABORTED(SeosCryptoApi_Signature_verify(hSig, hashBuf, hashLen, sigBuf,
                                                 sigLen));
 
     // Should fail because the total of both is too big for internal buffer
     hashLen = 16;
     sigLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_verify(&obj, hashBuf, hashLen, sigBuf,
+    TEST_INSUFF_SPACE(SeosCryptoApi_Signature_verify(hSig, hashBuf, hashLen, sigBuf,
                                                      sigLen));
 
-    TEST_SUCCESS(SeosCryptoApi_Signature_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
+    TEST_SUCCESS(SeosCryptoApi_Signature_free(hSig));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Signature_key_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey, prvKey;
-    SeosCryptoApi_Signature obj;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
+    SeosCryptoApi_SignatureH hSig;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     // Test with both keys having different exportable attributes
     rsa1024PrvData.attribs.exportable = false;
     rsa1024PubData.attribs.exportable = true;
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &rsa1024PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &rsa1024PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &rsa1024PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &rsa1024PubData));
 
     // Should fail due to different key localities
-    TEST_INVAL_HANDLE(SeosCryptoApi_Signature_init(api, &obj,
+    TEST_INVAL_HANDLE(SeosCryptoApi_Signature_init(&hSig, hCrypto, hPrvKey, hPubKey,
                                                    SeosCryptoApi_Signature_ALG_RSA_PKCS1_V15,
-                                                   SeosCryptoApi_Digest_ALG_NONE,
-                                                   &prvKey, &pubKey));
+                                                   SeosCryptoApi_Digest_ALG_NONE));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 void
 test_SeosCryptoApi_Signature(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    allowExport = true;
-    keyData_setExportable(keyDataList, allowExport);
-    keySpec_setExportable(keySpecList, allowExport);
+    bool expo = true;
 
-    test_SeosCryptoApi_Signature_init_pos(api);
-    test_SeosCryptoApi_Signature_init_neg(api);
+    keyData_setExportable(keyDataList, expo);
+    keySpec_setExportable(keySpecList, expo);
 
-    test_SeosCryptoApi_Signature_free_pos(api);
-    test_SeosCryptoApi_Signature_free_neg(api);
+    test_SeosCryptoApi_Signature_init_pos(hCrypto, mode, expo);
+    test_SeosCryptoApi_Signature_init_neg(hCrypto, mode, expo);
+
+    test_SeosCryptoApi_Signature_free_pos(hCrypto, mode, expo);
+    test_SeosCryptoApi_Signature_free_neg(hCrypto, mode, expo);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_SeosCryptoApi_Signature_sign_neg(api);
-    test_SeosCryptoApi_Signature_verify_neg(api);
+    test_SeosCryptoApi_Signature_sign_neg(hCrypto, mode, expo);
+    test_SeosCryptoApi_Signature_verify_neg(hCrypto, mode, expo);
 
-    test_SeosCryptoApi_Signature_sign_buffer(api);
-    test_SeosCryptoApi_Signature_verify_buffer(api);
+    test_SeosCryptoApi_Signature_sign_buffer(hCrypto, mode, expo);
+    test_SeosCryptoApi_Signature_verify_buffer(hCrypto, mode, expo);
 
     // Test vectors
-    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(api);
-    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(api);
+    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(hCrypto, mode, expo);
+    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(hCrypto, mode,
+                                                         expo);
     // We cannot do fixed test vectors for PKCS#1 V2.1 because the resulting
     // signatures are probablistic and we currently do not support providing
     // a fixed value as randomness during signing
-    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_verify(api);
+    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_verify(hCrypto, mode,
+                                                         expo);
 
     // Generate random vectors and sign/verify with them
-    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_rnd(api);
-    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_rnd(api);
+    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, expo);
+    test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, expo);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
-    if (api->mode == SeosCryptoApi_Mode_ROUTER)
+    if (mode == SeosCryptoApi_Mode_ROUTER)
     {
-        allowExport = false;
-        keyData_setExportable(keyDataList, allowExport);
-        keyData_setExportable(testKeyDataList, allowExport);
-        keySpec_setExportable(keySpecList, allowExport);
+        expo = false;
 
-        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(api);
-        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(api);
-        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_verify(api);
+        keyData_setExportable(keyDataList, expo);
+        keyData_setExportable(testKeyDataList, expo);
+        keySpec_setExportable(keySpecList, expo);
 
-        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_rnd(api);
-        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_rnd(api);
+        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_sign(hCrypto, mode, expo);
+        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_verify(hCrypto, mode,
+                                                             expo);
+        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_verify(hCrypto, mode,
+                                                             expo);
 
-        test_SeosCryptoApi_Signature_key_neg(api);
+        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, expo);
+        test_SeosCryptoApi_Signature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, expo);
+
+        test_SeosCryptoApi_Signature_key_neg(hCrypto, mode, expo);
     }
 }

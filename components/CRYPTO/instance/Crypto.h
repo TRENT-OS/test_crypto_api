@@ -9,15 +9,13 @@
 seos_err_t
 Crypto_openSession();
 
-typedef void* Object_Ptr;
-
 int
 Crypto_hasObject(
-    Object_Ptr ptr);
+    SeosCryptoLib_Object ptr);
 
 seos_err_t
 Crypto_loadKey(
-    SeosCryptoApi_Key_RemotePtr* ptr);
+    SeosCryptoLib_Object* ptr);
 
 seos_err_t
 Crypto_closeSession();

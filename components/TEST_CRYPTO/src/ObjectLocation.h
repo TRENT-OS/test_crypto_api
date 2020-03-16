@@ -5,23 +5,30 @@
 #pragma once
 
 #include "SeosCryptoApi.h"
-
 #include "Crypto.h"
-#include "LibDebug/Debug.h"
 
-#define Debug_ASSERT_OBJ_LOCAL(o) \
-    Debug_ASSERT_PRINTFLN(!Crypto_hasObject(o), "Object at 0x%lx is not local", (long) o)
+#include "TestMacros.h"
 
-#define Debug_ASSERT_OBJ_REMOTE(o) \
-    Debug_ASSERT_PRINTFLN(Crypto_hasObject(o), "Object at 0x%lx is not remote", (long) o)
+// Test location of object pointer based on exportable flag and api mode
+#define TEST_LOCACTION_EXP(m, e, o) {                   \
+    void *p = SeosCryptoApi_getObject(o);               \
+    if(m == SeosCryptoApi_Mode_LIBRARY ||               \
+       (m == SeosCryptoApi_Mode_ROUTER && e)) {         \
+        TEST_TRUE(!Crypto_hasObject(p));                \
+    } else if(m == SeosCryptoApi_Mode_RPC_CLIENT ||     \
+              (m == SeosCryptoApi_Mode_ROUTER && !e)) { \
+        TEST_TRUE(Crypto_hasObject(p));                 \
+    }                                                   \
+}
 
-#define Debug_ASSERT_OBJ_LOCATION(api, isLocal, o)              \
-    if(api->mode == SeosCryptoApi_Mode_LIBRARY ||               \
-       (api->mode == SeosCryptoApi_Mode_ROUTER && isLocal)) {   \
-        Debug_ASSERT_OBJ_LOCAL(o);                              \
-    } else if(api->mode == SeosCryptoApi_Mode_RPC_CLIENT ||     \
-       (api->mode == SeosCryptoApi_Mode_ROUTER && !isLocal)) {  \
-        Debug_ASSERT_OBJ_REMOTE(o);                             \
-    } else {                                                    \
-        Debug_ASSERT_PRINTFLN(1 == 0, "Cannot assert location");\
-    }
+// Test location of object pointer based on api mode only (used with objects
+// which have no key attached and are thus independent of their exportability)
+#define TEST_LOCACTION(m, o) {              \
+    void *p = SeosCryptoApi_getObject(o);   \
+    if(m == SeosCryptoApi_Mode_LIBRARY ||   \
+       (m == SeosCryptoApi_Mode_ROUTER)) {  \
+        TEST_TRUE(!Crypto_hasObject(p));    \
+    } else {                                \
+        TEST_TRUE(Crypto_hasObject(p));     \
+    }                                       \
+}

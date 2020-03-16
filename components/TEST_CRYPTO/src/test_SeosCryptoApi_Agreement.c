@@ -24,181 +24,196 @@ static const unsigned char ecdhSharedResult[] =
 
 #define NUM_RAND_ITERATIONS 5
 
-static bool allowExport;
-#define TEST_LOCATION(api, o) \
-    Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.agreement)
-
 static void
 test_SeosCryptoApi_Agreement_init_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key prvKey;
-    SeosCryptoApi_Agreement obj;
+    SeosCryptoApi_KeyH hPrvKey;
+    SeosCryptoApi_AgreementH hAgree;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     // Regular init with DH priv key
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
-                                              SeosCryptoApi_Agreement_ALG_DH, &prvKey));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &dh101PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hPrvKey,
+                                              SeosCryptoApi_Agreement_ALG_DH));
+    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_SUCCESS(SeosCryptoApi_Agreement_free(hAgree));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     // Regular init with ECDH priv key
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &secp256r1PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
-                                              SeosCryptoApi_Agreement_ALG_ECDH, &prvKey));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &secp256r1PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hPrvKey,
+                                              SeosCryptoApi_Agreement_ALG_ECDH));
+    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_SUCCESS(SeosCryptoApi_Agreement_free(hAgree));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Agreement_init_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key ecKey, dhKey;
-    SeosCryptoApi_Agreement obj;
+    SeosCryptoApi_KeyH hEcKey, hDhKey;
+    SeosCryptoApi_AgreementH hAgree;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &dhKey, &dh101PubData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &ecKey, &secp256r1PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hDhKey, hCrypto, &dh101PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hEcKey, hCrypto, &secp256r1PubData));
 
-    // Try without handle
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(api, NULL,
-                                                  SeosCryptoApi_Agreement_ALG_ECDH, &ecKey));
+    // Try without agreement handle
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(NULL, hCrypto, hEcKey,
+                                                  SeosCryptoApi_Agreement_ALG_ECDH));
 
-    // Try with invalid algorithm
-    TEST_NOT_SUPP(SeosCryptoApi_Agreement_init(api, &obj, 666, &ecKey));
+    // Try without crypto handle
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(&hAgree, NULL, hEcKey,
+                                                  SeosCryptoApi_Agreement_ALG_ECDH));
 
     // Try with invalid key handle
-    TEST_INVAL_HANDLE(SeosCryptoApi_Agreement_init(api, &obj,
-                                                   SeosCryptoApi_Agreement_ALG_ECDH, NULL));
+    TEST_INVAL_HANDLE(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, NULL,
+                                                   SeosCryptoApi_Agreement_ALG_ECDH));
+
+    // Try with invalid algorithm
+    TEST_NOT_SUPP(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hEcKey, 666));
 
     // Try with DH public key
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(api, &obj,
-                                                  SeosCryptoApi_Agreement_ALG_DH, &dhKey));
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hDhKey,
+                                                  SeosCryptoApi_Agreement_ALG_DH));
 
     // Try with DH public key but ECDH alg
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(api, &obj,
-                                                  SeosCryptoApi_Agreement_ALG_ECDH, &dhKey));
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hDhKey,
+                                                  SeosCryptoApi_Agreement_ALG_ECDH));
 
     // Try with ECDH public key but DH alg
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(api, &obj,
-                                                  SeosCryptoApi_Agreement_ALG_DH, &ecKey));
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hEcKey,
+                                                  SeosCryptoApi_Agreement_ALG_DH));
 
     // Try with ECDH public key
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(api, &obj,
-                                                  SeosCryptoApi_Agreement_ALG_ECDH, &ecKey));
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hEcKey,
+                                                  SeosCryptoApi_Agreement_ALG_ECDH));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&ecKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&dhKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hEcKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hDhKey));
 
     TEST_FINISH();
 }
 
 static seos_err_t
 agreeOnKey(
-    SeosCryptoApi*     api,
-    SeosCryptoApi_Key* prvKey,
-    SeosCryptoApi_Key* pubKey,
-    unsigned int       algo,
-    unsigned char*     buf,
-    size_t*            bufSize)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo,
+    SeosCryptoApi_KeyH       hPrvKey,
+    SeosCryptoApi_KeyH       hPubKey,
+    unsigned int             algo,
+    unsigned char*           buf,
+    size_t*                  bufSize)
 {
-    SeosCryptoApi_Agreement obj;
+    SeosCryptoApi_AgreementH hAgree;
     seos_err_t err;
 
     memset(buf, 0, *bufSize);
 
-    // We have a prvKey key (and a pubKey one) and want to use it to agree on a
+    // We have a hPrvKey key (and a hPubKey one) and want to use it to agree on a
     // shared secret to perform symmetric cryptography
-    TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj, algo, prvKey));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hPrvKey, algo));
+    TEST_LOCACTION_EXP(mode, expo, hAgree);
 
-    // We have received a pubKey key (e.g., from a server) and use this to derive a secret
+    // We have received a hPubKey key (e.g., from a server) and use this to derive a secret
     // key of a given length; for now, don't pass a RNG
-    if ((err = SeosCryptoApi_Agreement_agree(&obj, pubKey, buf,
+    if ((err = SeosCryptoApi_Agreement_agree(hAgree, hPubKey, buf,
                                              bufSize)) != SEOS_SUCCESS)
     {
         return err;
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Agreement_free(hAgree));
 
     return SEOS_SUCCESS;
 }
 
 static void
 test_SeosCryptoApi_Agreement_do_DH(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey, prvKey;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
     unsigned char clientShared[64];
     size_t n;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &dh101PubData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &dh101PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &dh101PrvData));
 
     // Compute the side of the CLIENT
     n = sizeof(clientShared);
-    TEST_SUCCESS(agreeOnKey(api, &prvKey, &pubKey, SeosCryptoApi_Agreement_ALG_DH,
+    TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+                            hPrvKey, hPubKey,
+                            SeosCryptoApi_Agreement_ALG_DH,
                             clientShared, &n));
     // Make sure both actually match!
     TEST_TRUE(!memcmp(clientShared, dhSharedResult, sizeof(dhSharedResult)));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Agreement_do_DH_rnd(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key clPubKey, clPrvKey;
-    SeosCryptoApi_Key svPubKey, svPrvKey;
+    SeosCryptoApi_KeyH hCliPubKey, hCliPrvKey;
+    SeosCryptoApi_KeyH hSvrPubKey, hSvrPrvKey;
     unsigned char clShared[64], svShared[64];
     size_t n;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
         // Generate a new keypair for the server
-        TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &svPrvKey, &dh64bSpec));
-        TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&svPubKey, &svPrvKey,
+        TEST_SUCCESS(SeosCryptoApi_Key_generate(&hSvrPrvKey, hCrypto, &dh64bSpec));
+        TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&hSvrPubKey, hCrypto, hSvrPrvKey,
                                                   &dh64bSpec.key.attribs));
 
         // Extract the public params and generate the client's keypair based on the
         // shared params
         n = sizeof(dh64pSpec.key.params);
-        TEST_SUCCESS(SeosCryptoApi_Key_getParams(&svPrvKey, &dh64pSpec.key.params, &n));
+        TEST_SUCCESS(SeosCryptoApi_Key_getParams(hSvrPrvKey, &dh64pSpec.key.params,
+                                                 &n));
         TEST_TRUE(sizeof(SeosCryptoApi_Key_DhParams) == n);
-        TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &clPrvKey, &dh64pSpec));
-        TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&clPubKey, &clPrvKey,
+        TEST_SUCCESS(SeosCryptoApi_Key_generate(&hCliPrvKey, hCrypto, &dh64pSpec));
+        TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&hCliPubKey, hCrypto, hCliPrvKey,
                                                   &dh64pSpec.key.attribs));
 
         // Compute both sides of the key agreement and check if the match
         n = sizeof(clShared);
-        TEST_SUCCESS(agreeOnKey(api, &clPrvKey, &svPubKey,
+        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+                                hCliPrvKey, hSvrPubKey,
                                 SeosCryptoApi_Agreement_ALG_DH, clShared, &n));
         n = sizeof(svShared);
-        TEST_SUCCESS(agreeOnKey(api, &svPrvKey, &clPubKey,
+        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+                                hSvrPrvKey, hCliPubKey,
                                 SeosCryptoApi_Agreement_ALG_DH, svShared, &n));
         TEST_TRUE(!memcmp(clShared, svShared, n));
 
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&clPrvKey));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&clPubKey));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&svPrvKey));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&svPubKey));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hCliPrvKey));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hCliPubKey));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hSvrPrvKey));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hSvrPubKey));
     }
 
     TEST_FINISH();
@@ -206,67 +221,74 @@ test_SeosCryptoApi_Agreement_do_DH_rnd(
 
 static void
 test_SeosCryptoApi_Agreement_do_ECDH(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey, prvKey;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
     unsigned char clientShared[64];
     size_t n;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &secp256r1PubData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &secp256r1PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &secp256r1PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &secp256r1PrvData));
 
     // Compute the side of the CLIENT
     n = sizeof(clientShared);
-    TEST_SUCCESS(agreeOnKey(api, &prvKey, &pubKey, SeosCryptoApi_Agreement_ALG_ECDH,
+    TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+                            hPrvKey, hPubKey,
+                            SeosCryptoApi_Agreement_ALG_ECDH,
                             clientShared, &n));
     // Make sure both actually match!
     TEST_TRUE(!memcmp(clientShared, ecdhSharedResult, sizeof(ecdhSharedResult)));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Agreement_do_ECDH_rnd(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key clPubKey, clPrvKey;
-    SeosCryptoApi_Key svPubKey, svPrvKey;
+    SeosCryptoApi_KeyH hCliPubKey, hCliPrvKey;
+    SeosCryptoApi_KeyH hSvrPubKey, hSvrPrvKey;
     unsigned char clShared[64], svShared[64];
     size_t n;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
         // Generate a new keypair for the server
-        TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &svPrvKey, &secp256r1Spec));
-        TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&svPubKey, &svPrvKey,
+        TEST_SUCCESS(SeosCryptoApi_Key_generate(&hSvrPrvKey, hCrypto, &secp256r1Spec));
+        TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&hSvrPubKey, hCrypto, hSvrPrvKey,
                                                   &secp256r1Spec.key.attribs));
 
         // Genrate new keypair for client; the keytype specifies the params so no need
         // for them to be passed explcitly
-        TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &clPrvKey, &secp256r1Spec));
-        TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&clPubKey, &clPrvKey,
+        TEST_SUCCESS(SeosCryptoApi_Key_generate(&hCliPrvKey, hCrypto, &secp256r1Spec));
+        TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&hCliPubKey, hCrypto, hCliPrvKey,
                                                   &secp256r1Spec.key.attribs));
 
         // Compute both sides of the key agreement and check if the match
         n = sizeof(clShared);
-        TEST_SUCCESS(agreeOnKey(api, &clPrvKey, &svPubKey,
+        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+                                hCliPrvKey, hSvrPubKey,
                                 SeosCryptoApi_Agreement_ALG_ECDH, clShared, &n));
         n = sizeof(svShared);
-        TEST_SUCCESS(agreeOnKey(api, &svPrvKey, &clPubKey,
+        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo, hSvrPrvKey, hCliPubKey,
                                 SeosCryptoApi_Agreement_ALG_ECDH, svShared, &n));
         TEST_TRUE(!memcmp(clShared, svShared, n));
 
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&clPrvKey));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&clPubKey));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&svPrvKey));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&svPubKey));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hCliPrvKey));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hCliPubKey));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hSvrPrvKey));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hSvrPubKey));
     }
 
     TEST_FINISH();
@@ -274,207 +296,223 @@ test_SeosCryptoApi_Agreement_do_ECDH_rnd(
 
 static void
 test_SeosCryptoApi_Agreement_agree_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey, prvKey;
-    SeosCryptoApi_Agreement obj;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
+    SeosCryptoApi_AgreementH hAgree;
     unsigned char clientShared[64];
     size_t n;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &secp256r1PubData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &secp256r1PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &secp256r1PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &secp256r1PrvData));
 
-    TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
-                                              SeosCryptoApi_Agreement_ALG_ECDH, &prvKey));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hPrvKey,
+                                              SeosCryptoApi_Agreement_ALG_ECDH));
+    TEST_LOCACTION_EXP(mode, expo, hAgree);
 
     // Try without agreement handle
     n = sizeof(clientShared);
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_agree(NULL, &pubKey, clientShared,
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_agree(NULL, hPubKey, clientShared,
                                                    &n));
 
     // Try with private key
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_agree(&obj, &prvKey, clientShared,
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_agree(hAgree, hPrvKey, clientShared,
                                                    &n));
 
     // Try with no key handle
-    TEST_INVAL_HANDLE(SeosCryptoApi_Agreement_agree(&obj, NULL, clientShared, &n));
+    TEST_INVAL_HANDLE(SeosCryptoApi_Agreement_agree(hAgree, NULL, clientShared,
+                                                    &n));
 
     // Try without buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_agree(&obj, &pubKey, NULL, &n));
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_agree(hAgree, hPubKey, NULL, &n));
 
     // Try without giving size pointer
-    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_agree(&obj, &pubKey, clientShared,
+    TEST_INVAL_PARAM(SeosCryptoApi_Agreement_agree(hAgree, hPubKey, clientShared,
                                                    NULL));
 
     // Try with too small buffer
     n = 17;
-    TEST_TOO_SMALL(SeosCryptoApi_Agreement_agree(&obj, &pubKey, clientShared, &n));
+    TEST_TOO_SMALL(SeosCryptoApi_Agreement_agree(hAgree, hPubKey, clientShared,
+                                                 &n));
 
-    TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Agreement_free(hAgree));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Agreement_free_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key prvKey;
-    SeosCryptoApi_Agreement obj;
+    SeosCryptoApi_KeyH hPrvKey;
+    SeosCryptoApi_AgreementH hAgree;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
-                                              SeosCryptoApi_Agreement_ALG_DH, &prvKey));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &dh101PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hPrvKey,
+                                              SeosCryptoApi_Agreement_ALG_DH));
+    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_SUCCESS(SeosCryptoApi_Agreement_free(hAgree));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Agreement_free_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key prvKey;
-    SeosCryptoApi_Agreement obj;
+    SeosCryptoApi_KeyH hPrvKey;
+    SeosCryptoApi_AgreementH hAgree;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
-    TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
-                                              SeosCryptoApi_Agreement_ALG_DH, &prvKey));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &dh101PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hPrvKey,
+                                              SeosCryptoApi_Agreement_ALG_DH));
+    TEST_LOCACTION_EXP(mode, expo, hAgree);
 
     // Empty handle
     TEST_INVAL_PARAM(SeosCryptoApi_Agreement_free(NULL));
 
-    TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Agreement_free(hAgree));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Agreement_agree_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey, prvKey;
-    SeosCryptoApi_Agreement obj;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
+    SeosCryptoApi_AgreementH hAgree;
     static unsigned char sharedBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t sharedLen;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &dh101PubData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &dh101PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &dh101PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &dh101PrvData));
 
-    // We have a prvKey key (and a pubKey one) and want to use to to agree on a shared
+    // We have a hPrvKey key (and a hPubKey one) and want to use to to agree on a shared
     // secret to perform symmetric cryptography
-    TEST_SUCCESS(SeosCryptoApi_Agreement_init(api, &obj,
-                                              SeosCryptoApi_Agreement_ALG_DH, &prvKey));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Agreement_init(&hAgree, hCrypto, hPrvKey,
+                                              SeosCryptoApi_Agreement_ALG_DH));
+    TEST_LOCACTION_EXP(mode, expo, hAgree);
 
     // Should go through and get the resulting agreement size
     sharedLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Agreement_agree(&obj, &pubKey, sharedBuf,
+    TEST_SUCCESS(SeosCryptoApi_Agreement_agree(hAgree, hPubKey, sharedBuf,
                                                &sharedLen));
     TEST_TRUE(sharedLen == dh101PubData.data.dh.pub.params.pLen);
 
     // Should fail because it is too small but give minimum size
     sharedLen = 10;
-    TEST_TOO_SMALL(SeosCryptoApi_Agreement_agree(&obj, &pubKey, sharedBuf,
+    TEST_TOO_SMALL(SeosCryptoApi_Agreement_agree(hAgree, hPubKey, sharedBuf,
                                                  &sharedLen));
     TEST_TRUE(sharedLen == dh101PubData.data.dh.pub.params.pLen);
 
     // Should fail because output buffer is too big
     sharedLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Agreement_agree(&obj, &pubKey, sharedBuf,
+    TEST_INSUFF_SPACE(SeosCryptoApi_Agreement_agree(hAgree, hPubKey, sharedBuf,
                                                     &sharedLen));
 
-    TEST_SUCCESS(SeosCryptoApi_Agreement_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Agreement_free(hAgree));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Agreement_key_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key pubKey, prvKey;
+    SeosCryptoApi_KeyH hPubKey, hPrvKey;
     unsigned char clientShared[64];
     size_t n;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     // Test with both keys having different exportable attributes
     secp256r1PrvData.attribs.exportable = false;
     secp256r1PubData.attribs.exportable = true;
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &pubKey, &secp256r1PubData));
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &prvKey, &secp256r1PrvData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &secp256r1PubData));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPrvKey, hCrypto, &secp256r1PrvData));
 
     // Should fail, because objects are in different locations
     n = sizeof(clientShared);
-    TEST_INVAL_HANDLE(agreeOnKey(api, &prvKey, &pubKey,
+    TEST_INVAL_HANDLE(agreeOnKey(hCrypto, mode, expo,
+                                 hPrvKey, hPubKey,
                                  SeosCryptoApi_Agreement_ALG_ECDH,
                                  clientShared, &n));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&prvKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPrvKey));
 
     TEST_FINISH();
 }
 
 void
 test_SeosCryptoApi_Agreement(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    allowExport = true;
-    keyData_setExportable(keyDataList, allowExport);
-    keySpec_setExportable(keySpecList, allowExport);
+    bool expo = true;
 
-    test_SeosCryptoApi_Agreement_init_pos(api);
-    test_SeosCryptoApi_Agreement_init_neg(api);
+    keyData_setExportable(keyDataList, expo);
+    keySpec_setExportable(keySpecList, expo);
 
-    test_SeosCryptoApi_Agreement_agree_neg(api);
+    test_SeosCryptoApi_Agreement_init_pos(hCrypto, mode, expo);
+    test_SeosCryptoApi_Agreement_init_neg(hCrypto, mode, expo);
 
-    test_SeosCryptoApi_Agreement_free_pos(api);
-    test_SeosCryptoApi_Agreement_free_neg(api);
+    test_SeosCryptoApi_Agreement_agree_neg(hCrypto, mode, expo);
 
-    test_SeosCryptoApi_Agreement_agree_buffer(api);
+    test_SeosCryptoApi_Agreement_free_pos(hCrypto, mode, expo);
+    test_SeosCryptoApi_Agreement_free_neg(hCrypto, mode, expo);
+
+    test_SeosCryptoApi_Agreement_agree_buffer(hCrypto, mode, expo);
 
     // Test vectors
-    test_SeosCryptoApi_Agreement_do_DH(api);
-    test_SeosCryptoApi_Agreement_do_ECDH(api);
+    test_SeosCryptoApi_Agreement_do_DH(hCrypto, mode, expo);
+    test_SeosCryptoApi_Agreement_do_ECDH(hCrypto, mode, expo);
 
     // Test with randomly generated values for multiple iterations
-    test_SeosCryptoApi_Agreement_do_DH_rnd(api);
-    test_SeosCryptoApi_Agreement_do_ECDH_rnd(api);
+    test_SeosCryptoApi_Agreement_do_DH_rnd(hCrypto, mode, expo);
+    test_SeosCryptoApi_Agreement_do_ECDH_rnd(hCrypto, mode, expo);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
-    if (api->mode == SeosCryptoApi_Mode_ROUTER)
+    if (mode == SeosCryptoApi_Mode_ROUTER)
     {
-        allowExport = false;
-        keyData_setExportable(keyDataList, allowExport);
-        keySpec_setExportable(keySpecList, allowExport);
+        expo = false;
 
-        test_SeosCryptoApi_Agreement_do_DH(api);
-        test_SeosCryptoApi_Agreement_do_DH_rnd(api);
+        keyData_setExportable(keyDataList, expo);
+        keySpec_setExportable(keySpecList, expo);
 
-        test_SeosCryptoApi_Agreement_do_ECDH(api);
-        test_SeosCryptoApi_Agreement_do_ECDH_rnd(api);
+        test_SeosCryptoApi_Agreement_do_DH(hCrypto, mode, expo);
+        test_SeosCryptoApi_Agreement_do_DH_rnd(hCrypto, mode, expo);
 
-        test_SeosCryptoApi_Agreement_key_neg(api);
+        test_SeosCryptoApi_Agreement_do_ECDH(hCrypto, mode, expo);
+        test_SeosCryptoApi_Agreement_do_ECDH_rnd(hCrypto, mode, expo);
+
+        test_SeosCryptoApi_Agreement_key_neg(hCrypto, mode, expo);
     }
 }

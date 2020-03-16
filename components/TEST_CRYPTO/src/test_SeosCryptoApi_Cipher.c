@@ -27,10 +27,6 @@ typedef struct
     SeosCryptoApi_Key_Data key;
 } TestVector;
 
-static bool allowExport;
-#define TEST_LOCATION(api, o) \
-    Debug_ASSERT_OBJ_LOCATION(api, allowExport, o.cipher)
-
 // -----------------------------------------------------------------------------
 
 #define NUM_RAND_ITERATIONS 100
@@ -241,41 +237,48 @@ static SeosCryptoApi_Key_Data* testKeyDataList[] =
 
 static seos_err_t
 do_AES_ECB(
-    SeosCryptoApi*     api,
-    int                algo,
-    SeosCryptoApi_Key* key,
-    const ByteVector*  din,
-    const ByteVector*  dout)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo,
+    SeosCryptoApi_KeyH       hKey,
+    int                      algo,
+    const ByteVector*        din,
+    const ByteVector*        dout)
 {
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_CipherH hCipher;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj, algo, key, NULL, 0));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, din->bytes, din->len, buf, &n));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey, algo, NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, din->bytes, din->len, buf,
+                                              &n));
     TEST_TRUE(n == dout->len);
     TEST_TRUE(!memcmp(buf, dout->bytes, n));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     return SEOS_SUCCESS;
 }
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_ECB_enc(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     size_t i;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesEcbVectors[i].key));
-        TEST_SUCCESS(do_AES_ECB(api, SeosCryptoApi_Cipher_ALG_AES_ECB_ENC, &key,
-                                &aesEcbVectors[i].pt, &aesEcbVectors[i].ct));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hKey, hCrypto, &aesEcbVectors[i].key));
+        TEST_SUCCESS(do_AES_ECB(hCrypto, mode, expo, hKey,
+                                SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
+                                &aesEcbVectors[i].pt,
+                                &aesEcbVectors[i].ct));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -283,19 +286,23 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_enc(
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_ECB_dec(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     size_t i;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesEcbVectors[i].key));
-        TEST_SUCCESS(do_AES_ECB(api, SeosCryptoApi_Cipher_ALG_AES_ECB_DEC, &key,
-                                &aesEcbVectors[i].ct, &aesEcbVectors[i].pt));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hKey, hCrypto, &aesEcbVectors[i].key));
+        TEST_SUCCESS(do_AES_ECB(hCrypto, mode, expo, hKey,
+                                SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
+                                &aesEcbVectors[i].ct,
+                                &aesEcbVectors[i].pt));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -303,42 +310,44 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_dec(
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_ECB_rnd(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Cipher obj;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_CipherH hCipher;
+    SeosCryptoApi_KeyH hKey;
     uint8_t pt[16], ct[16], tmp[16];
     size_t len;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
         // Generate random key, PT
-        TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
-        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(api, 0, pt, sizeof(pt)));
+        TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
+        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(hCrypto, 0, pt, sizeof(pt)));
 
         // Encrypt
         len = sizeof(ct);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+        TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
-                                               &key, NULL, 0));
-        TEST_LOCATION(api, obj);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, pt, sizeof(pt), ct, &len));
-        TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                               NULL, 0));
+        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, pt, sizeof(pt), ct, &len));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
         // Decrypt
         len = sizeof(tmp);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+        TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
-                                               &key, NULL, 0));
-        TEST_LOCATION(api, obj);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, ct, sizeof(ct), tmp, &len));
-        TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                               NULL, 0));
+        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, ct, sizeof(ct), tmp, &len));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
         // Check decryption result
         Debug_ASSERT(!memcmp(tmp, pt, len));
 
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -346,43 +355,51 @@ test_SeosCryptoApi_Cipher_do_AES_ECB_rnd(
 
 static seos_err_t
 do_AES_CBC(
-    SeosCryptoApi*     api,
-    int                algo,
-    SeosCryptoApi_Key* key,
-    const ByteVector*  iv,
-    const ByteVector*  din,
-    const ByteVector*  dout)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo,
+    SeosCryptoApi_KeyH       hKey,
+    int                      algo,
+    const ByteVector*        iv,
+    const ByteVector*        din,
+    const ByteVector*        dout)
 {
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_CipherH hCipher;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj, algo, key, iv->bytes,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey, algo, iv->bytes,
                                            iv->len));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, din->bytes, din->len, buf, &n));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, din->bytes, din->len, buf,
+                                              &n));
     TEST_TRUE(n == dout->len);
     TEST_TRUE(!memcmp(buf, dout->bytes, n));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     return SEOS_SUCCESS;
 }
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_CBC_enc(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     size_t i;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesCbcVectors[i].key));
-        TEST_SUCCESS(do_AES_CBC(api, SeosCryptoApi_Cipher_ALG_AES_CBC_ENC, &key,
-                                &aesCbcVectors[i].iv, &aesCbcVectors[i].pt, &aesCbcVectors[i].ct));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hKey, hCrypto, &aesCbcVectors[i].key));
+        TEST_SUCCESS(do_AES_CBC(hCrypto, mode, expo, hKey,
+                                SeosCryptoApi_Cipher_ALG_AES_CBC_ENC,
+                                &aesCbcVectors[i].iv,
+                                &aesCbcVectors[i].pt,
+                                &aesCbcVectors[i].ct));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -390,19 +407,24 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_enc(
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_CBC_dec(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     size_t i;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesCbcVectors[i].key));
-        TEST_SUCCESS(do_AES_CBC(api, SeosCryptoApi_Cipher_ALG_AES_CBC_DEC, &key,
-                                &aesCbcVectors[i].iv, &aesCbcVectors[i].ct, &aesCbcVectors[i].pt));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hKey, hCrypto, &aesCbcVectors[i].key));
+        TEST_SUCCESS(do_AES_CBC(hCrypto, mode, expo, hKey,
+                                SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
+                                &aesCbcVectors[i].iv,
+                                &aesCbcVectors[i].ct,
+                                &aesCbcVectors[i].pt));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -410,43 +432,45 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_dec(
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_CBC_rnd(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Cipher obj;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_CipherH hCipher;
+    SeosCryptoApi_KeyH hKey;
     uint8_t pt[16], ct[16], tmp[16], iv[16];
     size_t len;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
         // Generate random key, IV, PT
-        TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
-        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(api, 0, pt, sizeof(pt)));
-        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(api, 0, iv, sizeof(iv)));
+        TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
+        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(hCrypto, 0, pt, sizeof(pt)));
+        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(hCrypto, 0, iv, sizeof(iv)));
 
         // Encrypt
         len = sizeof(ct);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+        TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_CBC_ENC,
-                                               &key, iv, sizeof(iv)));
-        TEST_LOCATION(api, obj);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, pt, sizeof(pt), ct, &len));
-        TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                               iv, sizeof(iv)));
+        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, pt, sizeof(pt), ct, &len));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
         // Decrypt
         len = sizeof(tmp);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+        TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
-                                               &key, iv, sizeof(iv)));
-        TEST_LOCATION(api, obj);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, ct, sizeof(ct), tmp, &len));
-        TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                               iv, sizeof(iv)));
+        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, ct, sizeof(ct), tmp, &len));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
         // Check decryption result
         Debug_ASSERT(!memcmp(tmp, pt, len));
 
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -454,34 +478,37 @@ test_SeosCryptoApi_Cipher_do_AES_CBC_rnd(
 
 static seos_err_t
 do_AES_GCM(
-    SeosCryptoApi*     api,
-    int                algo,
-    SeosCryptoApi_Key* key,
-    const ByteVector*  iv,
-    const ByteVector*  ad,
-    const ByteVector*  din,
-    const ByteVector*  dout,
-    const ByteVector*  tag)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo,
+    SeosCryptoApi_KeyH       hKey,
+    int                      algo,
+    const ByteVector*        iv,
+    const ByteVector*        ad,
+    const ByteVector*        din,
+    const ByteVector*        dout,
+    const ByteVector*        tag)
 {
     seos_err_t ret;
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_CipherH hCipher;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj, algo, key, iv->bytes,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey, algo, iv->bytes,
                                            iv->len));
-    TEST_LOCATION(api, obj);
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     if (ad->len > 0)
     {
-        TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, ad->bytes, ad->len));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, ad->bytes, ad->len));
     }
     else
     {
-        TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, din->bytes, din->len, buf, &n));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, din->bytes, din->len, buf,
+                                              &n));
     TEST_TRUE(n == dout->len);
     TEST_TRUE(!memcmp(buf, dout->bytes, n));
 
@@ -489,7 +516,7 @@ do_AES_GCM(
     {
         // Here we create the tag
         n = sizeof(buf);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(&obj, buf, &n));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(hCipher, buf, &n));
         TEST_TRUE(n == tag->len);
         TEST_TRUE(!memcmp(buf, tag->bytes, n));
         ret = SEOS_SUCCESS;
@@ -499,30 +526,36 @@ do_AES_GCM(
         // Here we check the tag
         n = tag->len;
         memcpy(buf, tag->bytes, tag->len);
-        ret = SeosCryptoApi_Cipher_finalize(&obj, buf, &n);
+        ret = SeosCryptoApi_Cipher_finalize(hCipher, buf, &n);
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     return ret;
 }
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_GCM_enc(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     size_t i;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesGcmVectors[i].key));
-        TEST_SUCCESS(do_AES_GCM(api, SeosCryptoApi_Cipher_ALG_AES_GCM_ENC, &key,
-                                &aesGcmVectors[i].iv, &aesGcmVectors[i].ad, &aesGcmVectors[i].pt,
-                                &aesGcmVectors[i].ct, &aesGcmVectors[i].tag));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hKey, hCrypto, &aesGcmVectors[i].key));
+        TEST_SUCCESS(do_AES_GCM(hCrypto, mode, expo, hKey,
+                                SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                &aesGcmVectors[i].iv,
+                                &aesGcmVectors[i].ad,
+                                &aesGcmVectors[i].pt,
+                                &aesGcmVectors[i].ct,
+                                &aesGcmVectors[i].tag));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -530,20 +563,26 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_enc(
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     size_t i;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
-        TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesGcmVectors[i].key));
-        TEST_SUCCESS(do_AES_GCM(api, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, &key,
-                                &aesGcmVectors[i].iv, &aesGcmVectors[i].ad, &aesGcmVectors[i].ct,
-                                &aesGcmVectors[i].pt, &aesGcmVectors[i].tag));
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_import(&hKey, hCrypto, &aesGcmVectors[i].key));
+        TEST_SUCCESS(do_AES_GCM(hCrypto, mode, expo, hKey,
+                                SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
+                                &aesGcmVectors[i].iv,
+                                &aesGcmVectors[i].ad,
+                                &aesGcmVectors[i].ct,
+                                &aesGcmVectors[i].pt,
+                                &aesGcmVectors[i].tag));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -551,15 +590,17 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     const TestVector* vec = &aesGcmVectors[0];
     ByteVector brokenTag;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &vec->key));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hKey, hCrypto, &vec->key));
 
     // Create GCM with manipulated tag
     memcpy(brokenTag.bytes, vec->tag.bytes, vec->tag.len);
@@ -567,60 +608,63 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(
     brokenTag.bytes[0] ^= 0xff;
 
     // Check manipulated TAG is detected
-    TEST_ABORTED(do_AES_GCM(api, SeosCryptoApi_Cipher_ALG_AES_GCM_DEC, &key,
+    TEST_ABORTED(do_AES_GCM(hCrypto, mode, expo, hKey,
+                            SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
                             &vec->iv, &vec->ad, &vec->ct, &vec->pt, &brokenTag));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_do_AES_GCM_rnd(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Cipher obj;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_CipherH hCipher;
+    SeosCryptoApi_KeyH hKey;
     uint8_t pt[16], ct[16], tmp[16], iv[12], tag[16], ad[16];
     size_t len;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
         // Generate random key, PT, IV, AD
-        TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
-        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(api, 0, pt, sizeof(pt)));
-        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(api, 0, iv, sizeof(iv)));
-        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(api, 0, ad, sizeof(ad)));
+        TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
+        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(hCrypto, 0, pt, sizeof(pt)));
+        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(hCrypto, 0, iv, sizeof(iv)));
+        TEST_SUCCESS(SeosCryptoApi_Rng_getBytes(hCrypto, 0, ad, sizeof(ad)));
 
         // Encrypt
         len = sizeof(ct);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+        TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                               &key, iv, sizeof(iv)));
-        TEST_LOCATION(api, obj);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, ad, sizeof(ad)));
-        TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, pt, sizeof(pt), ct, &len));
+                                               iv, sizeof(iv)));
+        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, ad, sizeof(ad)));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, pt, sizeof(pt), ct, &len));
         len = sizeof(tag);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(&obj, tag, &len));
-        TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(hCipher, tag, &len));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
         // Decrypt
         len = sizeof(tmp);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+        TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
-                                               &key, iv, sizeof(iv)));
-        TEST_LOCATION(api, obj);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, ad, sizeof(ad)));
+                                               iv, sizeof(iv)));
+        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, ad, sizeof(ad)));
         len = sizeof(tmp);
-        TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, ct, sizeof(ct), tmp, &len));
-        TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(&obj, tag, &len));
-        TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, ct, sizeof(ct), tmp, &len));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(hCipher, tag, &len));
+        TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
         // Check decryption result
         Debug_ASSERT(!memcmp(tmp, pt, len));
 
-        TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+        TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
     }
 
     TEST_FINISH();
@@ -628,602 +672,628 @@ test_SeosCryptoApi_Cipher_do_AES_GCM_rnd(
 
 static void
 test_SeosCryptoApi_Cipher_init_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Cipher obj;
-    SeosCryptoApi_Key key;
-    const ByteVector* vec;
+    SeosCryptoApi_CipherH hCipher;
+    SeosCryptoApi_KeyH hKey;
+    const ByteVector* iv;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
 
     // Test GCM enc
-    vec = &aesGcmVectors[0].iv;
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    iv = &aesGcmVectors[0].iv;
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                           &key, vec->bytes, vec->len));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           iv->bytes, iv->len));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Test GCM dec
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
-                                           &key, vec->bytes, vec->len));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           iv->bytes, iv->len));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Test CBC enc
-    vec = &aesCbcVectors[0].iv;
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    iv = &aesCbcVectors[0].iv;
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_CBC_ENC,
-                                           &key, vec->bytes, vec->len));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           iv->bytes, iv->len));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Test CBC dec
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
-                                           &key, vec->bytes, vec->len));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           iv->bytes, iv->len));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Test ECB enc
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Test ECB dec
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_init_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Cipher obj;
-    SeosCryptoApi_Key key, pubKey;
-    const ByteVector* vec;
+    SeosCryptoApi_CipherH hCipher;
+    SeosCryptoApi_KeyH hKey, hPubKey;
+    const ByteVector* iv;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hPubKey, hCrypto, &secp256r1PubData));
 
-    // Test empty api
-    vec = &aesGcmVectors[0].iv;
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(NULL, &obj,
+    // Test empty cipher handle
+    iv = &aesGcmVectors[0].iv;
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(NULL, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                               &key, vec->bytes, vec->len));
+                                               iv->bytes, iv->len));
 
-    // Test empty handle
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(api, NULL,
-                                               SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
-                                               &key, vec->bytes, vec->len));
+    // Test empty crypto handle
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(&hCipher, NULL, hKey,
+                                               SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                               iv->bytes, iv->len));
+
+    // Test empty key handle
+    TEST_INVAL_HANDLE(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, NULL,
+                                                SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                                iv->bytes, iv->len));
+
+    // Test with wrong key type (EC pub key)
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hPubKey,
+                                               SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
+                                               iv->bytes, iv->len));
 
     // Test invalid algorithm
-    TEST_NOT_SUPP(SeosCryptoApi_Cipher_init(api, &obj, 666, &key, vec->bytes,
-                                            vec->len));
+    TEST_NOT_SUPP(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey, 666,
+                                            iv->bytes, iv->len));
 
-    // Test GCM/CBC without IV buf
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(api, &obj,
-                                               SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
-                                               &key, NULL, vec->len));
-
-    // Test GCM/CBC without IV buf
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(api, &obj,
+    // Test without zero sized buf
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
-                                               &key, vec->bytes, 0));
+                                               iv->bytes, 0));
+
     // Test CBC with wrong sized IV
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_CBC_ENC,
-                                               &key, vec->bytes, vec->len));
+                                               iv->bytes, iv->len));
 
     // Test GCM with wrong sized IV
-    vec = &aesCbcVectors[0].iv;
-    TEST_NOT_SUPP(SeosCryptoApi_Cipher_init(api, &obj,
+    iv = &aesCbcVectors[0].iv;
+    TEST_NOT_SUPP(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                             SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                            &key, vec->bytes, vec->len));
+                                            iv->bytes, iv->len));
 
     // Test ECB with IV
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
-                                               &key, vec->bytes, vec->len));
+                                               iv->bytes, iv->len));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
-
-    // Test with wrong key type
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &dh64bSpec));
-    TEST_SUCCESS(SeosCryptoApi_Key_makePublic(&pubKey, &key,
-                                              &dh64bSpec.key.attribs));
-    vec = &aesGcmVectors[0].iv;
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(api, &obj,
-                                               SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                               &key, vec->bytes, vec->len));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&pubKey));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hPubKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_free_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Cipher obj;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_CipherH hCipher;
+    SeosCryptoApi_KeyH hKey;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // Simply free
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_free_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Cipher obj;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_CipherH hCipher;
+    SeosCryptoApi_KeyH hKey;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // Test with empty handle
     TEST_INVAL_PARAM(SeosCryptoApi_Cipher_free(NULL));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_start_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_KeyH hKey;
+    SeosCryptoApi_CipherH hCipher;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                           &key, aesGcmVectors[0].iv.bytes,
+                                           aesGcmVectors[0].iv.bytes,
                                            aesGcmVectors[0].iv.len));
-    TEST_LOCATION(api, obj);
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
 
-    // Start without api
+    // Start without crypto handle
     TEST_INVAL_PARAM(SeosCryptoApi_Cipher_start(NULL, NULL, 0));
 
     // Start twice
-    TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
-    TEST_ABORTED(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
+    TEST_ABORTED(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
 
-    // Start for obj in wrong mode
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    // Start for hCipher in wrong mode
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
-    TEST_ABORTED(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_ABORTED(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_process_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_KeyH hKey;
+    SeosCryptoApi_CipherH hCipher;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                           &key, aesGcmVectors[0].iv.bytes,
+                                           aesGcmVectors[0].iv.bytes,
                                            aesGcmVectors[0].iv.len));
-    TEST_LOCATION(api, obj);
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // Process without calling start for GCM
-    TEST_ABORTED(SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n));
+    TEST_ABORTED(SeosCryptoApi_Cipher_process(hCipher, buf, 16, buf, &n));
 
     // Process without context
-    TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
     TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(NULL, buf, 16, buf, &n));
 
     // Process with empty input buf
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(&obj, NULL, 16, buf, &n));
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(hCipher, NULL, 16, buf, &n));
 
     // Process with empty zero blocksize
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(&obj, buf, 0, buf, &n));
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(hCipher, buf, 0, buf, &n));
 
     // Process without output buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(&obj, buf, 16, NULL, &n));
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(hCipher, buf, 16, NULL, &n));
 
     // Process with too small output buffer
     n = 3;
-    TEST_TOO_SMALL(SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n));
+    TEST_TOO_SMALL(SeosCryptoApi_Cipher_process(hCipher, buf, 16, buf, &n));
 
     // Process without with non-aligned block (which is ok for last call to Process in GCM mode)
     // but then adding another block via Process
     n = sizeof(buf);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, buf, 20, buf, &n));
-    TEST_ABORTED(SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, buf, 20, buf, &n));
+    TEST_ABORTED(SeosCryptoApi_Cipher_process(hCipher, buf, 16, buf, &n));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Process with un-aligned block sizes for ECB
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(&obj, buf, 18, buf, &n));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(hCipher, buf, 18, buf, &n));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Process with un-aligned block sizes for CBC
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_CBC_ENC,
-                                           &key, aesCbcVectors[0].iv.bytes,
+                                           aesCbcVectors[0].iv.bytes,
                                            aesCbcVectors[0].iv.len));
-    TEST_LOCATION(api, obj);
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(&obj, buf, 18, buf, &n));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_process(hCipher, buf, 18, buf, &n));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_finalize_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_KeyH hKey;
+    SeosCryptoApi_CipherH hCipher;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                           &key, aesGcmVectors[0].iv.bytes,
+                                           aesGcmVectors[0].iv.bytes,
                                            aesGcmVectors[0].iv.len));
-    TEST_LOCATION(api, obj);
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // Finalize without calling start+Process
-    TEST_ABORTED(SeosCryptoApi_Cipher_finalize(&obj, buf, &n));
+    TEST_ABORTED(SeosCryptoApi_Cipher_finalize(hCipher, buf, &n));
 
     // Finalize without calling Process
-    TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
-    TEST_ABORTED(SeosCryptoApi_Cipher_finalize(&obj, buf, &n));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
+    TEST_ABORTED(SeosCryptoApi_Cipher_finalize(hCipher, buf, &n));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, buf, 16, buf, &n));
 
     // Finalize without context
     TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(NULL, buf, &n));
 
     // Finalize without buffer in ENC mode (wants to write a tag)
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(&obj, NULL, &n));
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(hCipher, NULL, &n));
 
     // Finalize with zero length buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(&obj, buf, 0));
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(hCipher, buf, 0));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Finalize without buffer in DEC mode (will just compare the tag)
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_DEC,
-                                           &key, aesGcmVectors[0].iv.bytes,
+                                           aesGcmVectors[0].iv.bytes,
                                            aesGcmVectors[0].iv.len));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, buf, 16, buf, &n));
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(&obj, NULL, &n));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, buf, 16, buf, &n));
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(hCipher, NULL, &n));
 
     // Finalize without zero length in DEC mode (will just compare the tag)
     n = 0;
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(&obj, buf, &n));
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_finalize(hCipher, buf, &n));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
-    // Finalize on wrong type of obj
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    // Finalize on wrong type of hCipher
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_ENC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
     n = sizeof(buf);
-    TEST_NOT_SUPP(SeosCryptoApi_Cipher_finalize(&obj, buf, &n));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_NOT_SUPP(SeosCryptoApi_Cipher_finalize(hCipher, buf, &n));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_init_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_KeyH hKey;
+    SeosCryptoApi_CipherH hCipher;
     static unsigned char ivBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t ivLen;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
 
     // Should be OK
     ivLen = SeosCryptoApi_Cipher_SIZE_AES_BLOCK;
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
-                                           &key, ivBuf, ivLen));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+                                           ivBuf, ivLen));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     // Should fail with SEOS_ERROR_INVALID_PARAMETER beacause it is way too large
-    // for any obj
+    // for any hCipher
     ivLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_INVAL_PARAM(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
-                                               &key, ivBuf, ivLen));
+                                               ivBuf, ivLen));
 
     // Should fail with SEOS_ERROR_INSUFFICIENT_SPACE because it is too large for
     // the internal dataports
     ivLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                                 SeosCryptoApi_Cipher_ALG_AES_CBC_DEC,
-                                                &key, ivBuf, ivLen));
+                                                ivBuf, ivLen));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_start_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_KeyH hKey;
+    SeosCryptoApi_CipherH hCipher;
     static unsigned char ivBuf[16], inputBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                           &key, ivBuf, 12));
-    TEST_LOCATION(api, obj);
+                                           ivBuf, 12));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // Should be OK
     inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, inputBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, inputBuf, inLen));
 
     // Should fail because input is too big
     inLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_start(&obj, inputBuf, inLen));
+    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_start(hCipher, inputBuf, inLen));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_process_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Key key;
-    SeosCryptoApi_Cipher obj;
+    SeosCryptoApi_KeyH hKey;
+    SeosCryptoApi_CipherH hCipher;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT + 1],
                          outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // This should go OK
     inLen = outLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, inBuf, inLen, outBuf, &outLen));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, inBuf, inLen, outBuf,
+                                              &outLen));
     TEST_TRUE(inLen == outLen);
 
     // This should fail as input is too big
     inLen = SeosCryptoApi_SIZE_DATAPORT + 1;
     outLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_process(&obj, inBuf, inLen, outBuf,
+    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_process(hCipher, inBuf, inLen, outBuf,
                                                    &outLen));
 
     // This should fail as output is too big
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     outLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_process(&obj, inBuf, inLen, outBuf,
+    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_process(hCipher, inBuf, inLen, outBuf,
                                                    &outLen));
 
     // This should fail in the SeosCryptoLib_Cipher, but should give us the expected
     // (= minimum) output buffer size
     inLen = SeosCryptoApi_SIZE_DATAPORT;
     outLen = 10;
-    TEST_TOO_SMALL(SeosCryptoApi_Cipher_process(&obj, inBuf, inLen, outBuf,
+    TEST_TOO_SMALL(SeosCryptoApi_Cipher_process(hCipher, inBuf, inLen, outBuf,
                                                 &outLen));
     TEST_TRUE(inLen == outLen);
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
-    TEST_SUCCESS(SeosCryptoApi_Key_import(api, &key, &aesEcbVectors[0].key));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Key_import(&hKey, hCrypto, &aesEcbVectors[0].key));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_ECB_DEC,
-                                           &key, NULL, 0));
-    TEST_LOCATION(api, obj);
+                                           NULL, 0));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
     // Compute with same buffer used for input and output
     memcpy(inBuf, aesEcbVectors[0].ct.bytes, aesEcbVectors[0].ct.len);
     outLen = aesEcbVectors[0].pt.len;
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, inBuf, aesEcbVectors[0].ct.len,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, inBuf,
+                                              aesEcbVectors[0].ct.len,
                                               inBuf, &outLen));
     TEST_TRUE(!memcmp(inBuf, aesEcbVectors[0].pt.bytes,
                       aesEcbVectors[0].pt.len));
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Cipher_finalize_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode,
+    const bool               expo)
 {
-    SeosCryptoApi_Cipher obj;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_CipherH hCipher;
+    SeosCryptoApi_KeyH hKey;
     unsigned char inBuf[16], outBuf[16], iv[12];
     static unsigned char tagBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t tagLen;
 
-    TEST_START(api->mode, allowExport);
+    TEST_START(mode, expo);
 
-    TEST_SUCCESS(SeosCryptoApi_Key_generate(api, &key, &aes128Spec));
+    TEST_SUCCESS(SeosCryptoApi_Key_generate(&hKey, hCrypto, &aes128Spec));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                           &key, iv, 12));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
+                                           iv, 12));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
     tagLen = sizeof(outBuf);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, inBuf, 16, outBuf, &tagLen));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, inBuf, 16, outBuf, &tagLen));
 
     // Should work fine and give the written size
     tagLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(&obj, tagBuf, &tagLen));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(hCipher, tagBuf, &tagLen));
     TEST_TRUE(SeosCryptoApi_Cipher_SIZE_AES_GCM_TAG_MAX == tagLen);
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Cipher_init(&hCipher, hCrypto, hKey,
                                            SeosCryptoApi_Cipher_ALG_AES_GCM_ENC,
-                                           &key, iv, 12));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_start(&obj, NULL, 0));
+                                           iv, 12));
+    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_SUCCESS(SeosCryptoApi_Cipher_start(hCipher, NULL, 0));
     tagLen = sizeof(outBuf);
-    TEST_SUCCESS(SeosCryptoApi_Cipher_process(&obj, inBuf, 16, outBuf, &tagLen));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_process(hCipher, inBuf, 16, outBuf, &tagLen));
+
     // Should fail due to limited internal buffers
     tagLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_finalize(&obj, tagBuf, &tagLen));
+    TEST_INSUFF_SPACE(SeosCryptoApi_Cipher_finalize(hCipher, tagBuf, &tagLen));
+
     // Should fail (tags bust be at least 4 bytes) but give the minimum size
     tagLen = 3;
-    TEST_TOO_SMALL(SeosCryptoApi_Cipher_finalize(&obj, tagBuf, &tagLen));
+    TEST_TOO_SMALL(SeosCryptoApi_Cipher_finalize(hCipher, tagBuf, &tagLen));
     TEST_TRUE(4 == tagLen);
+
     // Should work
     tagLen = 5;
-    TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(&obj, tagBuf, &tagLen));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_finalize(hCipher, tagBuf, &tagLen));
     TEST_TRUE(5 == tagLen);
 
-    TEST_SUCCESS(SeosCryptoApi_Cipher_free(&obj));
-
-    TEST_SUCCESS(SeosCryptoApi_Key_free(&key));
+    TEST_SUCCESS(SeosCryptoApi_Cipher_free(hCipher));
+    TEST_SUCCESS(SeosCryptoApi_Key_free(hKey));
 
     TEST_FINISH();
 }
 
 void
 test_SeosCryptoApi_Cipher(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    allowExport = true;
-    keyData_setExportable(keyDataList, allowExport);
-    keyData_setExportable(testKeyDataList, allowExport);
-    keySpec_setExportable(keySpecList, allowExport);
+    bool expo = true;
 
-    test_SeosCryptoApi_Cipher_init_pos(api);
-    test_SeosCryptoApi_Cipher_init_neg(api);
+    keyData_setExportable(keyDataList, expo);
+    keyData_setExportable(testKeyDataList, expo);
+    keySpec_setExportable(keySpecList, expo);
 
-    test_SeosCryptoApi_Cipher_free_pos(api);
-    test_SeosCryptoApi_Cipher_free_neg(api);
+    test_SeosCryptoApi_Cipher_init_pos(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_init_neg(hCrypto, mode, expo);
+
+    test_SeosCryptoApi_Cipher_free_pos(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_free_neg(hCrypto, mode, expo);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_SeosCryptoApi_Cipher_start_neg(api);
-    test_SeosCryptoApi_Cipher_process_neg(api);
-    test_SeosCryptoApi_Cipher_finalize_neg(api);
+    test_SeosCryptoApi_Cipher_start_neg(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_process_neg(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_finalize_neg(hCrypto, mode, expo);
 
-    test_SeosCryptoApi_Cipher_init_buffer(api);
-    test_SeosCryptoApi_Cipher_start_buffer(api);
-    test_SeosCryptoApi_Cipher_process_buffer(api);
-    test_SeosCryptoApi_Cipher_finalize_buffer(api);
+    test_SeosCryptoApi_Cipher_init_buffer(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_start_buffer(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_process_buffer(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_finalize_buffer(hCrypto, mode, expo);
 
     // Test vectors
-    test_SeosCryptoApi_Cipher_do_AES_ECB_enc(api);
-    test_SeosCryptoApi_Cipher_do_AES_ECB_dec(api);
-    test_SeosCryptoApi_Cipher_do_AES_CBC_enc(api);
-    test_SeosCryptoApi_Cipher_do_AES_CBC_dec(api);
-    test_SeosCryptoApi_Cipher_do_AES_GCM_enc(api);
-    test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(api);
-    test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(api);
+    test_SeosCryptoApi_Cipher_do_AES_ECB_enc(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_do_AES_ECB_dec(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_do_AES_CBC_enc(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_do_AES_CBC_dec(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_do_AES_GCM_enc(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_do_AES_GCM_dec_neg(hCrypto, mode, expo);
 
     // Random values
-    test_SeosCryptoApi_Cipher_do_AES_ECB_rnd(api);
-    test_SeosCryptoApi_Cipher_do_AES_CBC_rnd(api);
-    test_SeosCryptoApi_Cipher_do_AES_GCM_rnd(api);
+    test_SeosCryptoApi_Cipher_do_AES_ECB_rnd(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_do_AES_CBC_rnd(hCrypto, mode, expo);
+    test_SeosCryptoApi_Cipher_do_AES_GCM_rnd(hCrypto, mode, expo);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
-    if (api->mode == SeosCryptoApi_Mode_ROUTER)
+    if (mode == SeosCryptoApi_Mode_ROUTER)
     {
-        allowExport = false;
-        keyData_setExportable(keyDataList, allowExport);
-        keyData_setExportable(testKeyDataList, allowExport);
-        keySpec_setExportable(keySpecList, allowExport);
+        expo = false;
 
-        test_SeosCryptoApi_Cipher_do_AES_ECB_enc(api);
-        test_SeosCryptoApi_Cipher_do_AES_ECB_dec(api);
-        test_SeosCryptoApi_Cipher_do_AES_CBC_enc(api);
-        test_SeosCryptoApi_Cipher_do_AES_CBC_dec(api);
-        test_SeosCryptoApi_Cipher_do_AES_GCM_enc(api);
-        test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(api);
+        keyData_setExportable(keyDataList, expo);
+        keyData_setExportable(testKeyDataList, expo);
+        keySpec_setExportable(keySpecList, expo);
 
-        test_SeosCryptoApi_Cipher_do_AES_ECB_rnd(api);
-        test_SeosCryptoApi_Cipher_do_AES_CBC_rnd(api);
-        test_SeosCryptoApi_Cipher_do_AES_GCM_rnd(api);
+        test_SeosCryptoApi_Cipher_do_AES_ECB_enc(hCrypto, mode, expo);
+        test_SeosCryptoApi_Cipher_do_AES_ECB_dec(hCrypto, mode, expo);
+        test_SeosCryptoApi_Cipher_do_AES_CBC_enc(hCrypto, mode, expo);
+        test_SeosCryptoApi_Cipher_do_AES_CBC_dec(hCrypto, mode, expo);
+        test_SeosCryptoApi_Cipher_do_AES_GCM_enc(hCrypto, mode, expo);
+        test_SeosCryptoApi_Cipher_do_AES_GCM_dec_pos(hCrypto, mode, expo);
+
+        test_SeosCryptoApi_Cipher_do_AES_ECB_rnd(hCrypto, mode, expo);
+        test_SeosCryptoApi_Cipher_do_AES_CBC_rnd(hCrypto, mode, expo);
+        test_SeosCryptoApi_Cipher_do_AES_GCM_rnd(hCrypto, mode, expo);
     }
 }

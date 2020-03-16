@@ -23,9 +23,6 @@ typedef struct
     ByteVector mac;
 } macTestVector;
 
-#define TEST_LOCATION(api, o) \
-    Debug_ASSERT_OBJ_LOCATION(api, true, o.mac)
-
 // -----------------------------------------------------------------------------
 
 #define NUM_MD5_TESTS 3
@@ -128,18 +125,18 @@ static const macTestVector sha256Vectors[NUM_SHA256_TESTS] =
 
 static seos_err_t
 do_mac(
-    SeosCryptoApi_Mac*   obj,
+    SeosCryptoApi_MacH   hMac,
     const macTestVector* vec)
 {
     seos_err_t err;
     char mac[64];
     size_t macSize;
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(obj, vec->secret.bytes, vec->secret.len));
-    TEST_SUCCESS(SeosCryptoApi_Mac_process(obj, vec->msg.bytes, vec->msg.len));
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, vec->secret.bytes, vec->secret.len));
+    TEST_SUCCESS(SeosCryptoApi_Mac_process(hMac, vec->msg.bytes, vec->msg.len));
 
     macSize = sizeof(mac);
-    if ((err = SeosCryptoApi_Mac_finalize(obj, mac, &macSize)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_Mac_finalize(hMac, mac, &macSize)) != SEOS_SUCCESS)
     {
         return err;
     }
@@ -152,350 +149,375 @@ do_mac(
 
 static void
 test_SeosCryptoApi_Mac_do_HMAC_MD5(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
     size_t i;
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
     {
-        TEST_SUCCESS(do_mac(&obj, &md5Vectors[i]));
+        TEST_SUCCESS(do_mac(hMac, &md5Vectors[i]));
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_do_HMAC_SHA256(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
     size_t i;
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
                                         SeosCryptoApi_Mac_ALG_HMAC_SHA256));
-    TEST_LOCATION(api, obj);
+    TEST_LOCACTION(mode, hMac);
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
     {
-        TEST_SUCCESS(do_mac(&obj, &sha256Vectors[i]));
+        TEST_SUCCESS(do_mac(hMac, &sha256Vectors[i]));
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_start_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
 
-    // Empty api
+    // Empty hCrypto
     TEST_INVAL_PARAM(SeosCryptoApi_Mac_start(NULL, vec->secret.bytes,
                                              vec->secret.len));
 
     // Empty secret buf
-    TEST_INVAL_PARAM(SeosCryptoApi_Mac_start(&obj, NULL, vec->secret.len));
+    TEST_INVAL_PARAM(SeosCryptoApi_Mac_start(hMac, NULL, vec->secret.len));
 
     // Zero-len secret
-    TEST_INVAL_PARAM(SeosCryptoApi_Mac_start(&obj, vec->secret.bytes, 0));
+    TEST_INVAL_PARAM(SeosCryptoApi_Mac_start(hMac, vec->secret.bytes, 0));
 
     // Start after already having started it
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(&obj, vec->secret.bytes, vec->secret.len));
-    TEST_ABORTED(SeosCryptoApi_Mac_start(&obj, vec->secret.bytes, vec->secret.len));
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, vec->secret.bytes, vec->secret.len));
+    TEST_ABORTED(SeosCryptoApi_Mac_start(hMac, vec->secret.bytes, vec->secret.len));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_process_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
     const macTestVector* vec = &md5Vectors[0];
     char mac[64];
     size_t macSize = sizeof(mac);
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(&obj, vec->secret.bytes, vec->secret.len));
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, vec->secret.bytes, vec->secret.len));
 
     // Test with empty handle
     TEST_INVAL_PARAM(SeosCryptoApi_Mac_process(NULL, vec->msg.bytes, vec->msg.len));
 
     // Test with empty input
-    TEST_INVAL_PARAM(SeosCryptoApi_Mac_process(&obj, NULL, vec->msg.len));
+    TEST_INVAL_PARAM(SeosCryptoApi_Mac_process(hMac, NULL, vec->msg.len));
 
     // Test with zero lenght input
-    TEST_INVAL_PARAM(SeosCryptoApi_Mac_process(&obj, vec->msg.bytes, 0));
+    TEST_INVAL_PARAM(SeosCryptoApi_Mac_process(hMac, vec->msg.bytes, 0));
 
     // Process after already finalizing it
-    TEST_SUCCESS(SeosCryptoApi_Mac_process(&obj, vec->msg.bytes, vec->msg.len));
-    TEST_SUCCESS(SeosCryptoApi_Mac_finalize(&obj, mac, &macSize));
-    TEST_ABORTED(SeosCryptoApi_Mac_process(&obj, vec->msg.bytes, vec->msg.len));
+    TEST_SUCCESS(SeosCryptoApi_Mac_process(hMac, vec->msg.bytes, vec->msg.len));
+    TEST_SUCCESS(SeosCryptoApi_Mac_finalize(hMac, mac, &macSize));
+    TEST_ABORTED(SeosCryptoApi_Mac_process(hMac, vec->msg.bytes, vec->msg.len));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_finalize_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
     const macTestVector* vec = &md5Vectors[0];
     char mac[64];
     size_t macSize = sizeof(mac);
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
 
     // Finalize without updating
-    TEST_ABORTED(SeosCryptoApi_Mac_finalize(&obj, mac, &macSize));
+    TEST_ABORTED(SeosCryptoApi_Mac_finalize(hMac, mac, &macSize));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(&obj, vec->secret.bytes, vec->secret.len));
-    TEST_SUCCESS(SeosCryptoApi_Mac_process(&obj, vec->msg.bytes, vec->msg.len));
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, vec->secret.bytes, vec->secret.len));
+    TEST_SUCCESS(SeosCryptoApi_Mac_process(hMac, vec->msg.bytes, vec->msg.len));
 
     // Finalize without handle
     TEST_INVAL_PARAM(SeosCryptoApi_Mac_finalize(NULL, mac, &macSize));
 
     // Finalize without output buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Mac_finalize(&obj, NULL, &macSize));
+    TEST_INVAL_PARAM(SeosCryptoApi_Mac_finalize(hMac, NULL, &macSize));
 
     // Finalize without sufficient space
     macSize = 4;
-    TEST_TOO_SMALL(SeosCryptoApi_Mac_finalize(&obj, mac, &macSize));
+    TEST_TOO_SMALL(SeosCryptoApi_Mac_finalize(hMac, mac, &macSize));
 
     // Finalize twice
     macSize = sizeof(mac);
-    TEST_SUCCESS(SeosCryptoApi_Mac_finalize(&obj, mac, &macSize));
-    TEST_ABORTED(SeosCryptoApi_Mac_finalize(&obj, mac, &macSize));
+    TEST_SUCCESS(SeosCryptoApi_Mac_finalize(hMac, mac, &macSize));
+    TEST_ABORTED(SeosCryptoApi_Mac_finalize(hMac, mac, &macSize));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_start_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen;
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
 
     // Should go OK
     inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(&obj, inBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, inBuf, inLen));
 
     // Should fail due to internal buffers being limited
     inLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Mac_start(&obj, inBuf, inLen));
+    TEST_INSUFF_SPACE(SeosCryptoApi_Mac_start(hMac, inBuf, inLen));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_process_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen;
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(&obj, inBuf, 16));
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, inBuf, 16));
 
     // Should go OK
     inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Mac_process(&obj, inBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_process(hMac, inBuf, inLen));
 
     // Should fail due to internal buffers being limited
     inLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Mac_process(&obj, inBuf, inLen));
+    TEST_INSUFF_SPACE(SeosCryptoApi_Mac_process(hMac, inBuf, inLen));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_finalize_buffer(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
     static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT],
-           outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+                         outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(&obj, inBuf, inLen));
-    TEST_SUCCESS(SeosCryptoApi_Mac_process(&obj, inBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, inBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_process(hMac, inBuf, inLen));
     // Should be OK, as we are below the dataport limit
     outLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Mac_finalize(&obj, outBuf, &outLen));
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_finalize(hMac, outBuf, &outLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(&obj, inBuf, inLen));
-    TEST_SUCCESS(SeosCryptoApi_Mac_process(&obj, inBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, inBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_process(hMac, inBuf, inLen));
     // Should fail because out buffer is potentially too big
     outLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Mac_finalize(&obj, outBuf, &outLen));
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_INSUFF_SPACE(SeosCryptoApi_Mac_finalize(hMac, outBuf, &outLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
     inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Mac_start(&obj, inBuf, inLen));
-    TEST_SUCCESS(SeosCryptoApi_Mac_process(&obj, inBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_start(hMac, inBuf, inLen));
+    TEST_SUCCESS(SeosCryptoApi_Mac_process(hMac, inBuf, inLen));
     // This should fail but give us the expected buffer size
     outLen = 10;
-    TEST_TOO_SMALL(SeosCryptoApi_Mac_finalize(&obj, outBuf, &outLen));
+    TEST_TOO_SMALL(SeosCryptoApi_Mac_finalize(hMac, outBuf, &outLen));
     TEST_TRUE(outLen == SeosCryptoApi_Mac_SIZE_HMAC_MD5);
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_init_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
     // Test HMAC_MD5
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     // Test HMAC_SHA256
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj,
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
                                         SeosCryptoApi_Mac_ALG_HMAC_SHA256));
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_init_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
 
-    TEST_START(api->mode);
-
-    // Empty context
-    TEST_INVAL_PARAM(SeosCryptoApi_Mac_init(NULL, &obj,
-                                            SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_START(mode);
 
     // Empty handle
-    TEST_INVAL_PARAM(SeosCryptoApi_Mac_init(api, NULL,
+    TEST_INVAL_PARAM(SeosCryptoApi_Mac_init(NULL, hCrypto,
+                                            SeosCryptoApi_Mac_ALG_HMAC_MD5));
+
+    // Empty context
+    TEST_INVAL_PARAM(SeosCryptoApi_Mac_init(&hMac, NULL,
                                             SeosCryptoApi_Mac_ALG_HMAC_MD5));
 
     // Incorrect algorithm
-    TEST_NOT_SUPP(SeosCryptoApi_Mac_init(api, &obj, 666));
+    TEST_NOT_SUPP(SeosCryptoApi_Mac_init(&hMac, hCrypto, 666));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_free_pos(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 static void
 test_SeosCryptoApi_Mac_free_neg(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    SeosCryptoApi_Mac obj;
+    SeosCryptoApi_MacH hMac;
 
-    TEST_START(api->mode);
+    TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_init(api, &obj, SeosCryptoApi_Mac_ALG_HMAC_MD5));
-    TEST_LOCATION(api, obj);
+    TEST_SUCCESS(SeosCryptoApi_Mac_init(&hMac, hCrypto,
+                                        SeosCryptoApi_Mac_ALG_HMAC_MD5));
+    TEST_LOCACTION(mode, hMac);
 
     // Empty handle
     TEST_INVAL_PARAM(SeosCryptoApi_Mac_free(NULL));
 
-    TEST_SUCCESS(SeosCryptoApi_Mac_free(&obj));
+    TEST_SUCCESS(SeosCryptoApi_Mac_free(hMac));
 
     TEST_FINISH();
 }
 
 void
 test_SeosCryptoApi_Mac(
-    SeosCryptoApi* api)
+    SeosCryptoApiH           hCrypto,
+    const SeosCryptoApi_Mode mode)
 {
-    test_SeosCryptoApi_Mac_init_pos(api);
-    test_SeosCryptoApi_Mac_init_neg(api);
+    test_SeosCryptoApi_Mac_init_pos(hCrypto, mode);
+    test_SeosCryptoApi_Mac_init_neg(hCrypto, mode);
 
-    test_SeosCryptoApi_Mac_free_pos(api);
-    test_SeosCryptoApi_Mac_free_neg(api);
+    test_SeosCryptoApi_Mac_free_pos(hCrypto, mode);
+    test_SeosCryptoApi_Mac_free_neg(hCrypto, mode);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_SeosCryptoApi_Mac_start_neg(api);
-    test_SeosCryptoApi_Mac_process_neg(api);
-    test_SeosCryptoApi_Mac_finalize_neg(api);
+    test_SeosCryptoApi_Mac_start_neg(hCrypto, mode);
+    test_SeosCryptoApi_Mac_process_neg(hCrypto, mode);
+    test_SeosCryptoApi_Mac_finalize_neg(hCrypto, mode);
 
-    test_SeosCryptoApi_Mac_start_buffer(api);
-    test_SeosCryptoApi_Mac_process_buffer(api);
-    test_SeosCryptoApi_Mac_finalize_buffer(api);
+    test_SeosCryptoApi_Mac_start_buffer(hCrypto, mode);
+    test_SeosCryptoApi_Mac_process_buffer(hCrypto, mode);
+    test_SeosCryptoApi_Mac_finalize_buffer(hCrypto, mode);
 
     // Test vectors
-    test_SeosCryptoApi_Mac_do_HMAC_MD5(api);
-    test_SeosCryptoApi_Mac_do_HMAC_SHA256(api);
+    test_SeosCryptoApi_Mac_do_HMAC_MD5(hCrypto, mode);
+    test_SeosCryptoApi_Mac_do_HMAC_SHA256(hCrypto, mode);
 }

@@ -3,6 +3,7 @@
  */
 
 #include "SeosCryptoApi.h"
+
 #include "Crypto.h"
 
 #include "LibDebug/Debug.h"
@@ -12,7 +13,7 @@
 #include <camkes.h>
 
 static PointerVector myObjects;
-static SeosCryptoApi myCrypto;
+static SeosCryptoApiH hCrypto;
 
 // Private static functions ----------------------------------------------------
 
@@ -82,12 +83,12 @@ my_free(
     }
 }
 
-SeosCryptoApi*
-SeosCryptoRpcServer_getSeosCryptoApi(
+SeosCryptoApiH
+SeosCryptoRpc_Server_getSeosCryptoApi(
     void)
 {
     // We have only a single instance
-    return &myCrypto;
+    return hCrypto;
 }
 
 // Public Functions -----------------------------------------------------------
@@ -113,7 +114,7 @@ Crypto_openSession()
     {
         return SEOS_ERROR_INSUFFICIENT_SPACE;
     }
-    if ((err = SeosCryptoApi_init(&myCrypto, &cfg)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_init(&hCrypto, &cfg)) != SEOS_SUCCESS)
     {
         Debug_LOG_TRACE("SeosCryptoApi_init failed with %d", err);
         goto err;
@@ -128,17 +129,17 @@ err:
 
 int
 Crypto_hasObject(
-    Object_Ptr ptr)
+    SeosCryptoLib_Object ptr)
 {
     return (findObject(ptr) != -1) ? 1 : 0;
 }
 
 seos_err_t
 Crypto_loadKey(
-    SeosCryptoApi_Key_RemotePtr* ptr)
+    SeosCryptoLib_Object* ptr)
 {
     seos_err_t err;
-    SeosCryptoApi_Key key;
+    SeosCryptoApi_KeyH hKey;
     static SeosCryptoApi_Key_Data aesKey =
     {
         .type = SeosCryptoApi_Key_TYPE_AES,
@@ -154,13 +155,13 @@ Crypto_loadKey(
     };
 
     // Import key data into the Crypto API
-    if ((err = SeosCryptoApi_Key_import(&myCrypto, &key, &aesKey)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_Key_import(&hKey, hCrypto, &aesKey)) != SEOS_SUCCESS)
     {
         return err;
     }
 
     // Send back only the pointer to the LIB Key object
-    *ptr = SeosCryptoApi_Key_getPtr(&key);
+    *ptr = SeosCryptoApi_getObject(hKey);
 
     return SEOS_SUCCESS;
 }
@@ -170,11 +171,7 @@ Crypto_closeSession()
 {
     seos_err_t err;
 
-    // Attention:
-    // We are allowing the user to free an arbitrary memory pointer, so we
-    // better trust the user or we do not implement something like this in
-    // production!
-    if ((err = SeosCryptoApi_free(&myCrypto)) != SEOS_SUCCESS)
+    if ((err = SeosCryptoApi_free(hCrypto)) != SEOS_SUCCESS)
     {
         Debug_LOG_TRACE("SeosCryptoApi_free failed with %d", err);
     }
