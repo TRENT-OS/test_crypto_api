@@ -2,16 +2,16 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 
-import <seos_if_cryptoApi.camkes>;
+import <if_OS_Crypto.camkes>;
 
 import "../../components/CryptoRpcServer/CryptoRpcServer.camkes";
 
-component test_SeosCryptoApi {
+component test_OS_Crypto {
     control;
 
     // SeosCryptoRpc Interface
     dataport    Buf                         SeosCryptoDataport;
-    uses        seos_if_cryptoApi           SeosCryptoRpc_Server;
+    uses        if_OS_Crypto                OS_CryptoRpcServer;
 
     // Interface to RPC component
     uses        CryptoRpcServerInf          CryptoRpcServer;

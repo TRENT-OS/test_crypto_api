@@ -12,19 +12,19 @@ seos_use_libs(
 
 project(tests_crypto_api C)
 
-DeclareCAmkESComponent(test_SeosCryptoApi
+DeclareCAmkESComponent(test_OS_Crypto
     INCLUDES
         common
         components/CryptoRpcServer/src
     SOURCES
-        components/Tests/src/test_SeosCryptoApi.c
-        components/Tests/src/test_SeosCryptoApi_Signature.c
-        components/Tests/src/test_SeosCryptoApi_Cipher.c
-        components/Tests/src/test_SeosCryptoApi_Rng.c
-        components/Tests/src/test_SeosCryptoApi_Digest.c
-        components/Tests/src/test_SeosCryptoApi_Mac.c
-        components/Tests/src/test_SeosCryptoApi_Agreement.c
-        components/Tests/src/test_SeosCryptoApi_Key.c
+        components/Tests/src/test_OS_Crypto.c
+        components/Tests/src/test_OS_CryptoSignature.c
+        components/Tests/src/test_OS_CryptoCipher.c
+        components/Tests/src/test_OS_CryptoRng.c
+        components/Tests/src/test_OS_CryptoDigest.c
+        components/Tests/src/test_OS_CryptoMac.c
+        components/Tests/src/test_OS_CryptoAgreement.c
+        components/Tests/src/test_OS_CryptoKey.c
     C_FLAGS
         -Wall -Werror
     LIBS

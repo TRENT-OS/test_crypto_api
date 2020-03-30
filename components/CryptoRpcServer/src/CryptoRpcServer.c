@@ -2,7 +2,7 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 
-#include "SeosCryptoApi.h"
+#include "OS_Crypto.h"
 
 #include "CryptoRpcServer.h"
 
@@ -13,7 +13,7 @@
 #include <camkes.h>
 
 static PointerVector myObjects;
-static SeosCryptoApiH hCrypto;
+static OS_Crypto_Handle_t hCrypto;
 
 // Private static functions ----------------------------------------------------
 
@@ -83,8 +83,8 @@ my_free(
     }
 }
 
-SeosCryptoApiH
-SeosCryptoRpc_Server_getSeosCryptoApi(
+OS_Crypto_Handle_t
+OS_CryptoRpcServer_getCrypto(
     void)
 {
     // We have only a single instance
@@ -97,9 +97,9 @@ seos_err_t
 CryptoRpcServer_openSession()
 {
     seos_err_t err;
-    SeosCryptoApi_Config cfg =
+    OS_Crypto_Config_t cfg =
     {
-        .mode = SeosCryptoApi_Mode_RPC_SERVER_WITH_LIBRARY,
+        .mode = OS_Crypto_MODE_RPC_SERVER_WITH_LIBRARY,
         .mem = {
             .malloc = my_malloc,
             .free   = my_free,
@@ -114,9 +114,9 @@ CryptoRpcServer_openSession()
     {
         return SEOS_ERROR_INSUFFICIENT_SPACE;
     }
-    if ((err = SeosCryptoApi_init(&hCrypto, &cfg)) != SEOS_SUCCESS)
+    if ((err = OS_Crypto_init(&hCrypto, &cfg)) != SEOS_SUCCESS)
     {
-        Debug_LOG_TRACE("SeosCryptoApi_init failed with %d", err);
+        Debug_LOG_TRACE("OS_Crypto_init failed with %d", err);
         goto err;
     }
 
@@ -129,20 +129,20 @@ err:
 
 int
 CryptoRpcServer_hasObject(
-    SeosCryptoLib_Object ptr)
+    OS_CryptoLib_Object_ptr ptr)
 {
     return (findObject(ptr) != -1) ? 1 : 0;
 }
 
 seos_err_t
 CryptoRpcServer_loadKey(
-    SeosCryptoLib_Object* ptr)
+    OS_CryptoLib_Object_ptr* ptr)
 {
     seos_err_t err;
-    SeosCryptoApi_KeyH hKey;
-    static SeosCryptoApi_Key_Data aesKey =
+    OS_CryptoKey_Handle_t hKey;
+    static OS_CryptoKey_Data_t aesKey =
     {
-        .type = SeosCryptoApi_Key_TYPE_AES,
+        .type = OS_CryptoKey_TYPE_AES,
         .attribs.exportable = true,
         .data.aes = {
             .len   = 24,
@@ -155,13 +155,13 @@ CryptoRpcServer_loadKey(
     };
 
     // Import key data into the Crypto API
-    if ((err = SeosCryptoApi_Key_import(&hKey, hCrypto, &aesKey)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoKey_import(&hKey, hCrypto, &aesKey)) != SEOS_SUCCESS)
     {
         return err;
     }
 
     // Send back only the pointer to the LIB Key object
-    *ptr = SeosCryptoApi_getObject(hKey);
+    *ptr = OS_Crypto_getObject(hKey);
 
     return SEOS_SUCCESS;
 }
@@ -171,9 +171,9 @@ CryptoRpcServer_closeSession()
 {
     seos_err_t err;
 
-    if ((err = SeosCryptoApi_free(hCrypto)) != SEOS_SUCCESS)
+    if ((err = OS_Crypto_free(hCrypto)) != SEOS_SUCCESS)
     {
-        Debug_LOG_TRACE("SeosCryptoApi_free failed with %d", err);
+        Debug_LOG_TRACE("OS_Crypto_free failed with %d", err);
     }
 
     PointerVector_dtor(&myObjects);

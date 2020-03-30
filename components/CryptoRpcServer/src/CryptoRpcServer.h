@@ -4,18 +4,18 @@
 
 #pragma once
 
-#include "SeosCryptoApi.h"
+#include "OS_Crypto.h"
 
 seos_err_t
 CryptoRpcServer_openSession();
 
 int
 CryptoRpcServer_hasObject(
-    SeosCryptoLib_Object ptr);
+    OS_CryptoLib_Object_ptr ptr);
 
 seos_err_t
 CryptoRpcServer_loadKey(
-    SeosCryptoLib_Object* ptr);
+    OS_CryptoLib_Object_ptr* ptr);
 
 seos_err_t
 CryptoRpcServer_closeSession();

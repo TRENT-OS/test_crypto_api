@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "SeosCryptoApi.h"
+#include "OS_Crypto.h"
 #include "compiler.h"
 
 /*
@@ -15,9 +15,9 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
-static SeosCryptoApi_Key_Data dh101PrvData =
+static OS_CryptoKey_Data_t dh101PrvData =
 {
-    .type = SeosCryptoApi_Key_TYPE_DH_PRV,
+    .type = OS_CryptoKey_TYPE_DH_PRV,
     .attribs.exportable = true,
     .data.dh.prv = {
         .params = {
@@ -30,9 +30,9 @@ static SeosCryptoApi_Key_Data dh101PrvData =
         .xLen   = 13,
     }
 };
-static SeosCryptoApi_Key_Data dh101PubData =
+static OS_CryptoKey_Data_t dh101PubData =
 {
-    .type = SeosCryptoApi_Key_TYPE_DH_PUB,
+    .type = OS_CryptoKey_TYPE_DH_PUB,
     .attribs.exportable = true,
     .data.dh.pub = {
         .params = {
@@ -45,9 +45,9 @@ static SeosCryptoApi_Key_Data dh101PubData =
         .gxLen   = 13,
     }
 };
-static SeosCryptoApi_Key_Data rsa1024PrvData =
+static OS_CryptoKey_Data_t rsa1024PrvData =
 {
-    .type = SeosCryptoApi_Key_TYPE_RSA_PRV,
+    .type = OS_CryptoKey_TYPE_RSA_PRV,
     .attribs.exportable = true,
     .data.rsa.prv = {
         .dBytes = {
@@ -81,9 +81,9 @@ static SeosCryptoApi_Key_Data rsa1024PrvData =
         .qLen = 64,
     }
 };
-static SeosCryptoApi_Key_Data rsa1024PubData =
+static OS_CryptoKey_Data_t rsa1024PubData =
 {
-    .type = SeosCryptoApi_Key_TYPE_RSA_PUB,
+    .type = OS_CryptoKey_TYPE_RSA_PUB,
     .attribs.exportable = true,
     .data.rsa.pub = {
         .nBytes = {
@@ -103,9 +103,9 @@ static SeosCryptoApi_Key_Data rsa1024PubData =
         .eLen = 3,
     }
 };
-static SeosCryptoApi_Key_Data rsaSmallData =
+static OS_CryptoKey_Data_t rsaSmallData =
 {
-    .type = SeosCryptoApi_Key_TYPE_RSA_PRV,
+    .type = OS_CryptoKey_TYPE_RSA_PRV,
     .attribs.exportable = true,
     .data.rsa.prv = {
         .dBytes = {
@@ -126,9 +126,9 @@ static SeosCryptoApi_Key_Data rsaSmallData =
         .qLen = 3,
     }
 };
-static SeosCryptoApi_Key_Data rsaLargeData =
+static OS_CryptoKey_Data_t rsaLargeData =
 {
-    .type = SeosCryptoApi_Key_TYPE_RSA_PRV,
+    .type = OS_CryptoKey_TYPE_RSA_PRV,
     .attribs.exportable = true,
     .data.rsa.prv = {
         .dBytes = {
@@ -149,9 +149,9 @@ static SeosCryptoApi_Key_Data rsaLargeData =
         .qLen = 7777,
     }
 };
-static SeosCryptoApi_Key_Data secp256r1PrvData =
+static OS_CryptoKey_Data_t secp256r1PrvData =
 {
-    .type = SeosCryptoApi_Key_TYPE_SECP256R1_PRV,
+    .type = OS_CryptoKey_TYPE_SECP256R1_PRV,
     .attribs.exportable = true,
     .data.secp256r1.prv = {
         .dBytes = {
@@ -161,9 +161,9 @@ static SeosCryptoApi_Key_Data secp256r1PrvData =
         .dLen   = 32,
     }
 };
-static SeosCryptoApi_Key_Data secp256r1PubData =
+static OS_CryptoKey_Data_t secp256r1PubData =
 {
-    .type = SeosCryptoApi_Key_TYPE_SECP256R1_PUB,
+    .type = OS_CryptoKey_TYPE_SECP256R1_PUB,
     .attribs.exportable = true,
     .data.secp256r1.pub = {
         .qxBytes = {
@@ -178,36 +178,36 @@ static SeosCryptoApi_Key_Data secp256r1PubData =
         .qyLen   = 32
     }
 };
-static SeosCryptoApi_Key_Data aes128Data =
+static OS_CryptoKey_Data_t aes128Data =
 {
-    .type = SeosCryptoApi_Key_TYPE_AES,
+    .type = OS_CryptoKey_TYPE_AES,
     .attribs.exportable = true,
     .data.aes = {
         .bytes = "0123456789abcdef",
         .len = 16
     }
 };
-static SeosCryptoApi_Key_Data aes192Data =
+static OS_CryptoKey_Data_t aes192Data =
 {
-    .type = SeosCryptoApi_Key_TYPE_AES,
+    .type = OS_CryptoKey_TYPE_AES,
     .attribs.exportable = true,
     .data.aes = {
         .bytes = "0123456789abcdef01234567",
         .len = 24
     }
 };
-static SeosCryptoApi_Key_Data aes256Data =
+static OS_CryptoKey_Data_t aes256Data =
 {
-    .type = SeosCryptoApi_Key_TYPE_AES,
+    .type = OS_CryptoKey_TYPE_AES,
     .attribs.exportable = true,
     .data.aes = {
         .bytes = "0123456789abcdef0123456789abcdef",
         .len = 32
     }
 };
-static SeosCryptoApi_Key_Data aes120Data =
+static OS_CryptoKey_Data_t aes120Data =
 {
-    .type = SeosCryptoApi_Key_TYPE_AES,
+    .type = OS_CryptoKey_TYPE_AES,
     .attribs.exportable = true,
     .data.aes = {
         .bytes = "0123456789abcde",
@@ -215,7 +215,7 @@ static SeosCryptoApi_Key_Data aes120Data =
     }
 };
 
-static SeosCryptoApi_Key_Data* keyDataList[] =
+static OS_CryptoKey_Data_t* keyDataList[] =
 {
     &aes120Data,
     &aes256Data,
@@ -234,56 +234,56 @@ static SeosCryptoApi_Key_Data* keyDataList[] =
 
 // -----------------------------------------------------------------------------
 
-static SeosCryptoApi_Key_Spec aes128Spec =
+static OS_CryptoKey_Spec_t aes128Spec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_AES,
+        .type = OS_CryptoKey_TYPE_AES,
         .attribs.exportable = true,
         .params.bits = 128
     }
 };
-static SeosCryptoApi_Key_Spec aes192Spec =
+static OS_CryptoKey_Spec_t aes192Spec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_AES,
+        .type = OS_CryptoKey_TYPE_AES,
         .attribs.exportable = true,
         .params.bits = 192
     }
 };
-static SeosCryptoApi_Key_Spec aes256Spec =
+static OS_CryptoKey_Spec_t aes256Spec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_AES,
+        .type = OS_CryptoKey_TYPE_AES,
         .attribs.exportable = true,
         .params.bits = 256
     }
 };
-static SeosCryptoApi_Key_Spec aes120Spec =
+static OS_CryptoKey_Spec_t aes120Spec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_AES,
+        .type = OS_CryptoKey_TYPE_AES,
         .attribs.exportable = true,
         .params.bits = 120
     }
 };
-static SeosCryptoApi_Key_Spec dh64bSpec =
+static OS_CryptoKey_Spec_t dh64bSpec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_DH_PRV,
+        .type = OS_CryptoKey_TYPE_DH_PRV,
         .attribs.exportable = true,
         .params.bits = 64
     }
 };
-static SeosCryptoApi_Key_Spec dh101pSpec =
+static OS_CryptoKey_Spec_t dh101pSpec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_PARAMS,
+    .type = OS_CryptoKey_SPECTYPE_PARAMS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_DH_PRV,
+        .type = OS_CryptoKey_TYPE_DH_PRV,
         .attribs.exportable = true,
         .params.dh = {
             .pBytes = {0x12, 0xdf, 0x4d, 0x76, 0x89, 0xdf, 0xf4, 0xc9, 0x9d, 0x9a, 0xe5, 0x7d, 0x07},
@@ -293,51 +293,51 @@ static SeosCryptoApi_Key_Spec dh101pSpec =
         }
     }
 };
-static SeosCryptoApi_Key_Spec dh63bSpec =
+static OS_CryptoKey_Spec_t dh63bSpec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_DH_PRV,
+        .type = OS_CryptoKey_TYPE_DH_PRV,
         .attribs.exportable = true,
         .params.bits = 63
     }
 };
-static SeosCryptoApi_Key_Spec dh64pSpec =
+static OS_CryptoKey_Spec_t dh64pSpec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_PARAMS,
+    .type = OS_CryptoKey_SPECTYPE_PARAMS,
     .key = {
         .attribs.exportable = true,
-        .type = SeosCryptoApi_Key_TYPE_DH_PRV,
+        .type = OS_CryptoKey_TYPE_DH_PRV,
     }
 };
-static SeosCryptoApi_Key_Spec rsa128Spec =
+static OS_CryptoKey_Spec_t rsa128Spec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_RSA_PRV,
+        .type = OS_CryptoKey_TYPE_RSA_PRV,
         .attribs.exportable = true,
         .params.bits = 128
     }
 };
-static SeosCryptoApi_Key_Spec secp256r1Spec =
+static OS_CryptoKey_Spec_t secp256r1Spec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_SECP256R1_PRV,
+        .type = OS_CryptoKey_TYPE_SECP256R1_PRV,
         .attribs.exportable = true,
     }
 };
-static SeosCryptoApi_Key_Spec rsa127Spec =
+static OS_CryptoKey_Spec_t rsa127Spec =
 {
-    .type = SeosCryptoApi_Key_SPECTYPE_BITS,
+    .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
-        .type = SeosCryptoApi_Key_TYPE_RSA_PRV,
+        .type = OS_CryptoKey_TYPE_RSA_PRV,
         .attribs.exportable = true,
         .params.bits = 127
     }
 };
 
-static SeosCryptoApi_Key_Spec* keySpecList[] =
+static OS_CryptoKey_Spec_t* keySpecList[] =
 {
     &aes128Spec,
     &aes192Spec,
@@ -357,10 +357,10 @@ static SeosCryptoApi_Key_Spec* keySpecList[] =
 
 INLINE void
 keyData_setExportable(
-    SeosCryptoApi_Key_Data* dataList[],
-    bool                    exp)
+    OS_CryptoKey_Data_t* dataList[],
+    bool                 exp)
 {
-    SeosCryptoApi_Key_Data* pData;
+    OS_CryptoKey_Data_t* pData;
     size_t i;
 
     i = 0;
@@ -372,10 +372,10 @@ keyData_setExportable(
 
 INLINE void
 keySpec_setExportable(
-    SeosCryptoApi_Key_Spec* specList[],
-    bool                    exp)
+    OS_CryptoKey_Spec_t* specList[],
+    bool                 exp)
 {
-    SeosCryptoApi_Key_Spec* pSpec;
+    OS_CryptoKey_Spec_t* pSpec;
     size_t i;
 
     i = 0;

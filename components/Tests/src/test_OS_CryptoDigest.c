@@ -2,7 +2,7 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 
-#include "SeosCryptoApi.h"
+#include "OS_Crypto.h"
 
 #include "ObjectLocation.h"
 #include "TestMacros.h"
@@ -130,19 +130,19 @@ static const TestVector sha256Vectors[NUM_SHA256_TESTS] =
 
 static seos_err_t
 do_hash(
-    SeosCryptoApi_DigestH hDigest,
-    const TestVector*     vec)
+    OS_CryptoDigest_Handle_t hDigest,
+    const TestVector*        vec)
 {
     seos_err_t err;
     char digest[64];
     size_t digestSize;
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_process(hDigest, vec->msg.bytes,
-                                              vec->msg.len));
+    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, vec->msg.bytes,
+                                         vec->msg.len));
 
     digestSize = sizeof(digest);
-    if ((err = SeosCryptoApi_Digest_finalize(hDigest, digest,
-                                             &digestSize)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoDigest_finalize(hDigest, digest,
+                                        &digestSize)) != SEOS_SUCCESS)
     {
         return err;
     }
@@ -153,17 +153,17 @@ do_hash(
 }
 
 static void
-test_SeosCryptoApi_Digest_do_MD5(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_do_MD5(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
+    OS_CryptoDigest_Handle_t hDigest;
     size_t i;
 
     TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
@@ -171,23 +171,23 @@ test_SeosCryptoApi_Digest_do_MD5(
         TEST_SUCCESS(do_hash(hDigest, &md5Vectors[i]));
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_do_SHA256(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_do_SHA256(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
+    OS_CryptoDigest_Handle_t hDigest;
     size_t i;
 
     TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_SHA256));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_SHA256));
     TEST_LOCACTION(mode, hDigest);
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
@@ -195,359 +195,359 @@ test_SeosCryptoApi_Digest_do_SHA256(
         TEST_SUCCESS(do_hash(hDigest, &sha256Vectors[i]));
     }
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 static seos_err_t
 do_clone(
-    SeosCryptoApiH                 hCrypto,
-    const SeosCryptoApi_Mode       mode,
-    const SeosCryptoApi_Digest_Alg algo,
-    const TestVector*              vec)
+    OS_Crypto_Handle_t          hCrypto,
+    const OS_Crypto_Mode_t      mode,
+    const OS_CryptoDigest_Alg_t algo,
+    const TestVector*           vec)
 {
     seos_err_t err;
-    SeosCryptoApi_DigestH hDst, hSrc;
+    OS_CryptoDigest_Handle_t hDst, hSrc;
     char srcDigest[64], dstDigest[64];
     size_t digestSize;
 
     // Create digest object and process something
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hSrc, hCrypto, algo));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hSrc, hCrypto, algo));
     TEST_LOCACTION(mode, hSrc);
-    TEST_SUCCESS(SeosCryptoApi_Digest_process(hSrc, vec->msg.bytes,
-                                              vec->msg.len));
+    TEST_SUCCESS(OS_CryptoDigest_process(hSrc, vec->msg.bytes,
+                                         vec->msg.len));
 
     // Create new digest and clone the state of the other one
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDst, hCrypto, algo));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDst, hCrypto, algo));
     TEST_LOCACTION(mode, hDst);
-    if ((err = SeosCryptoApi_Digest_clone(hDst, hSrc)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoDigest_clone(hDst, hSrc)) != SEOS_SUCCESS)
     {
         return err;
     }
 
     // Finalize both objects and check if they match
     digestSize = sizeof(srcDigest);
-    TEST_SUCCESS(SeosCryptoApi_Digest_finalize(hSrc, srcDigest, &digestSize));
+    TEST_SUCCESS(OS_CryptoDigest_finalize(hSrc, srcDigest, &digestSize));
     TEST_TRUE(digestSize == vec->digest.len);
     digestSize = sizeof(dstDigest);
-    TEST_SUCCESS(SeosCryptoApi_Digest_finalize(hDst, dstDigest, &digestSize));
+    TEST_SUCCESS(OS_CryptoDigest_finalize(hDst, dstDigest, &digestSize));
     TEST_TRUE(digestSize == vec->digest.len);
     TEST_TRUE(!memcmp(srcDigest, dstDigest, digestSize));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDst));
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hSrc));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDst));
+    TEST_SUCCESS(OS_CryptoDigest_free(hSrc));
 
     return SEOS_SUCCESS;
 }
 
 static void
-test_SeosCryptoApi_Digest_clone_pos(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_clone_pos(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
     TEST_START(mode);
 
     TEST_SUCCESS(do_clone(hCrypto, mode,
-                          SeosCryptoApi_Digest_ALG_MD5, &md5Vectors[0]));
+                          OS_CryptoDigest_ALG_MD5, &md5Vectors[0]));
     TEST_SUCCESS(do_clone(hCrypto, mode,
-                          SeosCryptoApi_Digest_ALG_SHA256, &sha256Vectors[0]));
+                          OS_CryptoDigest_ALG_SHA256, &sha256Vectors[0]));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_clone_neg(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_clone_neg(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
     const TestVector* vec = &md5Vectors[0];
-    SeosCryptoApi_DigestH hDst, hSrc;
+    OS_CryptoDigest_Handle_t hDst, hSrc;
 
     TEST_START(mode);
 
     // Create digest object and process something
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hSrc, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hSrc, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hSrc);
-    TEST_SUCCESS(SeosCryptoApi_Digest_process(hSrc, vec->msg.bytes,
-                                              vec->msg.len));
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDst, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_process(hSrc, vec->msg.bytes,
+                                         vec->msg.len));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDst, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDst);
 
     // Empty dst handle
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_clone(NULL, hSrc));
+    TEST_INVAL_PARAM(OS_CryptoDigest_clone(NULL, hSrc));
 
     // Empty src handle
-    TEST_INVAL_HANDLE(SeosCryptoApi_Digest_clone(hDst, NULL));
+    TEST_INVAL_HANDLE(OS_CryptoDigest_clone(hDst, NULL));
 
     // Clone into wrong type of digest
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDst));
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDst, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_SHA256));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDst));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDst, hCrypto,
+                                      OS_CryptoDigest_ALG_SHA256));
     TEST_LOCACTION(mode, hDst);
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_clone(hDst, hSrc));
+    TEST_INVAL_PARAM(OS_CryptoDigest_clone(hDst, hSrc));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDst));
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hSrc));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDst));
+    TEST_SUCCESS(OS_CryptoDigest_free(hSrc));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_init_pos(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_init_pos(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
+    OS_CryptoDigest_Handle_t hDigest;
 
     TEST_START(mode);
 
     // Test MD5
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     // Test SHA256
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_SHA256));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_SHA256));
     TEST_LOCACTION(mode, hDigest);
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_init_neg(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_init_neg(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
+    OS_CryptoDigest_Handle_t hDigest;
 
     TEST_START(mode);
 
     // Test with emtpy handle
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_init(NULL, hCrypto,
-                                               SeosCryptoApi_Digest_ALG_MD5));
+    TEST_INVAL_PARAM(OS_CryptoDigest_init(NULL, hCrypto,
+                                          OS_CryptoDigest_ALG_MD5));
 
     // Test with emtpy hCrypto
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_init(&hDigest, NULL,
-                                               SeosCryptoApi_Digest_ALG_MD5));
+    TEST_INVAL_PARAM(OS_CryptoDigest_init(&hDigest, NULL,
+                                          OS_CryptoDigest_ALG_MD5));
 
     // Test with invalid algo id
-    TEST_NOT_SUPP(SeosCryptoApi_Digest_init(&hDigest, hCrypto, 666));
+    TEST_NOT_SUPP(OS_CryptoDigest_init(&hDigest, hCrypto, 666));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_free_pos(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_free_pos(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
+    OS_CryptoDigest_Handle_t hDigest;
 
     TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_free_neg(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_free_neg(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
+    OS_CryptoDigest_Handle_t hDigest;
 
     TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
 
     // Test empty hCrypto
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_free(NULL));
+    TEST_INVAL_PARAM(OS_CryptoDigest_free(NULL));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_process_neg(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_process_neg(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
+    OS_CryptoDigest_Handle_t hDigest;
     const TestVector* vec = &md5Vectors[0];
 
     TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
 
     // Test with empty handle
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_process(NULL, vec->msg.bytes,
-                                                  vec->msg.len));
+    TEST_INVAL_PARAM(OS_CryptoDigest_process(NULL, vec->msg.bytes,
+                                             vec->msg.len));
 
     // Test with empty input
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_process(hDigest, NULL, vec->msg.len));
+    TEST_INVAL_PARAM(OS_CryptoDigest_process(hDigest, NULL, vec->msg.len));
 
     // Test with zero lenght input
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_process(hDigest, vec->msg.bytes, 0));
+    TEST_INVAL_PARAM(OS_CryptoDigest_process(hDigest, vec->msg.bytes, 0));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_finalize_neg(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_finalize_neg(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
+    OS_CryptoDigest_Handle_t hDigest;
     const TestVector* vec = &md5Vectors[0];
     char digest[64];
     size_t digestSize = sizeof(digest);
 
     TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
 
     // Finalize without updating
-    TEST_ABORTED(SeosCryptoApi_Digest_finalize(hDigest, digest, &digestSize));
+    TEST_ABORTED(OS_CryptoDigest_finalize(hDigest, digest, &digestSize));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_process(hDigest, vec->msg.bytes,
-                                              vec->msg.len));
+    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, vec->msg.bytes,
+                                         vec->msg.len));
 
     // Finalize without handle
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_finalize(NULL, digest, &digestSize));
+    TEST_INVAL_PARAM(OS_CryptoDigest_finalize(NULL, digest, &digestSize));
 
     // Finalize without output buffer
-    TEST_INVAL_PARAM(SeosCryptoApi_Digest_finalize(hDigest, NULL, &digestSize));
+    TEST_INVAL_PARAM(OS_CryptoDigest_finalize(hDigest, NULL, &digestSize));
 
     // Finalize without sufficient space
     digestSize = 4;
-    TEST_TOO_SMALL(SeosCryptoApi_Digest_finalize(hDigest, digest, &digestSize));
+    TEST_TOO_SMALL(OS_CryptoDigest_finalize(hDigest, digest, &digestSize));
 
     // Finalize twice
     digestSize = sizeof(digest);
-    TEST_SUCCESS(SeosCryptoApi_Digest_finalize(hDigest, digest, &digestSize));
-    TEST_ABORTED(SeosCryptoApi_Digest_finalize(hDigest, digest, &digestSize));
+    TEST_SUCCESS(OS_CryptoDigest_finalize(hDigest, digest, &digestSize));
+    TEST_ABORTED(OS_CryptoDigest_finalize(hDigest, digest, &digestSize));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_process_buffer(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_process_buffer(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
-    static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+    OS_CryptoDigest_Handle_t hDigest;
+    static unsigned char inBuf[OS_Crypto_SIZE_DATAPORT + 1];
     size_t inLen;
 
     TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
 
     // Should go OK
-    inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Digest_process(hDigest, inBuf, inLen));
+    inLen = OS_Crypto_SIZE_DATAPORT;
+    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, inBuf, inLen));
 
     // Should fail due to internal buffers being limited
-    inLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Digest_process(hDigest, inBuf, inLen));
+    inLen = OS_Crypto_SIZE_DATAPORT + 1;
+    TEST_INSUFF_SPACE(OS_CryptoDigest_process(hDigest, inBuf, inLen));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 static void
-test_SeosCryptoApi_Digest_finalize_buffer(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest_finalize_buffer(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    SeosCryptoApi_DigestH hDigest;
-    static unsigned char inBuf[SeosCryptoApi_SIZE_DATAPORT],
-                         outBuf[SeosCryptoApi_SIZE_DATAPORT + 1];
+    OS_CryptoDigest_Handle_t hDigest;
+    static unsigned char inBuf[OS_Crypto_SIZE_DATAPORT],
+                         outBuf[OS_Crypto_SIZE_DATAPORT + 1];
     size_t inLen, outLen;
 
     TEST_START(mode);
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
-    inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Digest_process(hDigest, inBuf, inLen));
+    inLen = OS_Crypto_SIZE_DATAPORT;
+    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, inBuf, inLen));
     // Should be OK, as we are below the dataport limit
-    outLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Digest_finalize(hDigest, outBuf, &outLen));
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    outLen = OS_Crypto_SIZE_DATAPORT;
+    TEST_SUCCESS(OS_CryptoDigest_finalize(hDigest, outBuf, &outLen));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
-    inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Digest_process(hDigest, inBuf, inLen));
+    inLen = OS_Crypto_SIZE_DATAPORT;
+    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, inBuf, inLen));
     // Should fail because out buffer is potentially too big
-    outLen = SeosCryptoApi_SIZE_DATAPORT + 1;
-    TEST_INSUFF_SPACE(SeosCryptoApi_Digest_finalize(hDigest, outBuf, &outLen));
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    outLen = OS_Crypto_SIZE_DATAPORT + 1;
+    TEST_INSUFF_SPACE(OS_CryptoDigest_finalize(hDigest, outBuf, &outLen));
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
-    TEST_SUCCESS(SeosCryptoApi_Digest_init(&hDigest, hCrypto,
-                                           SeosCryptoApi_Digest_ALG_MD5));
+    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
+                                      OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
-    inLen = SeosCryptoApi_SIZE_DATAPORT;
-    TEST_SUCCESS(SeosCryptoApi_Digest_process(hDigest, inBuf, inLen));
+    inLen = OS_Crypto_SIZE_DATAPORT;
+    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, inBuf, inLen));
     // This should fail but give us the expected buffer size
     outLen = 10;
-    TEST_TOO_SMALL(SeosCryptoApi_Digest_finalize(hDigest, outBuf, &outLen));
-    TEST_TRUE(outLen == SeosCryptoApi_Digest_SIZE_MD5);
-    TEST_SUCCESS(SeosCryptoApi_Digest_free(hDigest));
+    TEST_TOO_SMALL(OS_CryptoDigest_finalize(hDigest, outBuf, &outLen));
+    TEST_TRUE(outLen == OS_CryptoDigest_SIZE_MD5);
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
 }
 
 void
-test_SeosCryptoApi_Digest(
-    SeosCryptoApiH           hCrypto,
-    const SeosCryptoApi_Mode mode)
+test_OS_CryptoDigest(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode)
 {
-    test_SeosCryptoApi_Digest_init_pos(hCrypto, mode);
-    test_SeosCryptoApi_Digest_init_neg(hCrypto, mode);
+    test_OS_CryptoDigest_init_pos(hCrypto, mode);
+    test_OS_CryptoDigest_init_neg(hCrypto, mode);
 
-    test_SeosCryptoApi_Digest_free_pos(hCrypto, mode);
-    test_SeosCryptoApi_Digest_free_neg(hCrypto, mode);
+    test_OS_CryptoDigest_free_pos(hCrypto, mode);
+    test_OS_CryptoDigest_free_neg(hCrypto, mode);
 
-    test_SeosCryptoApi_Digest_clone_pos(hCrypto, mode);
-    test_SeosCryptoApi_Digest_clone_neg(hCrypto, mode);
+    test_OS_CryptoDigest_clone_pos(hCrypto, mode);
+    test_OS_CryptoDigest_clone_neg(hCrypto, mode);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_SeosCryptoApi_Digest_process_neg(hCrypto, mode);
-    test_SeosCryptoApi_Digest_finalize_neg(hCrypto, mode);
+    test_OS_CryptoDigest_process_neg(hCrypto, mode);
+    test_OS_CryptoDigest_finalize_neg(hCrypto, mode);
 
-    test_SeosCryptoApi_Digest_process_buffer(hCrypto, mode);
-    test_SeosCryptoApi_Digest_finalize_buffer(hCrypto, mode);
+    test_OS_CryptoDigest_process_buffer(hCrypto, mode);
+    test_OS_CryptoDigest_finalize_buffer(hCrypto, mode);
 
     // Test vectors
-    test_SeosCryptoApi_Digest_do_SHA256(hCrypto, mode);
-    test_SeosCryptoApi_Digest_do_MD5(hCrypto, mode);
+    test_OS_CryptoDigest_do_SHA256(hCrypto, mode);
+    test_OS_CryptoDigest_do_MD5(hCrypto, mode);
 }

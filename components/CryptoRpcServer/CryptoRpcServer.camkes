@@ -2,10 +2,10 @@
  * Copyright (C) 2019, Hensoldt Cyber GmbH
  */
 
-import <seos_if_cryptoApi.camkes>;
+import <if_OS_Crypto.camkes>;
 
 procedure CryptoRpcServerInf {
-    include     "SeosCryptoApi.h";
+    include     "OS_Crypto.h";
     include     "CryptoRpcServer.h";
 
     seos_err_t
@@ -18,18 +18,18 @@ procedure CryptoRpcServerInf {
 
     seos_err_t
     loadKey(
-        out SeosCryptoLib_Object ptr
+        out OS_CryptoLib_Object_ptr ptr
     );
 
     int hasObject (
-        in SeosCryptoLib_Object ptr
+        in OS_CryptoLib_Object_ptr ptr
     );
 };
 
 component CryptoRpcServer {
     // SeosCryptoRpc Interface
     dataport    Buf                         SeosCryptoDataport;
-    provides    seos_if_cryptoApi           SeosCryptoRpc_Server;
+    provides    if_OS_Crypto                OS_CryptoRpcServer;
 
     // Interface to CryptoRpcServer component
     provides    CryptoRpcServerInf          CryptoRpcServer;
