@@ -749,7 +749,7 @@ test_OS_CryptoKey_migrate_pos(
     const bool             expo)
 {
     OS_CryptoKey_Handle_t hKey;
-    OS_CryptoLib_Object_ptr ptr;
+    CryptoLib_Object_ptr ptr;
 
     TEST_START(mode, expo);
 
@@ -770,7 +770,7 @@ test_OS_CryptoKey_migrate_neg(
     const bool             expo)
 {
     OS_CryptoKey_Handle_t hKey;
-    OS_CryptoLib_Object_ptr ptr;
+    CryptoLib_Object_ptr ptr;
 
     TEST_START(mode, expo);
 

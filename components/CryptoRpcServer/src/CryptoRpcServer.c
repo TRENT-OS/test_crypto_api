@@ -84,7 +84,7 @@ my_free(
 }
 
 OS_Crypto_Handle_t
-OS_CryptoRpcServer_getCrypto(
+CryptoLibServer_getCrypto(
     void)
 {
     // We have only a single instance
@@ -129,14 +129,14 @@ err:
 
 int
 CryptoRpcServer_hasObject(
-    OS_CryptoLib_Object_ptr ptr)
+    CryptoLib_Object_ptr ptr)
 {
     return (findObject(ptr) != -1) ? 1 : 0;
 }
 
 seos_err_t
 CryptoRpcServer_loadKey(
-    OS_CryptoLib_Object_ptr* ptr)
+    CryptoLib_Object_ptr* ptr)
 {
     seos_err_t err;
     OS_CryptoKey_Handle_t hKey;

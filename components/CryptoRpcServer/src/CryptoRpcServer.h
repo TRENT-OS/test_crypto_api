@@ -11,11 +11,11 @@ CryptoRpcServer_openSession();
 
 int
 CryptoRpcServer_hasObject(
-    OS_CryptoLib_Object_ptr ptr);
+    CryptoLib_Object_ptr ptr);
 
 seos_err_t
 CryptoRpcServer_loadKey(
-    OS_CryptoLib_Object_ptr* ptr);
+    CryptoLib_Object_ptr* ptr);
 
 seos_err_t
 CryptoRpcServer_closeSession();

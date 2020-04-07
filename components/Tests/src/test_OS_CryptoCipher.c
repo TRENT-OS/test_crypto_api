@@ -1145,7 +1145,7 @@ test_OS_CryptoCipher_process_buffer(
     TEST_INSUFF_SPACE(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
                                               &outLen));
 
-    // This should fail in the OS_CryptoLib_Cipher, but should give us the expected
+    // This should fail in the implementation file, but should give us the expected
     // (= minimum) output buffer size
     inLen = OS_Crypto_SIZE_DATAPORT;
     outLen = 10;

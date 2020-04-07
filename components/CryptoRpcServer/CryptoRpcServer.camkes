@@ -18,18 +18,18 @@ procedure CryptoRpcServerInf {
 
     seos_err_t
     loadKey(
-        out OS_CryptoLib_Object_ptr ptr
+        out CryptoLib_Object_ptr ptr
     );
 
     int hasObject (
-        in OS_CryptoLib_Object_ptr ptr
+        in CryptoLib_Object_ptr ptr
     );
 };
 
 component CryptoRpcServer {
     // SeosCryptoRpc Interface
     dataport    Buf                         SeosCryptoDataport;
-    provides    if_OS_Crypto                OS_CryptoRpcServer;
+    provides    if_OS_Crypto                CryptoLibServer;
 
     // Interface to CryptoRpcServer component
     provides    CryptoRpcServerInf          CryptoRpcServer;

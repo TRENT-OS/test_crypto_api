@@ -13,7 +13,7 @@ assembly {
         component   CryptoRpcServer     rpcServer;
 
         connection seL4SharedData       shared  (from unitTests.SeosCryptoDataport,   to rpcServer.SeosCryptoDataport);
-        connection seL4RPCCall          call_0  (from unitTests.OS_CryptoRpcServer,   to rpcServer.OS_CryptoRpcServer);
+        connection seL4RPCCall          call_0  (from unitTests.CryptoLibServer,      to rpcServer.CryptoLibServer);
         connection seL4RPCCall          call_1  (from unitTests.CryptoRpcServer,      to rpcServer.CryptoRpcServer);
     }
 }
