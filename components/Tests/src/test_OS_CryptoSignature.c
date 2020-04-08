@@ -1401,7 +1401,9 @@ test_OS_CryptoSignature_key_neg(
     rsa1024PubData.attribs.exportable = true;
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
+    TEST_LOCACTION_EXP(mode, false, hPrvKey);
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
+    TEST_LOCACTION_EXP(mode, true, hPubKey);
 
     // Should fail due to different key localities
     TEST_INVAL_HANDLE(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, hPubKey,
