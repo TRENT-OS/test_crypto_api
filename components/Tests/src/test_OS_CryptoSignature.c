@@ -1170,7 +1170,7 @@ test_OS_CryptoSignature_init_pos(
     TEST_LOCACTION_EXP(mode, expo, hSig);
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
 
-    // Init just with prv key
+    // Init just with pub key
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
