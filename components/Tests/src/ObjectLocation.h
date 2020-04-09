@@ -12,11 +12,11 @@
 // Test location of object pointer based on exportable flag and api mode
 #define TEST_LOCACTION_EXP(m, e, o) {               \
     void *p = OS_Crypto_getObject(o);               \
-    if(m == OS_Crypto_MODE_LIBRARY ||               \
-       (m == OS_Crypto_MODE_ROUTER && e)) {         \
+    if(m == OS_Crypto_MODE_LIBRARY_ONLY ||          \
+       (m == OS_Crypto_MODE_CLIENT && e)) {         \
         TEST_TRUE(!CryptoRpcServer_hasObject(p));   \
-    } else if(m == OS_Crypto_MODE_RPC_CLIENT ||     \
-              (m == OS_Crypto_MODE_ROUTER && !e)) { \
+    } else if(m == OS_Crypto_MODE_CLIENT_ONLY ||     \
+              (m == OS_Crypto_MODE_CLIENT && !e)) { \
         TEST_TRUE(CryptoRpcServer_hasObject(p));    \
     }                                               \
 }
@@ -25,8 +25,8 @@
 // which have no key attached and are thus independent of their exportability)
 #define TEST_LOCACTION(m, o) {                      \
     void *p = OS_Crypto_getObject(o);               \
-    if(m == OS_Crypto_MODE_LIBRARY ||               \
-       (m == OS_Crypto_MODE_ROUTER)) {              \
+    if(m == OS_Crypto_MODE_LIBRARY_ONLY ||          \
+       (m == OS_Crypto_MODE_CLIENT)) {              \
         TEST_TRUE(!CryptoRpcServer_hasObject(p));   \
     } else {                                        \
         TEST_TRUE(CryptoRpcServer_hasObject(p));    \

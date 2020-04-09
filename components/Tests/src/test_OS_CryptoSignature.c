@@ -1455,7 +1455,7 @@ test_OS_CryptoSignature(
     test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, expo);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_ROUTER)
+    if (mode == OS_Crypto_MODE_CLIENT)
     {
         expo = false;
 

@@ -199,7 +199,7 @@ test_OS_CryptoKey_export_neg(
     // Non-exportable key
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128noExpSpec));
 
-    if (mode == OS_Crypto_MODE_LIBRARY)
+    if (mode == OS_Crypto_MODE_LIBRARY_ONLY)
     {
         /*
          * A library instance will store all keys in memory which is shared with the
@@ -825,7 +825,7 @@ void test_OS_CryptoKey(
     test_OS_CryptoKey_loadParams_buffer(hCrypto, mode, expo);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_ROUTER)
+    if (mode == OS_Crypto_MODE_CLIENT)
     {
         expo = false;
         keyData_setExportable(keyDataList, expo);
@@ -841,8 +841,8 @@ void test_OS_CryptoKey(
     // Migration is only useful when done not locally, as we need to migrate
     // a key created on the remote side to use it with the local API instance.
     // NOTE: These test require the remote instance to be initialized.
-    if (mode == OS_Crypto_MODE_ROUTER ||
-        mode == OS_Crypto_MODE_RPC_CLIENT)
+    if (mode == OS_Crypto_MODE_CLIENT ||
+        mode == OS_Crypto_MODE_CLIENT_ONLY)
     {
         test_OS_CryptoKey_migrate_pos(hCrypto, mode, expo);
         test_OS_CryptoKey_migrate_neg(hCrypto, mode, expo);

@@ -99,15 +99,13 @@ CryptoRpcServer_openSession()
     seos_err_t err;
     OS_Crypto_Config_t cfg =
     {
-        .mode = OS_Crypto_MODE_RPC_SERVER_WITH_LIBRARY,
+        .mode = OS_Crypto_MODE_SERVER,
         .mem = {
             .malloc = my_malloc,
             .free   = my_free,
         },
-        .impl.lib.rng = {
-            .entropy = my_entropy,
-        },
-        .server.dataPort = SeosCryptoDataport
+        .library.rng.entropy = my_entropy,
+        .rpc.server.dataPort = SeosCryptoDataport
     };
 
     if (!PointerVector_ctor(&myObjects, 1))

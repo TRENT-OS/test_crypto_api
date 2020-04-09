@@ -1277,7 +1277,7 @@ test_OS_CryptoCipher(
     test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, expo);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_ROUTER)
+    if (mode == OS_Crypto_MODE_CLIENT)
     {
         expo = false;
 

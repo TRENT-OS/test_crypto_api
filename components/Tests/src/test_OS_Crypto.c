@@ -46,24 +46,24 @@ static int entropy(
 // These are all the configurations of the Crypto API we want to test
 static OS_Crypto_Config_t cfgLib =
 {
-    .mode = OS_Crypto_MODE_LIBRARY,
+    .mode = OS_Crypto_MODE_LIBRARY_ONLY,
     .mem = {
         .malloc = malloc,
         .free = free,
     },
-    .impl.lib.rng.entropy = entropy,
+    .library.rng.entropy = entropy,
+};
+static OS_Crypto_Config_t cfgRemote =
+{
+    .mode = OS_Crypto_MODE_CLIENT_ONLY,
+    .mem = {
+        .malloc = malloc,
+        .free = free,
+    },
 };
 static OS_Crypto_Config_t cfgClient =
 {
-    .mode = OS_Crypto_MODE_RPC_CLIENT,
-    .mem = {
-        .malloc = malloc,
-        .free = free,
-    },
-};
-static OS_Crypto_Config_t cfgAuto =
-{
-    .mode = OS_Crypto_MODE_ROUTER,
+    .mode = OS_Crypto_MODE_CLIENT,
     .mem = {
         .malloc = malloc,
         .free = free,
@@ -92,14 +92,14 @@ test_OS_Crypto(
 
     switch (mode)
     {
-    case OS_Crypto_MODE_LIBRARY:
-        strcpy(desc, "OS_Crypto_MODE_LIBRARY");
+    case OS_Crypto_MODE_LIBRARY_ONLY:
+        strcpy(desc, "OS_Crypto_MODE_LIBRARY_ONLY");
         break;
-    case OS_Crypto_MODE_ROUTER:
-        strcpy(desc, "OS_Crypto_MODE_ROUTER");
+    case OS_Crypto_MODE_CLIENT:
+        strcpy(desc, "OS_Crypto_MODE_CLIENT");
         break;
-    case OS_Crypto_MODE_RPC_CLIENT:
-        strcpy(desc, "OS_Crypto_MODE_RPC_CLIENT");
+    case OS_Crypto_MODE_CLIENT_ONLY:
+        strcpy(desc, "OS_Crypto_MODE_CLIENT_ONLY");
         break;
     default:
         TEST_TRUE(1 == 0);
@@ -126,9 +126,9 @@ test_OS_Crypto_init_neg()
 
     // Set these up here as the dataport is not const, so that the configs
     // should actually work
-    cfgClient.impl.client.dataPort = SeosCryptoDataport;
-    cfgAuto.impl.router.client = cfgClient.impl.client;
-    cfgAuto.impl.router.lib = cfgLib.impl.lib;
+    cfgRemote.rpc.client.dataPort = SeosCryptoDataport;
+    cfgClient.rpc.client = cfgRemote.rpc.client;
+    cfgClient.library    = cfgLib.library;
 
     // Bad mode
     memcpy(&badCfg, &cfgLib, sizeof(OS_Crypto_Config_t));
@@ -140,11 +140,11 @@ test_OS_Crypto_init_neg()
     badCfg.mem.malloc = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
-    memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
+    memcpy(&badCfg, &cfgRemote, sizeof(OS_Crypto_Config_t));
     badCfg.mem.malloc = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
-    memcpy(&badCfg, &cfgAuto, sizeof(OS_Crypto_Config_t));
+    memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
     badCfg.mem.malloc = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
@@ -153,26 +153,26 @@ test_OS_Crypto_init_neg()
     badCfg.mem.free = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
-    memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
+    memcpy(&badCfg, &cfgRemote, sizeof(OS_Crypto_Config_t));
     badCfg.mem.free = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
-    memcpy(&badCfg, &cfgAuto, sizeof(OS_Crypto_Config_t));
+    memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
     badCfg.mem.free = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     // No RNG pointer for LIB
     memcpy(&badCfg, &cfgLib, sizeof(OS_Crypto_Config_t));
-    badCfg.impl.lib.rng.entropy = NULL;
+    badCfg.library.rng.entropy = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     // No dataport for CLIENT, ROUTER
-    memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
-    badCfg.impl.client.dataPort = NULL;
+    memcpy(&badCfg, &cfgRemote, sizeof(OS_Crypto_Config_t));
+    badCfg.rpc.client.dataPort = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
-    memcpy(&badCfg, &cfgAuto, sizeof(OS_Crypto_Config_t));
-    badCfg.impl.router.client.dataPort = NULL;
+    memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
+    badCfg.rpc.client.dataPort = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     TEST_FINISH();
@@ -202,30 +202,30 @@ int run()
 
     Debug_LOG_INFO("");
 
-    // Test LIBRARY mode
+    // Test LIBRARY_ONLY mode
     TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgLib));
     test_OS_Crypto(hCrypto);
     TEST_SUCCESS(OS_Crypto_free(hCrypto));
 
     Debug_LOG_INFO("");
 
-    cfgClient.impl.client.dataPort = SeosCryptoDataport;
+    cfgRemote.rpc.client.dataPort = SeosCryptoDataport;
 
-    // Test RPC CLIENT mode
+    // Test CLIENT_ONLY mode
     TEST_SUCCESS(CryptoRpcServer_openSession());
-    TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgClient));
+    TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgRemote));
     test_OS_Crypto(hCrypto);
     TEST_SUCCESS(OS_Crypto_free(hCrypto));
     TEST_SUCCESS(CryptoRpcServer_closeSession());
 
     Debug_LOG_INFO("");
 
-    cfgAuto.impl.router.client = cfgClient.impl.client;
-    cfgAuto.impl.router.lib = cfgLib.impl.lib;
+    cfgClient.rpc.client = cfgRemote.rpc.client;
+    cfgClient.library    = cfgLib.library;
 
-    // Test ROUTER mode
+    // Test CLIENT mode
     TEST_SUCCESS(CryptoRpcServer_openSession());
-    TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgAuto));
+    TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgClient));
     test_OS_Crypto(hCrypto);
     TEST_SUCCESS(OS_Crypto_free(hCrypto));
     TEST_SUCCESS(CryptoRpcServer_closeSession());

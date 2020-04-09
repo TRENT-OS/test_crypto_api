@@ -500,7 +500,7 @@ test_OS_CryptoAgreement(
     test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, expo);
 
     // Make all used keys NON-EXPORTABLE and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_ROUTER)
+    if (mode == OS_Crypto_MODE_CLIENT)
     {
         expo = false;
 
