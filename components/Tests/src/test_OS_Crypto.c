@@ -12,6 +12,7 @@
 #include "OS_Crypto.h"
 
 #include "TestMacros.h"
+#include "ObjectLocation.h"
 
 #include <camkes.h>
 #include <string.h>
@@ -189,6 +190,65 @@ test_OS_Crypto_free_neg()
     TEST_FINISH();
 }
 
+static void
+test_OS_Crypto_migrateLibObject_pos(
+    OS_Crypto_Handle_t hCrypto)
+{
+    static uint8_t expectedKey[24] = {
+        0x8e, 0x73, 0xb0, 0xf7, 0xda, 0x0e, 0x64, 0x52,
+        0xc8, 0x10, 0xf3, 0x2b, 0x80, 0x90, 0x79, 0xe5,
+        0x62, 0xf8, 0xea, 0xd2, 0x52, 0x2c, 0x6b, 0x7b
+    };
+    static OS_CryptoKey_Data_t keyData;
+    OS_CryptoKey_Handle_t hKey;
+    CryptoLib_Object_ptr ptr;
+
+    TEST_START();
+
+    // Let the remote side load a key into its address space
+    TEST_SUCCESS(CryptoRpcServer_loadKey(&ptr));
+
+    // Mograte the key so it can be accessed through or local API instance
+    TEST_SUCCESS(OS_Crypto_migrateLibObject(&hKey, hCrypto, ptr, false));
+    // Check that the key can now really be used by exporting it and checking it
+    // against an expected value..
+    TEST_SUCCESS(OS_CryptoKey_export(hKey, &keyData))
+    TEST_TRUE(!memcmp(keyData.data.aes.bytes, expectedKey, sizeof(expectedKey)));
+
+    TEST_SUCCESS(OS_CryptoKey_free(hKey));
+
+    TEST_FINISH();
+}
+
+static void
+test_OS_Crypto_migrateLibObject_neg(
+    OS_Crypto_Handle_t hCrypto)
+{
+    OS_CryptoKey_Handle_t hKey;
+    CryptoLib_Object_ptr ptr;
+
+    TEST_START();
+
+    // Let the remote side load a key into its address space
+    TEST_SUCCESS(CryptoRpcServer_loadKey(&ptr));
+
+    // Empty key
+    TEST_INVAL_PARAM(OS_Crypto_migrateLibObject(NULL, hCrypto, ptr, false));
+
+    // Empty ctx
+    TEST_INVAL_PARAM(OS_Crypto_migrateLibObject(&hKey, NULL, ptr, false));
+
+    // Invalid remote pointer
+    TEST_INVAL_PARAM(OS_Crypto_migrateLibObject(&hKey, hCrypto, NULL, false));
+
+    // Need to migrate it successfully, so we can free the crypto lib object
+    // through freeing the API proxy object
+    TEST_SUCCESS(OS_Crypto_migrateLibObject(&hKey, hCrypto, ptr, false));
+    TEST_SUCCESS(OS_CryptoKey_free(hKey));
+
+    TEST_FINISH();
+}
+
 // Public Functions -----------------------------------------------------------
 
 int run()
@@ -227,6 +287,8 @@ int run()
     TEST_SUCCESS(CryptoRpcServer_openSession());
     TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgClient));
     test_OS_Crypto(hCrypto);
+    test_OS_Crypto_migrateLibObject_pos(hCrypto);
+    test_OS_Crypto_migrateLibObject_neg(hCrypto);
     TEST_SUCCESS(OS_Crypto_free(hCrypto));
     TEST_SUCCESS(CryptoRpcServer_closeSession());
 

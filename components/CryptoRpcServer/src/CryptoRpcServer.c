@@ -159,7 +159,7 @@ CryptoRpcServer_loadKey(
     }
 
     // Send back only the pointer to the LIB Key object
-    *ptr = OS_Crypto_getObject(hKey);
+    *ptr = OS_Crypto_getLibObject(hKey);
 
     return SEOS_SUCCESS;
 }

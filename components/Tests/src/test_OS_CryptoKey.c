@@ -742,52 +742,6 @@ test_OS_CryptoKey_loadParams_buffer(
     TEST_FINISH();
 }
 
-static void
-test_OS_CryptoKey_migrate_pos(
-    OS_Crypto_Handle_t     hCrypto,
-    const OS_Crypto_Mode_t mode,
-    const bool             expo)
-{
-    OS_CryptoKey_Handle_t hKey;
-    CryptoLib_Object_ptr ptr;
-
-    TEST_START(mode, expo);
-
-    // Let the remote side load a key into its address space, then migrate
-    // it so it can be used through our API instance
-    TEST_SUCCESS(CryptoRpcServer_loadKey(&ptr));
-    TEST_SUCCESS(OS_Crypto_migrateObject(&hKey, hCrypto, ptr));
-
-    TEST_SUCCESS(OS_CryptoKey_free(hKey));
-
-    TEST_FINISH();
-}
-
-static void
-test_OS_CryptoKey_migrate_neg(
-    OS_Crypto_Handle_t     hCrypto,
-    const OS_Crypto_Mode_t mode,
-    const bool             expo)
-{
-    OS_CryptoKey_Handle_t hKey;
-    CryptoLib_Object_ptr ptr;
-
-    TEST_START(mode, expo);
-
-    TEST_SUCCESS(CryptoRpcServer_loadKey(&ptr));
-
-    // Empty key
-    TEST_INVAL_PARAM(OS_Crypto_migrateObject(NULL, hCrypto, ptr));
-
-    // Empty ctx
-    TEST_INVAL_PARAM(OS_Crypto_migrateObject(&hKey, NULL, ptr));
-
-    // Invalid remote pointer
-    TEST_INVAL_HANDLE(OS_Crypto_migrateObject(&hKey, hCrypto, NULL));
-
-    TEST_FINISH();
-}
-
 void test_OS_CryptoKey(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
@@ -836,15 +790,5 @@ void test_OS_CryptoKey(
         test_OS_CryptoKey_makePublic_pos(hCrypto, mode, expo);
         test_OS_CryptoKey_getParams_pos(hCrypto, mode, expo);
         test_OS_CryptoKey_loadParams_pos(hCrypto, mode, expo);
-    }
-
-    // Migration is only useful when done not locally, as we need to migrate
-    // a key created on the remote side to use it with the local API instance.
-    // NOTE: These test require the remote instance to be initialized.
-    if (mode == OS_Crypto_MODE_CLIENT ||
-        mode == OS_Crypto_MODE_CLIENT_ONLY)
-    {
-        test_OS_CryptoKey_migrate_pos(hCrypto, mode, expo);
-        test_OS_CryptoKey_migrate_neg(hCrypto, mode, expo);
     }
 }
