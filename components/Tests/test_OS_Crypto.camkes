@@ -10,7 +10,7 @@ component test_OS_Crypto {
     control;
 
     // SeosCryptoRpc Interface
-    dataport    Buf                         SeosCryptoDataport;
+    dataport    Buf                         CryptoLibDataport;
     uses        if_OS_Crypto                CryptoLibServer;
 
     // Interface to RPC component

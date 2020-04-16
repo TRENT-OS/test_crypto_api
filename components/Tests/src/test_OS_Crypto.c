@@ -127,7 +127,7 @@ test_OS_Crypto_init_neg()
 
     // Set these up here as the dataport is not const, so that the configs
     // should actually work
-    cfgRemote.rpc.client.dataPort = SeosCryptoDataport;
+    cfgRemote.rpc.client.dataPort = CryptoLibDataport;
     cfgClient.rpc.client = cfgRemote.rpc.client;
     cfgClient.library    = cfgLib.library;
 
@@ -269,7 +269,7 @@ int run()
 
     Debug_LOG_INFO("");
 
-    cfgRemote.rpc.client.dataPort = SeosCryptoDataport;
+    cfgRemote.rpc.client.dataPort = CryptoLibDataport;
 
     // Test CLIENT_ONLY mode
     TEST_SUCCESS(CryptoRpcServer_openSession());

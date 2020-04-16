@@ -105,7 +105,7 @@ CryptoRpcServer_openSession()
             .free   = my_free,
         },
         .library.rng.entropy = my_entropy,
-        .rpc.server.dataPort = SeosCryptoDataport
+        .rpc.server.dataPort = CryptoLibDataport
     };
 
     if (!PointerVector_ctor(&myObjects, 1))

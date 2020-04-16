@@ -12,7 +12,7 @@ assembly {
         component   test_OS_Crypto  unitTests;
         component   CryptoRpcServer     rpcServer;
 
-        connection seL4SharedData       shared  (from unitTests.SeosCryptoDataport,   to rpcServer.SeosCryptoDataport);
+        connection seL4SharedData       shared  (from unitTests.CryptoLibDataport,    to rpcServer.CryptoLibDataport);
         connection seL4RPCCall          call_0  (from unitTests.CryptoLibServer,      to rpcServer.CryptoLibServer);
         connection seL4RPCCall          call_1  (from unitTests.CryptoRpcServer,      to rpcServer.CryptoRpcServer);
     }
