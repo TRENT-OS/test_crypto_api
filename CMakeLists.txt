@@ -7,7 +7,6 @@ seos_use_libs(
     SEOS_LIBS_LOGGER
     SEOS_CRYPTO_WITH_RPC_CLIENT
     SEOS_CRYPTO_WITH_RPC_SERVER
-    SEOS_CRYPTO_IMPL_MBEDTLS
 )
 
 project(tests_crypto_api C)
