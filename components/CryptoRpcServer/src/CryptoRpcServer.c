@@ -46,12 +46,13 @@ my_entropy(
 }
 
 static void*
-my_malloc(
+my_calloc(
+    size_t n,
     size_t size)
 {
     void* ptr;
 
-    if ((ptr = malloc(size)) != NULL)
+    if ((ptr = calloc(n, size)) != NULL)
     {
         if (!PointerVector_pushBack(&myObjects, ptr))
         {
@@ -100,8 +101,8 @@ CryptoRpcServer_openSession()
     OS_Crypto_Config_t cfg =
     {
         .mode = OS_Crypto_MODE_SERVER,
-        .mem = {
-            .malloc = my_malloc,
+        .memory = {
+            .calloc = my_calloc,
             .free   = my_free,
         },
         .library.rng.entropy = my_entropy,

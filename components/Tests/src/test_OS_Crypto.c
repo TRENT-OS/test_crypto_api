@@ -48,27 +48,15 @@ static int entropy(
 static OS_Crypto_Config_t cfgLib =
 {
     .mode = OS_Crypto_MODE_LIBRARY_ONLY,
-    .mem = {
-        .malloc = malloc,
-        .free = free,
-    },
     .library.rng.entropy = entropy,
 };
 static OS_Crypto_Config_t cfgRemote =
 {
     .mode = OS_Crypto_MODE_CLIENT_ONLY,
-    .mem = {
-        .malloc = malloc,
-        .free = free,
-    },
 };
 static OS_Crypto_Config_t cfgClient =
 {
     .mode = OS_Crypto_MODE_CLIENT,
-    .mem = {
-        .malloc = malloc,
-        .free = free,
-    },
 };
 
 // Private Functions -----------------------------------------------------------
@@ -136,30 +124,36 @@ test_OS_Crypto_init_neg()
     badCfg.mode = 666;
     TEST_NOT_SUPP(OS_Crypto_init(&hCrypto, &badCfg));
 
-    // No malloc pointer in all modi
+    // Have only calloc but not free set in all modi
     memcpy(&badCfg, &cfgLib, sizeof(OS_Crypto_Config_t));
-    badCfg.mem.malloc = NULL;
+    badCfg.memory.calloc = NULL;
+    badCfg.memory.free = free;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     memcpy(&badCfg, &cfgRemote, sizeof(OS_Crypto_Config_t));
-    badCfg.mem.malloc = NULL;
+    badCfg.memory.calloc = NULL;
+    badCfg.memory.free = free;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
-    badCfg.mem.malloc = NULL;
+    badCfg.memory.calloc = NULL;
+    badCfg.memory.free = free;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
-    // No free pointer in all modi
+    // Have only free but not calloc set in all modi
     memcpy(&badCfg, &cfgLib, sizeof(OS_Crypto_Config_t));
-    badCfg.mem.free = NULL;
+    badCfg.memory.calloc = calloc;
+    badCfg.memory.free = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     memcpy(&badCfg, &cfgRemote, sizeof(OS_Crypto_Config_t));
-    badCfg.mem.free = NULL;
+    badCfg.memory.calloc = calloc;
+    badCfg.memory.free = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
-    badCfg.mem.free = NULL;
+    badCfg.memory.calloc = calloc;
+    badCfg.memory.free = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     // No RNG pointer for LIB
