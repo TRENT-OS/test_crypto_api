@@ -6,16 +6,16 @@
 
 #include "OS_Crypto.h"
 
-seos_err_t
+OS_Error_t
 CryptoRpcServer_openSession();
 
 int
 CryptoRpcServer_hasObject(
     CryptoLib_Object_ptr ptr);
 
-seos_err_t
+OS_Error_t
 CryptoRpcServer_loadKey(
     CryptoLib_Object_ptr* ptr);
 
-seos_err_t
+OS_Error_t
 CryptoRpcServer_closeSession();

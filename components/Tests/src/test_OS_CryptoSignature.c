@@ -803,7 +803,7 @@ static OS_CryptoKey_Data_t* testKeyDataList[] =
 
 // -----------------------------------------------------------------------------
 
-static seos_err_t
+static OS_Error_t
 do_RSA_verify(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
@@ -814,7 +814,7 @@ do_RSA_verify(
     const ByteVector*      hash,
     const ByteVector*      sig)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoSignature_Handle_t hSig;
 
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
@@ -880,7 +880,7 @@ test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 do_RSA_sign(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
@@ -891,7 +891,7 @@ do_RSA_sign(
     const ByteVector*      hash,
     const ByteVector*      sig)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoSignature_Handle_t hSig;
     uint8_t buf[512];
     size_t bufLen = sizeof(buf);
@@ -936,7 +936,7 @@ test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 do_RSA_rnd(
     OS_Crypto_Handle_t       hCrypto,
     const OS_Crypto_Mode_t   mode,
@@ -946,7 +946,7 @@ do_RSA_rnd(
     OS_CryptoDigest_Alg_t    hashType,
     size_t                   hashBytes)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoSignature_Handle_t hSig;
     OS_CryptoKey_Handle_t hPrvKey, hPubKey;
     uint8_t hash[256], sig[512];

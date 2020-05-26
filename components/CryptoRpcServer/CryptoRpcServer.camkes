@@ -8,15 +8,15 @@ procedure CryptoRpcServerInf {
     include     "OS_Crypto.h";
     include     "CryptoRpcServer.h";
 
-    seos_err_t
+    OS_Error_t
     openSession(
     );
 
-    seos_err_t
+    OS_Error_t
     closeSession(
     );
 
-    seos_err_t
+    OS_Error_t
     loadKey(
         out CryptoLib_Object_ptr ptr
     );

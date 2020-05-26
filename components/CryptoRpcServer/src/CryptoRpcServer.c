@@ -94,10 +94,10 @@ CryptoLibServer_getCrypto(
 
 // Public Functions -----------------------------------------------------------
 
-seos_err_t
+OS_Error_t
 CryptoRpcServer_openSession()
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_Crypto_Config_t cfg =
     {
         .mode = OS_Crypto_MODE_SERVER,
@@ -133,11 +133,11 @@ CryptoRpcServer_hasObject(
     return (findObject(ptr) != -1) ? 1 : 0;
 }
 
-seos_err_t
+OS_Error_t
 CryptoRpcServer_loadKey(
     CryptoLib_Object_ptr* ptr)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoKey_Handle_t hKey;
     static OS_CryptoKey_Data_t aesKey =
     {
@@ -165,10 +165,10 @@ CryptoRpcServer_loadKey(
     return SEOS_SUCCESS;
 }
 
-seos_err_t
+OS_Error_t
 CryptoRpcServer_closeSession()
 {
-    seos_err_t err;
+    OS_Error_t err;
 
     if ((err = OS_Crypto_free(hCrypto)) != SEOS_SUCCESS)
     {

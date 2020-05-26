@@ -235,7 +235,7 @@ static OS_CryptoKey_Data_t* testKeyDataList[] =
 
 // -----------------------------------------------------------------------------
 
-static seos_err_t
+static OS_Error_t
 do_AES_ECB(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
@@ -353,7 +353,7 @@ test_OS_CryptoCipher_do_AES_ECB_rnd(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 do_AES_CBC(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
@@ -476,7 +476,7 @@ test_OS_CryptoCipher_do_AES_CBC_rnd(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 do_AES_GCM(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
@@ -489,7 +489,7 @@ do_AES_GCM(
     const ByteVector*      dout,
     const ByteVector*      tag)
 {
-    seos_err_t ret;
+    OS_Error_t ret;
     OS_CryptoCipher_Handle_t hCipher;
     unsigned char buf[128];
     size_t n = sizeof(buf);

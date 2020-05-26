@@ -123,12 +123,12 @@ static const macTestVector sha256Vectors[NUM_SHA256_TESTS] =
 
 // -----------------------------------------------------------------------------
 
-static seos_err_t
+static OS_Error_t
 do_mac(
     OS_CryptoMac_Handle_t hMac,
     const macTestVector*  vec)
 {
-    seos_err_t err;
+    OS_Error_t err;
     char mac[64];
     size_t macSize;
 

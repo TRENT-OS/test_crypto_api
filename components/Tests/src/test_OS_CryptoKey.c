@@ -12,14 +12,14 @@
 
 // -----------------------------------------------------------------------------
 
-static seos_err_t
+static OS_Error_t
 do_import(
     OS_Crypto_Handle_t         hCrypto,
     const OS_Crypto_Mode_t     mode,
     const bool                 expo,
     const OS_CryptoKey_Data_t* data)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoKey_Handle_t hKey;
 
     if ((err = OS_CryptoKey_import(&hKey, hCrypto, data)) != SEOS_SUCCESS)
@@ -102,14 +102,14 @@ test_OS_CryptoKey_import_neg(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 do_export(
     OS_Crypto_Handle_t         hCrypto,
     const OS_Crypto_Mode_t     mode,
     const bool                 expo,
     const OS_CryptoKey_Data_t* data)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_Data_t expData;
 
@@ -222,14 +222,14 @@ test_OS_CryptoKey_export_neg(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 do_generate(
     OS_Crypto_Handle_t         hCrypto,
     const OS_Crypto_Mode_t     mode,
     const bool                 expo,
     const OS_CryptoKey_Spec_t* spec)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_Data_t expData;
 
@@ -332,14 +332,14 @@ test_OS_CryptoKey_generate_neg(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 do_makePublic(
     OS_Crypto_Handle_t         hCrypto,
     const OS_Crypto_Mode_t     mode,
     const bool                 expo,
     const OS_CryptoKey_Spec_t* spec)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoKey_Handle_t hPrvKey, hPubKey;
     OS_CryptoKey_Data_t expData;
 

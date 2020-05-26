@@ -105,7 +105,7 @@ test_OS_CryptoAgreement_init_neg(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 agreeOnKey(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
@@ -117,7 +117,7 @@ agreeOnKey(
     size_t*                bufSize)
 {
     OS_CryptoAgreement_Handle_t hAgree;
-    seos_err_t err;
+    OS_Error_t err;
 
     memset(buf, 0, *bufSize);
 

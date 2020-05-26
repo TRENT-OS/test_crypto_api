@@ -128,12 +128,12 @@ static const TestVector sha256Vectors[NUM_SHA256_TESTS] =
 
 // -----------------------------------------------------------------------------
 
-static seos_err_t
+static OS_Error_t
 do_hash(
     OS_CryptoDigest_Handle_t hDigest,
     const TestVector*        vec)
 {
-    seos_err_t err;
+    OS_Error_t err;
     char digest[64];
     size_t digestSize;
 
@@ -200,14 +200,14 @@ test_OS_CryptoDigest_do_SHA256(
     TEST_FINISH();
 }
 
-static seos_err_t
+static OS_Error_t
 do_clone(
     OS_Crypto_Handle_t          hCrypto,
     const OS_Crypto_Mode_t      mode,
     const OS_CryptoDigest_Alg_t algo,
     const TestVector*           vec)
 {
-    seos_err_t err;
+    OS_Error_t err;
     OS_CryptoDigest_Handle_t hDst, hSrc;
     char srcDigest[64], dstDigest[64];
     size_t digestSize;
