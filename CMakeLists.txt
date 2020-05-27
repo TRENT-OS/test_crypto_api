@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.7.2)
 seos_set_config_file(config.h)
 
 seos_use_libs(
-    SEOS_LIBS
-    SEOS_LIBS_LOGGER
-    SEOS_CRYPTO_WITH_RPC_CLIENT
-    SEOS_CRYPTO_WITH_RPC_SERVER
+    OS_LIBS
+    OS_LIBS_LOGGER
+    OS_CRYPTO_WITH_RPC_CLIENT
+    OS_CRYPTO_WITH_RPC_SERVER
 )
 
 project(tests_crypto_api C)
