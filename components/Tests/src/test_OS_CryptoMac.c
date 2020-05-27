@@ -136,7 +136,7 @@ do_mac(
     TEST_SUCCESS(OS_CryptoMac_process(hMac, vec->msg.bytes, vec->msg.len));
 
     macSize = sizeof(mac);
-    if ((err = OS_CryptoMac_finalize(hMac, mac, &macSize)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoMac_finalize(hMac, mac, &macSize)) != OS_SUCCESS)
     {
         return err;
     }
@@ -144,7 +144,7 @@ do_mac(
     TEST_TRUE(macSize == vec->mac.len);
     TEST_TRUE(!memcmp(mac, vec->mac.bytes, vec->mac.len));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void

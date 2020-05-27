@@ -129,14 +129,14 @@ agreeOnKey(
     // We have received a hPubKey key (e.g., from a server) and use this to derive a secret
     // key of a given length; for now, don't pass a RNG
     if ((err = OS_CryptoAgreement_agree(hAgree, hPubKey, buf,
-                                        bufSize)) != SEOS_SUCCESS)
+                                        bufSize)) != OS_SUCCESS)
     {
         return err;
     }
 
     TEST_SUCCESS(OS_CryptoAgreement_free(hAgree));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void

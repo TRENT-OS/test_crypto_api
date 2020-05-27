@@ -142,14 +142,14 @@ do_hash(
 
     digestSize = sizeof(digest);
     if ((err = OS_CryptoDigest_finalize(hDigest, digest,
-                                        &digestSize)) != SEOS_SUCCESS)
+                                        &digestSize)) != OS_SUCCESS)
     {
         return err;
     }
     TEST_TRUE(digestSize == vec->digest.len);
     TEST_TRUE(!memcmp(digest, vec->digest.bytes, vec->digest.len));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
@@ -221,7 +221,7 @@ do_clone(
     // Create new digest and clone the state of the other one
     TEST_SUCCESS(OS_CryptoDigest_init(&hDst, hCrypto, algo));
     TEST_LOCACTION(mode, hDst);
-    if ((err = OS_CryptoDigest_clone(hDst, hSrc)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoDigest_clone(hDst, hSrc)) != OS_SUCCESS)
     {
         return err;
     }
@@ -238,7 +238,7 @@ do_clone(
     TEST_SUCCESS(OS_CryptoDigest_free(hDst));
     TEST_SUCCESS(OS_CryptoDigest_free(hSrc));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void

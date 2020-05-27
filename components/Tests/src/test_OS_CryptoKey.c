@@ -22,7 +22,7 @@ do_import(
     OS_Error_t err;
     OS_CryptoKey_Handle_t hKey;
 
-    if ((err = OS_CryptoKey_import(&hKey, hCrypto, data)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoKey_import(&hKey, hCrypto, data)) != OS_SUCCESS)
     {
         return err;
     }
@@ -30,7 +30,7 @@ do_import(
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
@@ -117,7 +117,7 @@ do_export(
     TEST_LOCACTION_EXP(mode, expo, hKey);
 
     memset(&expData, 0, sizeof(OS_CryptoKey_Data_t));
-    if ((err = OS_CryptoKey_export(hKey, &expData)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoKey_export(hKey, &expData)) != OS_SUCCESS)
     {
         return err;
     }
@@ -125,7 +125,7 @@ do_export(
     TEST_TRUE(!memcmp(data, &expData, sizeof(OS_CryptoKey_Data_t)));
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
@@ -233,7 +233,7 @@ do_generate(
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_Data_t expData;
 
-    if ((err = OS_CryptoKey_generate(&hKey, hCrypto, spec)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoKey_generate(&hKey, hCrypto, spec)) != OS_SUCCESS)
     {
         return err;
     }
@@ -266,7 +266,7 @@ do_generate(
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
@@ -346,7 +346,7 @@ do_makePublic(
     TEST_SUCCESS(OS_CryptoKey_generate(&hPrvKey, hCrypto, spec));
     TEST_LOCACTION_EXP(mode, expo, hPrvKey);
     if ((err = OS_CryptoKey_makePublic(&hPubKey, hCrypto, hPrvKey,
-                                       &spec->key.attribs)) != SEOS_SUCCESS)
+                                       &spec->key.attribs)) != OS_SUCCESS)
     {
         return err;
     }
@@ -383,7 +383,7 @@ do_makePublic(
     TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 
 }
 static void

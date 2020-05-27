@@ -111,15 +111,15 @@ CryptoRpcServer_openSession()
 
     if (!PointerVector_ctor(&myObjects, 1))
     {
-        return SEOS_ERROR_INSUFFICIENT_SPACE;
+        return OS_ERROR_INSUFFICIENT_SPACE;
     }
-    if ((err = OS_Crypto_init(&hCrypto, &cfg)) != SEOS_SUCCESS)
+    if ((err = OS_Crypto_init(&hCrypto, &cfg)) != OS_SUCCESS)
     {
         Debug_LOG_TRACE("OS_Crypto_init failed with %d", err);
         goto err;
     }
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 
 err:
     PointerVector_dtor(&myObjects);
@@ -154,7 +154,7 @@ CryptoRpcServer_loadKey(
     };
 
     // Import key data into the Crypto API
-    if ((err = OS_CryptoKey_import(&hKey, hCrypto, &aesKey)) != SEOS_SUCCESS)
+    if ((err = OS_CryptoKey_import(&hKey, hCrypto, &aesKey)) != OS_SUCCESS)
     {
         return err;
     }
@@ -162,7 +162,7 @@ CryptoRpcServer_loadKey(
     // Send back only the pointer to the LIB Key object
     *ptr = OS_Crypto_getLibObject(hKey);
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 OS_Error_t
@@ -170,7 +170,7 @@ CryptoRpcServer_closeSession()
 {
     OS_Error_t err;
 
-    if ((err = OS_Crypto_free(hCrypto)) != SEOS_SUCCESS)
+    if ((err = OS_Crypto_free(hCrypto)) != OS_SUCCESS)
     {
         Debug_LOG_TRACE("OS_Crypto_free failed with %d", err);
     }

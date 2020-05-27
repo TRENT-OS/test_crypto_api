@@ -257,7 +257,7 @@ do_AES_ECB(
     TEST_TRUE(!memcmp(buf, dout->bytes, n));
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
@@ -377,7 +377,7 @@ do_AES_CBC(
     TEST_TRUE(!memcmp(buf, dout->bytes, n));
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
@@ -519,7 +519,7 @@ do_AES_GCM(
         TEST_SUCCESS(OS_CryptoCipher_finalize(hCipher, buf, &n));
         TEST_TRUE(n == tag->len);
         TEST_TRUE(!memcmp(buf, tag->bytes, n));
-        ret = SEOS_SUCCESS;
+        ret = OS_SUCCESS;
     }
     else
     {
@@ -1056,14 +1056,14 @@ test_OS_CryptoCipher_init_buffer(
     TEST_LOCACTION_EXP(mode, expo, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
-    // Should fail with SEOS_ERROR_INVALID_PARAMETER beacause it is way too large
+    // Should fail with OS_ERROR_INVALID_PARAMETER beacause it is way too large
     // for any hCipher
     ivLen = OS_Crypto_SIZE_DATAPORT;
     TEST_INVAL_PARAM(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                           OS_CryptoCipher_ALG_AES_CBC_DEC,
                                           ivBuf, ivLen));
 
-    // Should fail with SEOS_ERROR_INSUFFICIENT_SPACE because it is too large for
+    // Should fail with OS_ERROR_INSUFFICIENT_SPACE because it is too large for
     // the internal dataports
     ivLen = OS_Crypto_SIZE_DATAPORT + 1;
     TEST_INSUFF_SPACE(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,

@@ -829,7 +829,7 @@ do_RSA_verify(
 
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
@@ -909,7 +909,7 @@ do_RSA_sign(
     TEST_TRUE(!memcmp(sig->bytes, buf, bufLen));
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
@@ -977,7 +977,7 @@ do_RSA_rnd(
 
     // Verify
     if ((err = OS_CryptoSignature_verify(hSig, hash, hashBytes, sig,
-                                         sigLen)) != SEOS_SUCCESS)
+                                         sigLen)) != OS_SUCCESS)
     {
         return err;
     }
@@ -986,7 +986,7 @@ do_RSA_rnd(
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
     TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
 
-    return SEOS_SUCCESS;
+    return OS_SUCCESS;
 }
 
 static void
