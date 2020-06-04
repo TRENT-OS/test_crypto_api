@@ -219,12 +219,11 @@ do_clone(
                                          vec->msg.len));
 
     // Create new digest and clone the state of the other one
-    TEST_SUCCESS(OS_CryptoDigest_init(&hDst, hCrypto, algo));
-    TEST_LOCACTION(mode, hDst);
-    if ((err = OS_CryptoDigest_clone(hDst, hSrc)) != OS_SUCCESS)
+    if ((err = OS_CryptoDigest_clone(&hDst, hCrypto, hSrc)) != OS_SUCCESS)
     {
         return err;
     }
+    TEST_LOCACTION(mode, hDst);
 
     // Finalize both objects and check if they match
     digestSize = sizeof(srcDigest);
@@ -272,24 +271,16 @@ test_OS_CryptoDigest_clone_neg(
     TEST_LOCACTION(mode, hSrc);
     TEST_SUCCESS(OS_CryptoDigest_process(hSrc, vec->msg.bytes,
                                          vec->msg.len));
-    TEST_SUCCESS(OS_CryptoDigest_init(&hDst, hCrypto,
-                                      OS_CryptoDigest_ALG_MD5));
-    TEST_LOCACTION(mode, hDst);
 
     // Empty dst handle
-    TEST_INVAL_PARAM(OS_CryptoDigest_clone(NULL, hSrc));
+    TEST_INVAL_PARAM(OS_CryptoDigest_clone(NULL, hCrypto, hSrc));
+
+    // Empty crypto handle
+    TEST_INVAL_PARAM(OS_CryptoDigest_clone(&hDst, NULL, hSrc));
 
     // Empty src handle
-    TEST_INVAL_HANDLE(OS_CryptoDigest_clone(hDst, NULL));
+    TEST_INVAL_HANDLE(OS_CryptoDigest_clone(&hDst, hCrypto, NULL));
 
-    // Clone into wrong type of digest
-    TEST_SUCCESS(OS_CryptoDigest_free(hDst));
-    TEST_SUCCESS(OS_CryptoDigest_init(&hDst, hCrypto,
-                                      OS_CryptoDigest_ALG_SHA256));
-    TEST_LOCACTION(mode, hDst);
-    TEST_INVAL_PARAM(OS_CryptoDigest_clone(hDst, hSrc));
-
-    TEST_SUCCESS(OS_CryptoDigest_free(hDst));
     TEST_SUCCESS(OS_CryptoDigest_free(hSrc));
 
     TEST_FINISH();
