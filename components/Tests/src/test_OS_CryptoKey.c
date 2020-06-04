@@ -50,6 +50,9 @@ test_OS_CryptoKey_import_pos(
     // Import 256-bit AES key
     TEST_SUCCESS(do_import(hCrypto, mode, expo, &aes256Data));
 
+    // Import MAC key
+    TEST_SUCCESS(do_import(hCrypto, mode, expo, &macData));
+
     // Import 1024-bit RSA pubkey
     TEST_SUCCESS(do_import(hCrypto, mode, expo, &rsa1024PubData));
 
@@ -144,6 +147,9 @@ test_OS_CryptoKey_export_pos(
 
     // Export 256-bit AES key
     TEST_SUCCESS(do_export(hCrypto, mode, expo, &aes256Data));
+
+    // Export 256-bit AES key
+    TEST_SUCCESS(do_export(hCrypto, mode, expo, &macData));
 
     // Export 1024-bit RSA pubkey
     TEST_SUCCESS(do_export(hCrypto, mode, expo, &rsa1024PubData));
@@ -285,6 +291,9 @@ test_OS_CryptoKey_generate_pos(
 
     // Generate 256-bit AES key
     TEST_SUCCESS(do_generate(hCrypto, mode, expo, &aes256Spec));
+
+    // Generate 256-bit AES key
+    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &macSpec));
 
     // Generate 64-bit DH privkey from bit spec
     TEST_SUCCESS(do_generate(hCrypto, mode, expo, &dh64bSpec));

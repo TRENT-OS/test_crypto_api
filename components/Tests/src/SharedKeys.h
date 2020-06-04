@@ -214,9 +214,19 @@ static OS_CryptoKey_Data_t aes120Data =
         .len = 15
     }
 };
+static OS_CryptoKey_Data_t macData =
+{
+    .type = OS_CryptoKey_TYPE_MAC,
+    .attribs.exportable = true,
+    .data.mac = {
+        .bytes = "0123456789abcde",
+        .len = 15
+    }
+};
 
 static OS_CryptoKey_Data_t* keyDataList[] =
 {
+    &macData,
     &aes120Data,
     &aes256Data,
     &aes192Data,
@@ -268,6 +278,15 @@ static OS_CryptoKey_Spec_t aes120Spec =
         .type = OS_CryptoKey_TYPE_AES,
         .attribs.exportable = true,
         .params.bits = 120
+    }
+};
+static OS_CryptoKey_Spec_t macSpec =
+{
+    .type = OS_CryptoKey_SPECTYPE_BITS,
+    .key = {
+        .type = OS_CryptoKey_TYPE_MAC,
+        .attribs.exportable = true,
+        .params.bits = 4096
     }
 };
 static OS_CryptoKey_Spec_t dh64bSpec =
@@ -343,6 +362,7 @@ static OS_CryptoKey_Spec_t* keySpecList[] =
     &aes192Spec,
     &aes256Spec,
     &aes120Spec,
+    &macSpec,
     &dh64bSpec,
     &dh64pSpec,
     &dh101pSpec,
