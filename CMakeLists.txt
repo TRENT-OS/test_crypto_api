@@ -27,8 +27,8 @@ DeclareCAmkESComponent(test_OS_Crypto
     C_FLAGS
         -Wall -Werror
     LIBS
-        seos_core_api
-        seos_crypto_with_rpc_client
+        os_core_api
+        os_crypto_with_rpc_client
 )
 
 DeclareCAmkESComponent(CryptoRpcServer
@@ -40,9 +40,9 @@ DeclareCAmkESComponent(CryptoRpcServer
     C_FLAGS
         -Wall -Werror
     LIBS
-        seos_core_api
-        seos_libs
-        seos_crypto_with_rpc_server
+        os_core_api
+        os_libs
+        os_crypto_with_rpc_server
 )
 
 DeclareCAmkESRootserver(main.camkes)
