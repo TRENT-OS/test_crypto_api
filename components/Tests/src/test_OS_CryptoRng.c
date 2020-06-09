@@ -88,18 +88,18 @@ test_OS_CryptoRng_reSeed_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    static unsigned char seedBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char seedBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t seedLen;
 
     TEST_START(mode);
 
     // Should go through, but will fail with aborted as RNG can only accept
     // limited amount of inputs per reseed
-    seedLen = OS_Crypto_SIZE_DATAPORT;
+    seedLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_ABORTED(OS_CryptoRng_reseed(hCrypto, seedBuf, seedLen));
 
     // Should fail as input is too big
-    seedLen = OS_Crypto_SIZE_DATAPORT + 1;
+    seedLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoRng_reseed(hCrypto, seedBuf, seedLen));
 
     TEST_FINISH();
@@ -110,18 +110,18 @@ test_OS_CryptoRng_getBytes_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    static unsigned char rngBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char rngBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t rngLen;
 
     TEST_START(mode);
 
     // Should go through, but will fail with aborted as RNG can only provide a
     // limited amount of bytes per call
-    rngLen = OS_Crypto_SIZE_DATAPORT;
+    rngLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_ABORTED(OS_CryptoRng_getBytes(hCrypto, 0, rngBuf, rngLen));
 
     // Should fail as output is too big
-    rngLen = OS_Crypto_SIZE_DATAPORT + 1;
+    rngLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoRng_getBytes(hCrypto, 0, rngBuf, rngLen));
 
     TEST_FINISH();

@@ -690,7 +690,7 @@ test_OS_CryptoKey_getParams_buffer(
     const bool             expo)
 {
     OS_CryptoKey_Handle_t hKey;
-    static unsigned char paramBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char paramBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t paramLen;
 
     TEST_START(mode, expo);
@@ -699,7 +699,7 @@ test_OS_CryptoKey_getParams_buffer(
     TEST_LOCACTION_EXP(mode, expo, hKey);
 
     // Should be OK and give the correct length
-    paramLen = OS_Crypto_SIZE_DATAPORT;
+    paramLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoKey_getParams(hKey, paramBuf, &paramLen));
     TEST_TRUE(paramLen == sizeof(OS_CryptoKey_DhParams_t));
 
@@ -709,7 +709,7 @@ test_OS_CryptoKey_getParams_buffer(
     TEST_TRUE(paramLen == sizeof(OS_CryptoKey_DhParams_t));
 
     // Should fail due buffer being too big
-    paramLen = OS_Crypto_SIZE_DATAPORT + 1;
+    paramLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoKey_getParams(hKey, paramBuf, &paramLen));
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
@@ -723,13 +723,13 @@ test_OS_CryptoKey_loadParams_buffer(
     const OS_Crypto_Mode_t mode,
     const bool             expo)
 {
-    static unsigned char paramBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char paramBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t paramLen;
 
     TEST_START(mode, expo);
 
     // Should be OK
-    paramLen = OS_Crypto_SIZE_DATAPORT;
+    paramLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoKey_loadParams(hCrypto,
                                          OS_CryptoKey_PARAM_ECC_SECP192R1,
                                          paramBuf, &paramLen));
@@ -743,7 +743,7 @@ test_OS_CryptoKey_loadParams_buffer(
     TEST_TRUE(paramLen == sizeof(OS_CryptoKey_EccParams_t));
 
     // Should fail because buffer is too big
-    paramLen = OS_Crypto_SIZE_DATAPORT + 1;
+    paramLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoKey_loadParams(hCrypto,
                                               OS_CryptoKey_PARAM_ECC_SECP192R1,
                                               paramBuf, &paramLen));

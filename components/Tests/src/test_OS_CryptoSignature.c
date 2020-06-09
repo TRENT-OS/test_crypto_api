@@ -10,6 +10,8 @@
 
 #include <string.h>
 
+// -----------------------------------------------------------------------------
+
 #define MAX_VECTOR_SIZE 2048
 typedef struct
 {
@@ -1302,8 +1304,8 @@ test_OS_CryptoSignature_sign_buffer(
 {
     OS_CryptoKey_Handle_t hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
-    static unsigned int hashBuf[OS_Crypto_SIZE_DATAPORT + 1],
-                        sigBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned int hashBuf[OS_DATAPORT_DEFAULT_SIZE + 1],
+                        sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
     TEST_START(mode, expo);
@@ -1315,20 +1317,20 @@ test_OS_CryptoSignature_sign_buffer(
     TEST_LOCACTION_EXP(mode, expo, hSig);
 
     // Should go through but then return ABORTED because crypto fails
-    hashLen = OS_Crypto_SIZE_DATAPORT;
-    sigLen = OS_Crypto_SIZE_DATAPORT;
+    hashLen = OS_DATAPORT_DEFAULT_SIZE;
+    sigLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_ABORTED(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, sigBuf,
                                          &sigLen));
 
     // Should fail because input is too long
-    hashLen = OS_Crypto_SIZE_DATAPORT + 1;
-    sigLen = OS_Crypto_SIZE_DATAPORT;
+    hashLen = OS_DATAPORT_DEFAULT_SIZE + 1;
+    sigLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_INSUFF_SPACE(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, sigBuf,
                                               &sigLen));
 
     // Should fail because output is too long
-    hashLen = OS_Crypto_SIZE_DATAPORT;
-    sigLen = OS_Crypto_SIZE_DATAPORT + 1;
+    hashLen = OS_DATAPORT_DEFAULT_SIZE;
+    sigLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, sigBuf,
                                               &sigLen));
 
@@ -1355,8 +1357,8 @@ test_OS_CryptoSignature_verify_buffer(
 {
     OS_CryptoKey_Handle_t hPubKey;
     OS_CryptoSignature_Handle_t hSig;
-    static unsigned int hashBuf[OS_Crypto_SIZE_DATAPORT + 1],
-                        sigBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned int hashBuf[OS_DATAPORT_DEFAULT_SIZE + 1],
+                        sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
     TEST_START(mode, expo);
@@ -1369,13 +1371,13 @@ test_OS_CryptoSignature_verify_buffer(
 
     // Should go through but fail with ABORTED because crypto fails
     sigLen = (rsa1024PrvData.data.rsa.prv.pLen + rsa1024PrvData.data.rsa.prv.qLen);
-    hashLen = OS_Crypto_SIZE_DATAPORT - sigLen;
+    hashLen = OS_DATAPORT_DEFAULT_SIZE - sigLen;
     TEST_ABORTED(OS_CryptoSignature_verify(hSig, hashBuf, hashLen, sigBuf,
                                            sigLen));
 
     // Should fail because the total of both is too big for internal buffer
     hashLen = 16;
-    sigLen = OS_Crypto_SIZE_DATAPORT;
+    sigLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_INSUFF_SPACE(OS_CryptoSignature_verify(hSig, hashBuf, hashLen, sigBuf,
                                                 sigLen));
 

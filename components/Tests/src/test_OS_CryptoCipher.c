@@ -10,6 +10,8 @@
 
 #include <string.h>
 
+// -----------------------------------------------------------------------------
+
 #define MAX_VECTOR_SIZE 256
 typedef struct
 {
@@ -1041,7 +1043,7 @@ test_OS_CryptoCipher_init_buffer(
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
-    static unsigned char ivBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char ivBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t ivLen;
 
     TEST_START(mode, expo);
@@ -1058,14 +1060,14 @@ test_OS_CryptoCipher_init_buffer(
 
     // Should fail with OS_ERROR_INVALID_PARAMETER beacause it is way too large
     // for any hCipher
-    ivLen = OS_Crypto_SIZE_DATAPORT;
+    ivLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_INVAL_PARAM(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                           OS_CryptoCipher_ALG_AES_CBC_DEC,
                                           ivBuf, ivLen));
 
     // Should fail with OS_ERROR_INSUFFICIENT_SPACE because it is too large for
     // the internal dataports
-    ivLen = OS_Crypto_SIZE_DATAPORT + 1;
+    ivLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                            OS_CryptoCipher_ALG_AES_CBC_DEC,
                                            ivBuf, ivLen));
@@ -1083,7 +1085,7 @@ test_OS_CryptoCipher_start_buffer(
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
-    static unsigned char ivBuf[16], inputBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char ivBuf[16], inputBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen;
 
     TEST_START(mode, expo);
@@ -1095,11 +1097,11 @@ test_OS_CryptoCipher_start_buffer(
     TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // Should be OK
-    inLen = OS_Crypto_SIZE_DATAPORT;
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoCipher_start(hCipher, inputBuf, inLen));
 
     // Should fail because input is too big
-    inLen = OS_Crypto_SIZE_DATAPORT + 1;
+    inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoCipher_start(hCipher, inputBuf, inLen));
 
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
@@ -1115,8 +1117,8 @@ test_OS_CryptoCipher_process_buffer(
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
-    static unsigned char inBuf[OS_Crypto_SIZE_DATAPORT + 1],
-                         outBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE + 1],
+                         outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
     TEST_START(mode, expo);
@@ -1128,26 +1130,26 @@ test_OS_CryptoCipher_process_buffer(
     TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // This should go OK
-    inLen = outLen = OS_Crypto_SIZE_DATAPORT;
+    inLen = outLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
                                          &outLen));
     TEST_TRUE(inLen == outLen);
 
     // This should fail as input is too big
-    inLen = OS_Crypto_SIZE_DATAPORT + 1;
-    outLen = OS_Crypto_SIZE_DATAPORT;
+    inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
+    outLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_INSUFF_SPACE(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
                                               &outLen));
 
     // This should fail as output is too big
-    inLen = OS_Crypto_SIZE_DATAPORT;
-    outLen = OS_Crypto_SIZE_DATAPORT + 1;
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
+    outLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
                                               &outLen));
 
     // This should fail in the implementation file, but should give us the expected
     // (= minimum) output buffer size
-    inLen = OS_Crypto_SIZE_DATAPORT;
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
     outLen = 10;
     TEST_TOO_SMALL(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
                                            &outLen));
@@ -1184,7 +1186,7 @@ test_OS_CryptoCipher_finalize_buffer(
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
     unsigned char inBuf[16], outBuf[16], iv[12];
-    static unsigned char tagBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char tagBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t tagLen;
 
     TEST_START(mode, expo);
@@ -1200,7 +1202,7 @@ test_OS_CryptoCipher_finalize_buffer(
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, inBuf, 16, outBuf, &tagLen));
 
     // Should work fine and give the written size
-    tagLen = OS_Crypto_SIZE_DATAPORT;
+    tagLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoCipher_finalize(hCipher, tagBuf, &tagLen));
     TEST_TRUE(OS_CryptoCipher_SIZE_AES_GCM_TAG_MAX == tagLen);
 
@@ -1215,7 +1217,7 @@ test_OS_CryptoCipher_finalize_buffer(
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, inBuf, 16, outBuf, &tagLen));
 
     // Should fail due to limited internal buffers
-    tagLen = OS_Crypto_SIZE_DATAPORT + 1;
+    tagLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoCipher_finalize(hCipher, tagBuf, &tagLen));
 
     // Should fail (tags bust be at least 4 bytes) but give the minimum size

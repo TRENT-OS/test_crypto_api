@@ -10,6 +10,8 @@
 
 #include <string.h>
 
+// -----------------------------------------------------------------------------
+
 // From mbedtls test suite; has very small keylength, do not use for anything
 // other than testing!!
 static const unsigned char dhSharedResult[] =
@@ -22,7 +24,11 @@ static const unsigned char ecdhSharedResult[] =
     0x2f, 0xef, 0x8e, 0x9e, 0xce, 0x7d, 0xce, 0x03, 0x81, 0x24, 0x64, 0xd0, 0x4b, 0x94, 0x42, 0xde
 };
 
+// -----------------------------------------------------------------------------
+
 #define NUM_RAND_ITERATIONS 5
+
+// -----------------------------------------------------------------------------
 
 static void
 test_OS_CryptoAgreement_init_pos(
@@ -401,7 +407,7 @@ test_OS_CryptoAgreement_agree_buffer(
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoAgreement_Handle_t hAgree;
-    static unsigned char sharedBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char sharedBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t sharedLen;
 
     TEST_START(mode, expo);
@@ -416,7 +422,7 @@ test_OS_CryptoAgreement_agree_buffer(
     TEST_LOCACTION_EXP(mode, expo, hAgree);
 
     // Should go through and get the resulting agreement size
-    sharedLen = OS_Crypto_SIZE_DATAPORT;
+    sharedLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoAgreement_agree(hAgree, hPubKey, sharedBuf,
                                           &sharedLen));
     TEST_TRUE(sharedLen == dh101PubData.data.dh.pub.params.pLen);
@@ -428,7 +434,7 @@ test_OS_CryptoAgreement_agree_buffer(
     TEST_TRUE(sharedLen == dh101PubData.data.dh.pub.params.pLen);
 
     // Should fail because output buffer is too big
-    sharedLen = OS_Crypto_SIZE_DATAPORT + 1;
+    sharedLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoAgreement_agree(hAgree, hPubKey, sharedBuf,
                                                &sharedLen));
 

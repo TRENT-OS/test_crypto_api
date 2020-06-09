@@ -53,10 +53,13 @@ static OS_Crypto_Config_t cfgLib =
 static OS_Crypto_Config_t cfgRemote =
 {
     .mode = OS_Crypto_MODE_CLIENT_ONLY,
+    .dataport = OS_DATAPORT_ASSIGN(CryptoLibDataport)
 };
 static OS_Crypto_Config_t cfgClient =
 {
     .mode = OS_Crypto_MODE_CLIENT,
+    .dataport = OS_DATAPORT_ASSIGN(CryptoLibDataport),
+    .library.rng.entropy = entropy
 };
 
 // Private Functions -----------------------------------------------------------
@@ -113,12 +116,6 @@ test_OS_Crypto_init_neg()
 
     TEST_START();
 
-    // Set these up here as the dataport is not const, so that the configs
-    // should actually work
-    cfgRemote.rpc.client.dataPort = CryptoLibDataport;
-    cfgClient.rpc.client = cfgRemote.rpc.client;
-    cfgClient.library    = cfgLib.library;
-
     // Bad mode
     memcpy(&badCfg, &cfgLib, sizeof(OS_Crypto_Config_t));
     badCfg.mode = 666;
@@ -163,11 +160,11 @@ test_OS_Crypto_init_neg()
 
     // No dataport for CLIENT, ROUTER
     memcpy(&badCfg, &cfgRemote, sizeof(OS_Crypto_Config_t));
-    badCfg.rpc.client.dataPort = NULL;
+    badCfg.dataport.io = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
-    badCfg.rpc.client.dataPort = NULL;
+    badCfg.dataport.io = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     TEST_FINISH();
@@ -263,8 +260,6 @@ int run()
 
     Debug_LOG_INFO("");
 
-    cfgRemote.rpc.client.dataPort = CryptoLibDataport;
-
     // Test CLIENT_ONLY mode
     TEST_SUCCESS(CryptoRpcServer_openSession());
     TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgRemote));
@@ -273,9 +268,6 @@ int run()
     TEST_SUCCESS(CryptoRpcServer_closeSession());
 
     Debug_LOG_INFO("");
-
-    cfgClient.rpc.client = cfgRemote.rpc.client;
-    cfgClient.library    = cfgLib.library;
 
     // Test CLIENT mode
     TEST_SUCCESS(CryptoRpcServer_openSession());

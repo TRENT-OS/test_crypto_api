@@ -94,20 +94,21 @@ CryptoLibServer_getCrypto(
 
 // Public Functions -----------------------------------------------------------
 
+static OS_Crypto_Config_t cfg =
+{
+    .mode = OS_Crypto_MODE_SERVER,
+    .memory = {
+        .calloc = my_calloc,
+        .free   = my_free,
+    },
+    .dataport = OS_DATAPORT_ASSIGN(CryptoLibDataport),
+    .library.rng.entropy = my_entropy,
+};
+
 OS_Error_t
 CryptoRpcServer_openSession()
 {
     OS_Error_t err;
-    OS_Crypto_Config_t cfg =
-    {
-        .mode = OS_Crypto_MODE_SERVER,
-        .memory = {
-            .calloc = my_calloc,
-            .free   = my_free,
-        },
-        .library.rng.entropy = my_entropy,
-        .rpc.server.dataPort = CryptoLibDataport
-    };
 
     if (!PointerVector_ctor(&myObjects, 1))
     {

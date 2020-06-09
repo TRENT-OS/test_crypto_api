@@ -10,6 +10,8 @@
 
 #include <string.h>
 
+// -----------------------------------------------------------------------------
+
 #define MAX_VECTOR_SIZE 256
 typedef struct
 {
@@ -328,7 +330,7 @@ test_OS_CryptoMac_process_buffer(
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
-    static unsigned char inBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen;
 
     TEST_START(mode, expo);
@@ -340,11 +342,11 @@ test_OS_CryptoMac_process_buffer(
     TEST_LOCACTION_EXP(mode, expo, hMac);
 
     // Should go OK
-    inLen = OS_Crypto_SIZE_DATAPORT;
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
 
     // Should fail due to internal buffers being limited
-    inLen = OS_Crypto_SIZE_DATAPORT + 1;
+    inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoMac_process(hMac, inBuf, inLen));
 
     TEST_SUCCESS(OS_CryptoMac_free(hMac));
@@ -362,8 +364,8 @@ test_OS_CryptoMac_finalize_buffer(
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
-    static unsigned char inBuf[OS_Crypto_SIZE_DATAPORT],
-           outBuf[OS_Crypto_SIZE_DATAPORT + 1];
+    static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE],
+           outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
     TEST_START(mode, expo);
@@ -374,27 +376,27 @@ test_OS_CryptoMac_finalize_buffer(
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
     TEST_LOCACTION_EXP(mode, expo, hMac);
-    inLen = OS_Crypto_SIZE_DATAPORT;
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
     // Should be OK, as we are below the dataport limit
-    outLen = OS_Crypto_SIZE_DATAPORT;
+    outLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_finalize(hMac, outBuf, &outLen));
     TEST_SUCCESS(OS_CryptoMac_free(hMac));
 
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
     TEST_LOCACTION_EXP(mode, expo, hMac);
-    inLen = OS_Crypto_SIZE_DATAPORT;
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
     // Should fail because out buffer is potentially too big
-    outLen = OS_Crypto_SIZE_DATAPORT + 1;
+    outLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_INSUFF_SPACE(OS_CryptoMac_finalize(hMac, outBuf, &outLen));
     TEST_SUCCESS(OS_CryptoMac_free(hMac));
 
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
     TEST_LOCACTION_EXP(mode, expo, hMac);
-    inLen = OS_Crypto_SIZE_DATAPORT;
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
     // This should fail but give us the expected buffer size
     outLen = 10;
