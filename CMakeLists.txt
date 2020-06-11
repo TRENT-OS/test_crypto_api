@@ -58,6 +58,6 @@ DeclareCAmkESComponent(
         os_crypto_with_rpc_server
 )
 
-DeclareCAmkESRootserver(main.camkes)
-GenerateCAmkESRootServer()
+
+DeclareAndCreateCamkESSystem(main.camkes)
 GenerateSimulateScript()
