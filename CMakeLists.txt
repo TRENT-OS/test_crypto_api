@@ -15,9 +15,12 @@ os_use_libs(
     OS_CRYPTO_WITH_RPC_SERVER
 )
 
+
+#-------------------------------------------------------------------------------
 project(tests_crypto_api C)
 
-DeclareCAmkESComponent(test_OS_Crypto
+DeclareCAmkESComponent(
+    test_OS_Crypto
     INCLUDES
         common
         components/CryptoRpcServer/src
@@ -31,20 +34,23 @@ DeclareCAmkESComponent(test_OS_Crypto
         components/Tests/src/test_OS_CryptoAgreement.c
         components/Tests/src/test_OS_CryptoKey.c
     C_FLAGS
-        -Wall -Werror
+        -Wall
+        -Werror
     LIBS
         os_core_api
         os_crypto_with_rpc_client
 )
 
-DeclareCAmkESComponent(CryptoRpcServer
+DeclareCAmkESComponent(
+    CryptoRpcServer
     INCLUDES
         common
         components/CryptoRpcServer/src
     SOURCES
         components/CryptoRpcServer/src/CryptoRpcServer.c
     C_FLAGS
-        -Wall -Werror
+        -Wall
+        -Werror
     LIBS
         os_core_api
         os_libs
