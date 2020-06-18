@@ -40,15 +40,12 @@ void test_OS_CryptoSignature(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode);
 
-// Forward declaration
-static int entropy(
-    void*, unsigned char*, size_t);
-
 // These are all the configurations of the Crypto API we want to test
 static OS_Crypto_Config_t cfgLib =
 {
     .mode = OS_Crypto_MODE_LIBRARY_ONLY,
-    .library.rng.entropy = entropy,
+    .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(entropySource_rpc_read,
+                                                      entropySource_dp),
 };
 static OS_Crypto_Config_t cfgRemote =
 {
@@ -59,21 +56,11 @@ static OS_Crypto_Config_t cfgClient =
 {
     .mode = OS_Crypto_MODE_CLIENT,
     .dataport = OS_DATAPORT_ASSIGN(CryptoLibDataport),
-    .library.rng.entropy = entropy
+    .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(entropySource_rpc_read,
+                                                      entropySource_dp),
 };
 
 // Private Functions -----------------------------------------------------------
-
-static int
-entropy(
-    void*          ctx,
-    unsigned char* buf,
-    size_t         len)
-{
-    // This would be the platform specific function to obtain entropy
-    memset(buf, 0, len);
-    return 0;
-}
 
 static void
 test_OS_Crypto(
@@ -153,9 +140,9 @@ test_OS_Crypto_init_neg()
     badCfg.memory.free = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
-    // No RNG pointer for LIB
+    // No Entropy callback pointer for LIB
     memcpy(&badCfg, &cfgLib, sizeof(OS_Crypto_Config_t));
-    badCfg.library.rng.entropy = NULL;
+    badCfg.library.entropy.read = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     // No dataport for CLIENT, ROUTER
@@ -185,7 +172,8 @@ static void
 test_OS_Crypto_migrateLibObject_pos(
     OS_Crypto_Handle_t hCrypto)
 {
-    static uint8_t expectedKey[24] = {
+    static uint8_t expectedKey[24] =
+    {
         0x8e, 0x73, 0xb0, 0xf7, 0xda, 0x0e, 0x64, 0x52,
         0xc8, 0x10, 0xf3, 0x2b, 0x80, 0x90, 0x79, 0xe5,
         0x62, 0xf8, 0xea, 0xd2, 0x52, 0x2c, 0x6b, 0x7b

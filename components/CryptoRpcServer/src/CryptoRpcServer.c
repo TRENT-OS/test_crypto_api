@@ -34,17 +34,6 @@ findObject(
     return -1;
 }
 
-static int
-my_entropy(
-    void*          ctx,
-    unsigned char* buf,
-    size_t         len)
-{
-    // This would be the platform specific function to obtain entropy
-    memset(buf, 0, len);
-    return 0;
-}
-
 static void*
 my_calloc(
     size_t n,
@@ -102,7 +91,8 @@ static OS_Crypto_Config_t cfg =
         .free   = my_free,
     },
     .dataport = OS_DATAPORT_ASSIGN(CryptoLibDataport),
-    .library.rng.entropy = my_entropy,
+    .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(entropySource_rpc_read,
+                                                      entropySource_dp),
 };
 
 OS_Error_t

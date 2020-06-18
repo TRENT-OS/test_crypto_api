@@ -4,16 +4,33 @@
 
 import <std_connector.camkes>;
 
+import <if_OS_EntropySource.camkes>;
+
 import "components/Tests/test_OS_Crypto.camkes";
 import "components/CryptoRpcServer/CryptoRpcServer.camkes";
 
+#include "EntropySource/camkes/EntropySource.camkes"
+DECLARE_COMPONENT_EntropySource(EntropySource)
+
 assembly {
     composition {
-        component   test_OS_Crypto  unitTests;
+        component   test_OS_Crypto      unitTests;
         component   CryptoRpcServer     rpcServer;
 
         connection seL4SharedData       shared  (from unitTests.CryptoLibDataport,    to rpcServer.CryptoLibDataport);
         connection seL4RPCCall          call_0  (from unitTests.CryptoLibServer,      to rpcServer.CryptoLibServer);
         connection seL4RPCCall          call_1  (from unitTests.CryptoRpcServer,      to rpcServer.CryptoRpcServer);
-    }
+
+         DECLARE_AND_CONNECT_INSTANCE_EntropySource(
+            EntropySource,
+            entropySource0,
+            unitTests.entropySource_rpc,
+            unitTests.entropySource_dp)
+
+        DECLARE_AND_CONNECT_INSTANCE_EntropySource(
+            EntropySource,
+            entropySource1,
+            rpcServer.entropySource_rpc,
+            rpcServer.entropySource_dp)
+     }
 }

@@ -3,6 +3,7 @@
  */
 
 import <if_OS_Crypto.camkes>;
+import <if_OS_EntropySource.camkes>;
 
 import "../../components/CryptoRpcServer/CryptoRpcServer.camkes";
 
@@ -12,6 +13,10 @@ component test_OS_Crypto {
     // SeosCryptoRpc Interface
     dataport    Buf                         CryptoLibDataport;
     uses        if_OS_Crypto                CryptoLibServer;
+
+    // For EntropySource component
+    uses        if_OS_EntropySource         entropySource_rpc;
+    dataport    Buf                         entropySource_dp;
 
     // Interface to RPC component
     uses        CryptoRpcServerInf          CryptoRpcServer;
