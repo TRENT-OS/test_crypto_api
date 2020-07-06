@@ -198,7 +198,7 @@ test_OS_CryptoMac_do_HMAC_MD5(
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
     {
-        TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &md5Vectors[i].key))
+        TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &md5Vectors[i].key));
         TEST_LOCACTION_EXP(mode, expo, hKey);
         TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                        OS_CryptoMac_ALG_HMAC_MD5));
@@ -227,7 +227,9 @@ test_OS_CryptoMac_do_HMAC_SHA256(
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
     {
-        TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &sha256Vectors[i].key))
+        TEST_SUCCESS(
+            OS_CryptoKey_import(&hKey, hCrypto, &sha256Vectors[i].key));
+
         TEST_LOCACTION_EXP(mode, expo, hKey);
         TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                        OS_CryptoMac_ALG_HMAC_SHA256));
@@ -254,7 +256,7 @@ test_OS_CryptoMac_process_neg(
 
     TEST_START(mode, expo);
 
-    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key))
+    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_EXP(mode, expo, hKey);
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
@@ -289,7 +291,7 @@ test_OS_CryptoMac_finalize_neg(
 
     TEST_START(mode, expo);
 
-    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key))
+    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_EXP(mode, expo, hKey);
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
@@ -335,7 +337,7 @@ test_OS_CryptoMac_process_buffer(
 
     TEST_START(mode, expo);
 
-    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key))
+    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_EXP(mode, expo, hKey);
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
@@ -370,7 +372,7 @@ test_OS_CryptoMac_finalize_buffer(
 
     TEST_START(mode, expo);
 
-    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key))
+    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_EXP(mode, expo, hKey);
 
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
@@ -421,7 +423,7 @@ test_OS_CryptoMac_init_pos(
 
     TEST_START(mode, expo);
 
-    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key))
+    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_EXP(mode, expo, hKey);
 
     // Test HMAC_MD5
@@ -452,7 +454,7 @@ test_OS_CryptoMac_init_neg(
 
     TEST_START(mode, expo);
 
-    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key))
+    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_EXP(mode, expo, hKey);
 
     // Empty handle
@@ -487,7 +489,7 @@ test_OS_CryptoMac_free_pos(
 
     TEST_START(mode, expo);
 
-    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key))
+    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_EXP(mode, expo, hKey);
 
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,

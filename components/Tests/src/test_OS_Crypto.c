@@ -191,7 +191,7 @@ test_OS_Crypto_migrateLibObject_pos(
     TEST_SUCCESS(OS_Crypto_migrateLibObject(&hKey, hCrypto, ptr, false));
     // Check that the key can now really be used by exporting it and checking it
     // against an expected value..
-    TEST_SUCCESS(OS_CryptoKey_export(hKey, &keyData))
+    TEST_SUCCESS(OS_CryptoKey_export(hKey, &keyData));
     TEST_TRUE(!memcmp(keyData.data.aes.bytes, expectedKey, sizeof(expectedKey)));
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
