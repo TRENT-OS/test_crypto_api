@@ -44,8 +44,9 @@ void test_OS_CryptoSignature(
 static OS_Crypto_Config_t cfgLib =
 {
     .mode = OS_Crypto_MODE_LIBRARY_ONLY,
-    .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(entropySource_rpc_read,
-                                                      entropySource_dp),
+    .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(
+        entropySource_rpc,
+        entropySource_dp),
 };
 static OS_Crypto_Config_t cfgRemote =
 {
@@ -56,8 +57,9 @@ static OS_Crypto_Config_t cfgClient =
 {
     .mode = OS_Crypto_MODE_CLIENT,
     .dataport = OS_DATAPORT_ASSIGN(CryptoLibDataport),
-    .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(entropySource_rpc_read,
-                                                      entropySource_dp),
+    .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(
+        entropySource_rpc,
+        entropySource_dp),
 };
 
 // Private Functions -----------------------------------------------------------
