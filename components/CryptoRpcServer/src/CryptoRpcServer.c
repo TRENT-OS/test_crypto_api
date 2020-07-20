@@ -74,7 +74,7 @@ my_free(
 }
 
 OS_Crypto_Handle_t
-CryptoLibServer_getCrypto(
+crypto_rpc_getCrypto(
     void)
 {
     // We have only a single instance
@@ -90,7 +90,7 @@ static OS_Crypto_Config_t cfg =
         .calloc = my_calloc,
         .free   = my_free,
     },
-    .dataport = OS_DATAPORT_ASSIGN(CryptoLibDataport),
+    .dataport = OS_DATAPORT_ASSIGN(crypto_port),
     .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(
         entropySource_rpc,
         entropySource_dp),

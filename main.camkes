@@ -17,9 +17,9 @@ assembly {
         component   test_OS_Crypto      unitTests;
         component   CryptoRpcServer     rpcServer;
 
-        connection seL4SharedData       shared  (from unitTests.CryptoLibDataport,    to rpcServer.CryptoLibDataport);
-        connection seL4RPCCall          call_0  (from unitTests.CryptoLibServer,      to rpcServer.CryptoLibServer);
-        connection seL4RPCCall          call_1  (from unitTests.CryptoRpcServer,      to rpcServer.CryptoRpcServer);
+        connection seL4SharedData       shared  (from unitTests.crypto_port,        to rpcServer.crypto_port);
+        connection seL4RPCCall          call_0  (from unitTests.crypto_rpc,         to rpcServer.crypto_rpc);
+        connection seL4RPCCall          call_1  (from unitTests.CryptoRpcServer,    to rpcServer.CryptoRpcServer);
 
          DECLARE_AND_CONNECT_INSTANCE_EntropySource(
             EntropySource,

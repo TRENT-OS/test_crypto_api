@@ -29,8 +29,8 @@ procedure CryptoRpcServerInf {
 
 component CryptoRpcServer {
     // SeosCryptoRpc Interface
-    dataport    Buf                         CryptoLibDataport;
-    provides    if_OS_Crypto                CryptoLibServer;
+    dataport    Buf                         crypto_port;
+    provides    if_OS_Crypto                crypto_rpc;
 
     // For EntropySource component
     uses        if_OS_EntropySource         entropySource_rpc;

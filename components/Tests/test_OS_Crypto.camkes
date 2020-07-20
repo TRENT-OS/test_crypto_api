@@ -11,8 +11,8 @@ component test_OS_Crypto {
     control;
 
     // SeosCryptoRpc Interface
-    dataport    Buf                         CryptoLibDataport;
-    uses        if_OS_Crypto                CryptoLibServer;
+    dataport    Buf                         crypto_port;
+    uses        if_OS_Crypto                crypto_rpc;
 
     // For EntropySource component
     uses        if_OS_EntropySource         entropySource_rpc;
