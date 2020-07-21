@@ -24,13 +24,13 @@ assembly {
          DECLARE_AND_CONNECT_INSTANCE_EntropySource(
             EntropySource,
             entropySource0,
-            unitTests.entropySource_rpc,
-            unitTests.entropySource_dp)
+            unitTests.entropy_rpc,
+            unitTests.entropy_port)
 
         DECLARE_AND_CONNECT_INSTANCE_EntropySource(
             EntropySource,
             entropySource1,
-            rpcServer.entropySource_rpc,
-            rpcServer.entropySource_dp)
+            rpcServer.entropy_rpc,
+            rpcServer.entropy_port)
      }
 }

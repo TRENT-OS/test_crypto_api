@@ -92,8 +92,8 @@ static OS_Crypto_Config_t cfg =
     },
     .dataport = OS_DATAPORT_ASSIGN(crypto_port),
     .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(
-        entropySource_rpc,
-        entropySource_dp),
+        entropy_rpc,
+        entropy_port),
 };
 
 OS_Error_t

@@ -45,8 +45,8 @@ static OS_Crypto_Config_t cfgLib =
 {
     .mode = OS_Crypto_MODE_LIBRARY_ONLY,
     .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(
-        entropySource_rpc,
-        entropySource_dp),
+        entropy_rpc,
+        entropy_port),
 };
 static OS_Crypto_Config_t cfgRemote =
 {
@@ -58,8 +58,8 @@ static OS_Crypto_Config_t cfgClient =
     .mode = OS_Crypto_MODE_CLIENT,
     .dataport = OS_DATAPORT_ASSIGN(crypto_port),
     .library.entropy = OS_CRYPTO_ASSIGN_EntropySource(
-        entropySource_rpc,
-        entropySource_dp),
+        entropy_rpc,
+        entropy_port),
 };
 
 // Private Functions -----------------------------------------------------------
