@@ -3,7 +3,7 @@
  */
 
 import <if_OS_Crypto.camkes>;
-import <if_OS_EntropySource.camkes>;
+import <if_OS_Entropy.camkes>;
 
 procedure CryptoRpcServerInf {
     include     "OS_Crypto.h";
@@ -33,7 +33,7 @@ component CryptoRpcServer {
     provides    if_OS_Crypto                crypto_rpc;
 
     // For EntropySource component
-    uses        if_OS_EntropySource         entropySource_rpc;
+    uses        if_OS_Entropy               entropySource_rpc;
     dataport    Buf                         entropySource_dp;
 
     // Interface to CryptoRpcServer component
