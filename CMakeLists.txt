@@ -15,9 +15,6 @@ project(tests_crypto_api C)
 
 DeclareCAmkESComponent(
     test_OS_Crypto
-    INCLUDES
-        common
-        components/CryptoRpcServer/src
     SOURCES
         components/Tests/src/test_OS_Crypto.c
         components/Tests/src/test_OS_CryptoSignature.c
@@ -38,9 +35,6 @@ DeclareCAmkESComponent(
 
 DeclareCAmkESComponent(
     TestServer
-    INCLUDES
-        common
-        components/CryptoRpcServer/src
     SOURCES
         components/TestServer/src/testServer_rpc.c
     C_FLAGS
