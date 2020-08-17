@@ -89,7 +89,7 @@ static OS_Crypto_Config_t cfg =
         .free   = my_free,
     },
     .dataport = OS_DATAPORT_ASSIGN(crypto_port),
-    .library.entropy = OS_CRYPTO_ASSIGN_Entropy(
+    .entropy = IF_OS_ENTROPY_ASSIGN(
         entropy_rpc,
         entropy_port),
 };

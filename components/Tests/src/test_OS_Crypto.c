@@ -44,7 +44,7 @@ void test_OS_CryptoSignature(
 static OS_Crypto_Config_t cfgLib =
 {
     .mode = OS_Crypto_MODE_LIBRARY_ONLY,
-    .library.entropy = OS_CRYPTO_ASSIGN_Entropy(
+    .entropy = IF_OS_ENTROPY_ASSIGN(
         entropy_rpc,
         entropy_port),
 };
@@ -57,7 +57,7 @@ static OS_Crypto_Config_t cfgClient =
 {
     .mode = OS_Crypto_MODE_CLIENT,
     .dataport = OS_DATAPORT_ASSIGN(crypto_port),
-    .library.entropy = OS_CRYPTO_ASSIGN_Entropy(
+    .entropy = IF_OS_ENTROPY_ASSIGN(
         entropy_rpc,
         entropy_port),
 };
@@ -144,7 +144,7 @@ test_OS_Crypto_init_neg()
 
     // No Entropy callback pointer for LIB
     memcpy(&badCfg, &cfgLib, sizeof(OS_Crypto_Config_t));
-    badCfg.library.entropy.read = NULL;
+    badCfg.entropy.read = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     // No dataport for CLIENT, ROUTER
