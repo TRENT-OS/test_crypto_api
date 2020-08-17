@@ -1,0 +1,24 @@
+/*
+ * Copyright (C) 2020, Hensoldt Cyber GmbH
+ */
+
+procedure if_TestServer {
+    include "OS_Crypto.h";
+
+    OS_Error_t
+    openSession(
+    );
+
+    OS_Error_t
+    closeSession(
+    );
+
+    OS_Error_t
+    loadKey(
+        out CryptoLib_Object_ptr ptr
+    );
+
+    int hasObject (
+        in CryptoLib_Object_ptr ptr
+    );
+};

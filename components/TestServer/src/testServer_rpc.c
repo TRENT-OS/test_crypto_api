@@ -4,8 +4,6 @@
 
 #include "OS_Crypto.h"
 
-#include "CryptoRpcServer.h"
-
 #include "LibDebug/Debug.h"
 #include "LibUtil/PointerVector.h"
 
@@ -97,7 +95,7 @@ static OS_Crypto_Config_t cfg =
 };
 
 OS_Error_t
-CryptoRpcServer_openSession()
+testServer_rpc_openSession()
 {
     OS_Error_t err;
 
@@ -119,14 +117,14 @@ err:
 }
 
 int
-CryptoRpcServer_hasObject(
+testServer_rpc_hasObject(
     CryptoLib_Object_ptr ptr)
 {
     return (findObject(ptr) != -1) ? 1 : 0;
 }
 
 OS_Error_t
-CryptoRpcServer_loadKey(
+testServer_rpc_loadKey(
     CryptoLib_Object_ptr* ptr)
 {
     OS_Error_t err;
@@ -158,7 +156,7 @@ CryptoRpcServer_loadKey(
 }
 
 OS_Error_t
-CryptoRpcServer_closeSession()
+testServer_rpc_closeSession()
 {
     OS_Error_t err;
 

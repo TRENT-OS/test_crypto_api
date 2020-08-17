@@ -187,7 +187,7 @@ test_OS_Crypto_migrateLibObject_pos(
     TEST_START();
 
     // Let the remote side load a key into its address space
-    TEST_SUCCESS(CryptoRpcServer_loadKey(&ptr));
+    TEST_SUCCESS(testServer_rpc_loadKey(&ptr));
 
     // Mograte the key so it can be accessed through or local API instance
     TEST_SUCCESS(OS_Crypto_migrateLibObject(&hKey, hCrypto, ptr, false));
@@ -211,7 +211,7 @@ test_OS_Crypto_migrateLibObject_neg(
     TEST_START();
 
     // Let the remote side load a key into its address space
-    TEST_SUCCESS(CryptoRpcServer_loadKey(&ptr));
+    TEST_SUCCESS(testServer_rpc_loadKey(&ptr));
 
     // Empty key
     TEST_INVAL_PARAM(OS_Crypto_migrateLibObject(NULL, hCrypto, ptr, false));
@@ -251,22 +251,22 @@ int run()
     Debug_LOG_INFO("");
 
     // Test CLIENT_ONLY mode
-    TEST_SUCCESS(CryptoRpcServer_openSession());
+    TEST_SUCCESS(testServer_rpc_openSession());
     TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgRemote));
     test_OS_Crypto(hCrypto);
     TEST_SUCCESS(OS_Crypto_free(hCrypto));
-    TEST_SUCCESS(CryptoRpcServer_closeSession());
+    TEST_SUCCESS(testServer_rpc_closeSession());
 
     Debug_LOG_INFO("");
 
     // Test CLIENT mode
-    TEST_SUCCESS(CryptoRpcServer_openSession());
+    TEST_SUCCESS(testServer_rpc_openSession());
     TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgClient));
     test_OS_Crypto(hCrypto);
     test_OS_Crypto_migrateLibObject_pos(hCrypto);
     test_OS_Crypto_migrateLibObject_neg(hCrypto);
     TEST_SUCCESS(OS_Crypto_free(hCrypto));
-    TEST_SUCCESS(CryptoRpcServer_closeSession());
+    TEST_SUCCESS(testServer_rpc_closeSession());
 
     Debug_LOG_INFO("All tests successfully completed.");
 

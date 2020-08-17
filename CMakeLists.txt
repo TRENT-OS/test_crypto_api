@@ -37,12 +37,12 @@ DeclareCAmkESComponent(
 )
 
 DeclareCAmkESComponent(
-    CryptoRpcServer
+    TestServer
     INCLUDES
         common
         components/CryptoRpcServer/src
     SOURCES
-        components/CryptoRpcServer/src/CryptoRpcServer.c
+        components/TestServer/src/testServer_rpc.c
     C_FLAGS
         -Wall
         -Werror
