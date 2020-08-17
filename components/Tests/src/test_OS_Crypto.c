@@ -234,6 +234,7 @@ test_OS_Crypto_migrateLibObject_neg(
 
 int run()
 {
+    OS_Error_t err;
     OS_Crypto_Handle_t hCrypto;
 
     // We simply do negative tests here, as everything else below here covers
@@ -244,29 +245,57 @@ int run()
     Debug_LOG_INFO("");
 
     // Test LIBRARY_ONLY mode
-    TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgLib));
+    if ((err = OS_Crypto_init(&hCrypto, &cfgLib)) != OS_SUCCESS)
+    {
+        Debug_LOG_ERROR("OS_Crypto_init() failed with %d", err);
+        return -1;
+    }
+
     test_OS_Crypto(hCrypto);
-    TEST_SUCCESS(OS_Crypto_free(hCrypto));
+
+    OS_Crypto_free(hCrypto);
 
     Debug_LOG_INFO("");
 
     // Test CLIENT_ONLY mode
-    TEST_SUCCESS(testServer_rpc_openSession());
-    TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgRemote));
+    if ((err = testServer_rpc_openSession()) != OS_SUCCESS)
+    {
+        Debug_LOG_ERROR("testServer_rpc_openSession() failed with %d", err);
+        return -1;
+    }
+    if ((err = OS_Crypto_init(&hCrypto, &cfgRemote)) != OS_SUCCESS)
+    {
+        Debug_LOG_ERROR("OS_Crypto_init() failed with %d", err);
+        return -1;
+    }
+
     test_OS_Crypto(hCrypto);
-    TEST_SUCCESS(OS_Crypto_free(hCrypto));
-    TEST_SUCCESS(testServer_rpc_closeSession());
+
+    OS_Crypto_free(hCrypto);
+    testServer_rpc_closeSession();
 
     Debug_LOG_INFO("");
 
     // Test CLIENT mode
-    TEST_SUCCESS(testServer_rpc_openSession());
-    TEST_SUCCESS(OS_Crypto_init(&hCrypto, &cfgClient));
+    if ((err = testServer_rpc_openSession()) != OS_SUCCESS)
+    {
+        Debug_LOG_ERROR("testServer_rpc_openSession() failed with %d", err);
+        return -1;
+    }
+    if ((err = OS_Crypto_init(&hCrypto, &cfgClient)) != OS_SUCCESS)
+    {
+        Debug_LOG_ERROR("OS_Crypto_init() failed with %d", err);
+        return -1;
+    }
+
     test_OS_Crypto(hCrypto);
     test_OS_Crypto_migrateLibObject_pos(hCrypto);
     test_OS_Crypto_migrateLibObject_neg(hCrypto);
     TEST_SUCCESS(OS_Crypto_free(hCrypto));
     TEST_SUCCESS(testServer_rpc_closeSession());
+
+    OS_Crypto_free(hCrypto);
+    testServer_rpc_closeSession();
 
     Debug_LOG_INFO("All tests successfully completed.");
 
