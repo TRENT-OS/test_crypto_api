@@ -180,15 +180,6 @@ test_OS_CryptoKey_export_neg(
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_Data_t expData;
-    OS_CryptoKey_Spec_t aes128noExpSpec =
-    {
-        .type = OS_CryptoKey_SPECTYPE_BITS,
-        .key = {
-            .type = OS_CryptoKey_TYPE_AES,
-            .attribs.keepLocal = false,
-            .params.bits = 128
-        }
-    };
 
     TEST_START(mode, keepLocal);
 
@@ -199,29 +190,6 @@ test_OS_CryptoKey_export_neg(
 
     // Empty export data buffer
     TEST_INVAL_PARAM(OS_CryptoKey_export(hKey, NULL));
-
-    TEST_SUCCESS(OS_CryptoKey_free(hKey));
-
-    // Remote key
-    TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128noExpSpec));
-
-    if (mode == OS_Crypto_MODE_LIBRARY_ONLY)
-    {
-        /*
-         * A library instance will store all keys in memory which is shared with the
-         * host component. Therefore, if the API runs in library mode, it will ALWAYS
-         * allow exports, even if the key is marked as "non exportable".
-         */
-        TEST_SUCCESS(OS_CryptoKey_export(hKey, &expData));
-    }
-    else
-    {
-        /*
-         * It is assumed that all other modes of the Crypto API respect the
-         * exportable flag and thus deny the operation.
-         */
-        TEST_OP_DENIED(OS_CryptoKey_export(hKey, &expData));
-    }
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
@@ -246,28 +214,21 @@ do_generate(
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     memset(&expData, 0, sizeof(OS_CryptoKey_Data_t));
-    if (keepLocal)
+    TEST_SUCCESS(OS_CryptoKey_export(hKey, &expData));
+    TEST_TRUE(spec->key.type == expData.type);
+    TEST_TRUE(!memcmp(&spec->key.attribs, &expData.attribs,
+                      sizeof(OS_CryptoKey_Attrib_t)));
+    if (spec->type == OS_CryptoKey_SPECTYPE_PARAMS)
     {
-        TEST_SUCCESS(OS_CryptoKey_export(hKey, &expData));
-        TEST_TRUE(spec->key.type == expData.type);
-        TEST_TRUE(!memcmp(&spec->key.attribs, &expData.attribs,
-                          sizeof(OS_CryptoKey_Attrib_t)));
-        if (spec->type == OS_CryptoKey_SPECTYPE_PARAMS)
+        switch (spec->key.type)
         {
-            switch (spec->key.type)
-            {
-            case OS_CryptoKey_TYPE_DH_PRV:
-                TEST_TRUE(!memcmp(&spec->key.params, &expData.data.dh.prv.params,
-                                  sizeof(OS_CryptoKey_DhParams_t)));
-                break;
-            default:
-                TEST_TRUE(1 == 0);
-            }
+        case OS_CryptoKey_TYPE_DH_PRV:
+            TEST_TRUE(!memcmp(&spec->key.params, &expData.data.dh.prv.params,
+                              sizeof(OS_CryptoKey_DhParams_t)));
+            break;
+        default:
+            TEST_TRUE(1 == 0);
         }
-    }
-    else
-    {
-        TEST_OP_DENIED(OS_CryptoKey_export(hKey, &expData));
     }
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
@@ -360,33 +321,26 @@ do_makePublic(
         return err;
     }
 
-    if (keepLocal)
+    TEST_SUCCESS(OS_CryptoKey_export(hPubKey, &expData));
+    TEST_LOCACTION_FLAG(mode, keepLocal, hPubKey);
+    switch (spec->key.type)
     {
-        TEST_SUCCESS(OS_CryptoKey_export(hPubKey, &expData));
-        TEST_LOCACTION_FLAG(mode, keepLocal, hPubKey);
-        switch (spec->key.type)
+    case OS_CryptoKey_TYPE_RSA_PRV:
+        TEST_TRUE(expData.type == OS_CryptoKey_TYPE_RSA_PUB);
+        break;
+    case OS_CryptoKey_TYPE_DH_PRV:
+        TEST_TRUE(expData.type == OS_CryptoKey_TYPE_DH_PUB);
+        if (OS_CryptoKey_SPECTYPE_PARAMS == spec->type)
         {
-        case OS_CryptoKey_TYPE_RSA_PRV:
-            TEST_TRUE(expData.type == OS_CryptoKey_TYPE_RSA_PUB);
-            break;
-        case OS_CryptoKey_TYPE_DH_PRV:
-            TEST_TRUE(expData.type == OS_CryptoKey_TYPE_DH_PUB);
-            if (OS_CryptoKey_SPECTYPE_PARAMS == spec->type)
-            {
-                TEST_TRUE(!memcmp(&expData.data.dh.pub.params, &spec->key.params.dh,
-                                  sizeof(OS_CryptoKey_DhParams_t)));
-            }
-            break;
-        case OS_CryptoKey_TYPE_SECP256R1_PRV:
-            TEST_TRUE(expData.type == OS_CryptoKey_TYPE_SECP256R1_PUB);
-            break;
-        default:
-            TEST_TRUE(1 == 0);
+            TEST_TRUE(!memcmp(&expData.data.dh.pub.params, &spec->key.params.dh,
+                              sizeof(OS_CryptoKey_DhParams_t)));
         }
-    }
-    else
-    {
-        TEST_OP_DENIED(OS_CryptoKey_export(hPubKey, &expData));
+        break;
+    case OS_CryptoKey_TYPE_SECP256R1_PRV:
+        TEST_TRUE(expData.type == OS_CryptoKey_TYPE_SECP256R1_PUB);
+        break;
+    default:
+        TEST_TRUE(1 == 0);
     }
 
     TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
@@ -477,15 +431,8 @@ test_OS_CryptoKey_getParams_pos(
     n = sizeof(dhParams);
     TEST_SUCCESS(OS_CryptoKey_getParams(hKey, &dhParams, &n));
     TEST_TRUE(n == sizeof(dhParams));
-    if (keepLocal)
-    {
-        TEST_SUCCESS(OS_CryptoKey_export(hKey, &expData));
-        TEST_TRUE(!memcmp(&expData.data.dh.prv.params, &dhParams, n));
-    }
-    else
-    {
-        TEST_OP_DENIED(OS_CryptoKey_export(hKey, &expData));
-    }
+    TEST_SUCCESS(OS_CryptoKey_export(hKey, &expData));
+    TEST_TRUE(!memcmp(&expData.data.dh.prv.params, &dhParams, n));
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
     TEST_FINISH();
