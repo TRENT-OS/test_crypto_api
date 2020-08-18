@@ -34,18 +34,18 @@ static void
 test_OS_CryptoAgreement_init_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPrvKey;
     OS_CryptoAgreement_Handle_t hAgree;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Regular init with DH priv key
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &dh101PrvData));
     TEST_SUCCESS(OS_CryptoAgreement_init(&hAgree, hCrypto, hPrvKey,
                                          OS_CryptoAgreement_ALG_DH));
-    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hAgree);
     TEST_SUCCESS(OS_CryptoAgreement_free(hAgree));
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
 
@@ -53,7 +53,7 @@ test_OS_CryptoAgreement_init_pos(
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &secp256r1PrvData));
     TEST_SUCCESS(OS_CryptoAgreement_init(&hAgree, hCrypto, hPrvKey,
                                          OS_CryptoAgreement_ALG_ECDH));
-    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hAgree);
     TEST_SUCCESS(OS_CryptoAgreement_free(hAgree));
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
 
@@ -64,12 +64,12 @@ static void
 test_OS_CryptoAgreement_init_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hEcKey, hDhKey;
     OS_CryptoAgreement_Handle_t hAgree;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hDhKey, hCrypto, &dh101PubData));
     TEST_SUCCESS(OS_CryptoKey_import(&hEcKey, hCrypto, &secp256r1PubData));
@@ -115,7 +115,7 @@ static OS_Error_t
 agreeOnKey(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo,
+    const bool             keepLocal,
     OS_CryptoKey_Handle_t  hPrvKey,
     OS_CryptoKey_Handle_t  hPubKey,
     unsigned int           algo,
@@ -130,7 +130,7 @@ agreeOnKey(
     // We have a hPrvKey key (and a hPubKey one) and want to use it to agree on a
     // shared secret to perform symmetric cryptography
     TEST_SUCCESS(OS_CryptoAgreement_init(&hAgree, hCrypto, hPrvKey, algo));
-    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hAgree);
 
     // We have received a hPubKey key (e.g., from a server) and use this to derive a secret
     // key of a given length; for now, don't pass a RNG
@@ -149,20 +149,20 @@ static void
 test_OS_CryptoAgreement_do_DH(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     unsigned char clientShared[64];
     size_t n;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &dh101PubData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &dh101PrvData));
 
     // Compute the side of the CLIENT
     n = sizeof(clientShared);
-    TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+    TEST_SUCCESS(agreeOnKey(hCrypto,  mode, keepLocal,
                             hPrvKey, hPubKey,
                             OS_CryptoAgreement_ALG_DH,
                             clientShared, &n));
@@ -179,14 +179,14 @@ static void
 test_OS_CryptoAgreement_do_DH_rnd(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hCliPubKey, hCliPrvKey;
     OS_CryptoKey_Handle_t hSvrPubKey, hSvrPrvKey;
     unsigned char clShared[64], svShared[64];
     size_t n;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -207,11 +207,11 @@ test_OS_CryptoAgreement_do_DH_rnd(
 
         // Compute both sides of the key agreement and check if the match
         n = sizeof(clShared);
-        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, keepLocal,
                                 hCliPrvKey, hSvrPubKey,
                                 OS_CryptoAgreement_ALG_DH, clShared, &n));
         n = sizeof(svShared);
-        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, keepLocal,
                                 hSvrPrvKey, hCliPubKey,
                                 OS_CryptoAgreement_ALG_DH, svShared, &n));
         TEST_TRUE(!memcmp(clShared, svShared, n));
@@ -229,20 +229,20 @@ static void
 test_OS_CryptoAgreement_do_ECDH(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     unsigned char clientShared[64];
     size_t n;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &secp256r1PubData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &secp256r1PrvData));
 
     // Compute the side of the CLIENT
     n = sizeof(clientShared);
-    TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+    TEST_SUCCESS(agreeOnKey(hCrypto,  mode, keepLocal,
                             hPrvKey, hPubKey,
                             OS_CryptoAgreement_ALG_ECDH,
                             clientShared, &n));
@@ -259,14 +259,14 @@ static void
 test_OS_CryptoAgreement_do_ECDH_rnd(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hCliPubKey, hCliPrvKey;
     OS_CryptoKey_Handle_t hSvrPubKey, hSvrPrvKey;
     unsigned char clShared[64], svShared[64];
     size_t n;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -283,11 +283,11 @@ test_OS_CryptoAgreement_do_ECDH_rnd(
 
         // Compute both sides of the key agreement and check if the match
         n = sizeof(clShared);
-        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo,
+        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, keepLocal,
                                 hCliPrvKey, hSvrPubKey,
                                 OS_CryptoAgreement_ALG_ECDH, clShared, &n));
         n = sizeof(svShared);
-        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, expo, hSvrPrvKey, hCliPubKey,
+        TEST_SUCCESS(agreeOnKey(hCrypto,  mode, keepLocal, hSvrPrvKey, hCliPubKey,
                                 OS_CryptoAgreement_ALG_ECDH, svShared, &n));
         TEST_TRUE(!memcmp(clShared, svShared, n));
 
@@ -304,21 +304,21 @@ static void
 test_OS_CryptoAgreement_agree_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoAgreement_Handle_t hAgree;
     unsigned char clientShared[64];
     size_t n;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &secp256r1PubData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &secp256r1PrvData));
 
     TEST_SUCCESS(OS_CryptoAgreement_init(&hAgree, hCrypto, hPrvKey,
                                          OS_CryptoAgreement_ALG_ECDH));
-    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hAgree);
 
     // Try without agreement handle
     n = sizeof(clientShared);
@@ -357,17 +357,17 @@ static void
 test_OS_CryptoAgreement_free_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPrvKey;
     OS_CryptoAgreement_Handle_t hAgree;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &dh101PrvData));
     TEST_SUCCESS(OS_CryptoAgreement_init(&hAgree, hCrypto, hPrvKey,
                                          OS_CryptoAgreement_ALG_DH));
-    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hAgree);
     TEST_SUCCESS(OS_CryptoAgreement_free(hAgree));
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
 
@@ -378,17 +378,17 @@ static void
 test_OS_CryptoAgreement_free_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPrvKey;
     OS_CryptoAgreement_Handle_t hAgree;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &dh101PrvData));
     TEST_SUCCESS(OS_CryptoAgreement_init(&hAgree, hCrypto, hPrvKey,
                                          OS_CryptoAgreement_ALG_DH));
-    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hAgree);
 
     // Empty handle
     TEST_INVAL_HANDLE(OS_CryptoAgreement_free(NULL));
@@ -403,14 +403,14 @@ static void
 test_OS_CryptoAgreement_agree_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoAgreement_Handle_t hAgree;
     static unsigned char sharedBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t sharedLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &dh101PubData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &dh101PrvData));
@@ -419,7 +419,7 @@ test_OS_CryptoAgreement_agree_buffer(
     // secret to perform symmetric cryptography
     TEST_SUCCESS(OS_CryptoAgreement_init(&hAgree, hCrypto, hPrvKey,
                                          OS_CryptoAgreement_ALG_DH));
-    TEST_LOCACTION_EXP(mode, expo, hAgree);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hAgree);
 
     // Should go through and get the resulting agreement size
     sharedLen = OS_DATAPORT_DEFAULT_SIZE;
@@ -449,24 +449,24 @@ static void
 test_OS_CryptoAgreement_key_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     unsigned char clientShared[64];
     size_t n;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
-    // Test with both keys having different exportable attributes
-    secp256r1PrvData.attribs.exportable = false;
-    secp256r1PubData.attribs.exportable = true;
+    // Test with both keys having different locality attributes
+    secp256r1PrvData.attribs.keepLocal = false;
+    secp256r1PubData.attribs.keepLocal = true;
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &secp256r1PubData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &secp256r1PrvData));
 
     // Should fail, because objects are in different locations
     n = sizeof(clientShared);
-    TEST_INVAL_HANDLE(agreeOnKey(hCrypto, mode, expo,
+    TEST_INVAL_HANDLE(agreeOnKey(hCrypto, mode, keepLocal,
                                  hPrvKey, hPubKey,
                                  OS_CryptoAgreement_ALG_ECDH,
                                  clientShared, &n));
@@ -482,43 +482,43 @@ test_OS_CryptoAgreement(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool expo = true;
+    bool keepLocal = true;
 
-    keyData_setExportable(keyDataList, expo);
-    keySpec_setExportable(keySpecList, expo);
+    keyData_setLocality(keyDataList, keepLocal);
+    keySpec_setLocality(keySpecList, keepLocal);
 
-    test_OS_CryptoAgreement_init_pos(hCrypto, mode, expo);
-    test_OS_CryptoAgreement_init_neg(hCrypto, mode, expo);
+    test_OS_CryptoAgreement_init_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoAgreement_init_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoAgreement_agree_neg(hCrypto, mode, expo);
+    test_OS_CryptoAgreement_agree_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoAgreement_free_pos(hCrypto, mode, expo);
-    test_OS_CryptoAgreement_free_neg(hCrypto, mode, expo);
+    test_OS_CryptoAgreement_free_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoAgreement_free_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoAgreement_agree_buffer(hCrypto, mode, expo);
+    test_OS_CryptoAgreement_agree_buffer(hCrypto, mode, keepLocal);
 
     // Test vectors
-    test_OS_CryptoAgreement_do_DH(hCrypto, mode, expo);
-    test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, expo);
+    test_OS_CryptoAgreement_do_DH(hCrypto, mode, keepLocal);
+    test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, keepLocal);
 
     // Test with randomly generated values for multiple iterations
-    test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, expo);
-    test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, expo);
+    test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, keepLocal);
+    test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, keepLocal);
 
-    // Make all used keys NON-EXPORTABLE and re-run parts of the tests
+    // Make all used keys remote and re-run parts of the tests
     if (mode == OS_Crypto_MODE_CLIENT)
     {
-        expo = false;
+        keepLocal = false;
 
-        keyData_setExportable(keyDataList, expo);
-        keySpec_setExportable(keySpecList, expo);
+        keyData_setLocality(keyDataList, keepLocal);
+        keySpec_setLocality(keySpecList, keepLocal);
 
-        test_OS_CryptoAgreement_do_DH(hCrypto, mode, expo);
-        test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, expo);
+        test_OS_CryptoAgreement_do_DH(hCrypto, mode, keepLocal);
+        test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, keepLocal);
 
-        test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, expo);
-        test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, expo);
+        test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, keepLocal);
+        test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, keepLocal);
 
-        test_OS_CryptoAgreement_key_neg(hCrypto, mode, expo);
+        test_OS_CryptoAgreement_key_neg(hCrypto, mode, keepLocal);
     }
 }

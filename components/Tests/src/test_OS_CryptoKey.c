@@ -16,7 +16,7 @@ static OS_Error_t
 do_import(
     OS_Crypto_Handle_t         hCrypto,
     const OS_Crypto_Mode_t     mode,
-    const bool                 expo,
+    const bool                 keepLocal,
     const OS_CryptoKey_Data_t* data)
 {
     OS_Error_t err;
@@ -26,7 +26,7 @@ do_import(
     {
         return err;
     }
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
@@ -37,39 +37,39 @@ static void
 test_OS_CryptoKey_import_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Import 128-bit AES key
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &aes128Data));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &aes128Data));
 
     // Import 192-bit AES key
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &aes192Data));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &aes192Data));
 
     // Import 256-bit AES key
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &aes256Data));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &aes256Data));
 
     // Import MAC key
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &macData));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &macData));
 
     // Import 1024-bit RSA pubkey
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &rsa1024PubData));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &rsa1024PubData));
 
     // Import 1024-bit RSA prvkey
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &rsa1024PrvData));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &rsa1024PrvData));
 
     // Import 101-bit DH pubkey
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &dh101PubData));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &dh101PubData));
 
     // Import 101-bit DH RSA prvkey
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &dh101PrvData));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &dh101PrvData));
 
     // Import SECP256r1 pubkey
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &secp256r1PubData));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &secp256r1PubData));
 
     // Import SECP256r1 prvkey
-    TEST_SUCCESS(do_import(hCrypto, mode, expo, &secp256r1PrvData));
+    TEST_SUCCESS(do_import(hCrypto, mode, keepLocal, &secp256r1PrvData));
 
     TEST_FINISH();
 }
@@ -78,11 +78,11 @@ static void
 test_OS_CryptoKey_import_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Empty key handle
     TEST_INVAL_HANDLE(OS_CryptoKey_import(NULL, hCrypto, &aes128Data));
@@ -109,7 +109,7 @@ static OS_Error_t
 do_export(
     OS_Crypto_Handle_t         hCrypto,
     const OS_Crypto_Mode_t     mode,
-    const bool                 expo,
+    const bool                 keepLocal,
     const OS_CryptoKey_Data_t* data)
 {
     OS_Error_t err;
@@ -117,7 +117,7 @@ do_export(
     OS_CryptoKey_Data_t expData;
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, data));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     memset(&expData, 0, sizeof(OS_CryptoKey_Data_t));
     if ((err = OS_CryptoKey_export(hKey, &expData)) != OS_SUCCESS)
@@ -135,39 +135,39 @@ static void
 test_OS_CryptoKey_export_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Export 128-bit AES key
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &aes128Data));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &aes128Data));
 
     // Export 192-bit AES key
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &aes192Data));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &aes192Data));
 
     // Export 256-bit AES key
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &aes256Data));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &aes256Data));
 
     // Export 256-bit AES key
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &macData));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &macData));
 
     // Export 1024-bit RSA pubkey
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &rsa1024PubData));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &rsa1024PubData));
 
     // Export 1024-bit RSA prvkey
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &rsa1024PrvData));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &rsa1024PrvData));
 
     // Export 101-bit DH pubkey
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &dh101PubData));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &dh101PubData));
 
     // Export 101-bit DH prvkey
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &dh101PrvData));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &dh101PrvData));
 
     // Export SECP256r1 pubkey
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &secp256r1PubData));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &secp256r1PubData));
 
     // Export SECP256r1 prvkey
-    TEST_SUCCESS(do_export(hCrypto, mode, expo, &secp256r1PrvData));
+    TEST_SUCCESS(do_export(hCrypto, mode, keepLocal, &secp256r1PrvData));
 
     TEST_FINISH();
 }
@@ -176,7 +176,7 @@ static void
 test_OS_CryptoKey_export_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_Data_t expData;
@@ -185,12 +185,12 @@ test_OS_CryptoKey_export_neg(
         .type = OS_CryptoKey_SPECTYPE_BITS,
         .key = {
             .type = OS_CryptoKey_TYPE_AES,
-            .attribs.exportable = false,
+            .attribs.keepLocal = false,
             .params.bits = 128
         }
     };
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aes128Data));
 
@@ -202,7 +202,7 @@ test_OS_CryptoKey_export_neg(
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
-    // Non-exportable key
+    // Remote key
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128noExpSpec));
 
     if (mode == OS_Crypto_MODE_LIBRARY_ONLY)
@@ -232,7 +232,7 @@ static OS_Error_t
 do_generate(
     OS_Crypto_Handle_t         hCrypto,
     const OS_Crypto_Mode_t     mode,
-    const bool                 expo,
+    const bool                 keepLocal,
     const OS_CryptoKey_Spec_t* spec)
 {
     OS_Error_t err;
@@ -243,10 +243,10 @@ do_generate(
     {
         return err;
     }
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     memset(&expData, 0, sizeof(OS_CryptoKey_Data_t));
-    if (expo)
+    if (keepLocal)
     {
         TEST_SUCCESS(OS_CryptoKey_export(hKey, &expData));
         TEST_TRUE(spec->key.type == expData.type);
@@ -279,33 +279,33 @@ static void
 test_OS_CryptoKey_generate_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Generate 128-bit AES key
-    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &aes128Spec));
+    TEST_SUCCESS(do_generate(hCrypto, mode, keepLocal, &aes128Spec));
 
     // Generate 192-bit AES key
-    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &aes192Spec));
+    TEST_SUCCESS(do_generate(hCrypto, mode, keepLocal, &aes192Spec));
 
     // Generate 256-bit AES key
-    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &aes256Spec));
+    TEST_SUCCESS(do_generate(hCrypto, mode, keepLocal, &aes256Spec));
 
     // Generate 256-bit AES key
-    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &macSpec));
+    TEST_SUCCESS(do_generate(hCrypto, mode, keepLocal, &macSpec));
 
     // Generate 64-bit DH privkey from bit spec
-    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &dh64bSpec));
+    TEST_SUCCESS(do_generate(hCrypto, mode, keepLocal, &dh64bSpec));
 
     // Generate 101-bit DH privkey from param spec
-    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &dh101pSpec));
+    TEST_SUCCESS(do_generate(hCrypto, mode, keepLocal, &dh101pSpec));
 
     // Generate 128-bit RSA privkey
-    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &rsa128Spec));
+    TEST_SUCCESS(do_generate(hCrypto, mode, keepLocal, &rsa128Spec));
 
     // Generate SECP256r1 privkey
-    TEST_SUCCESS(do_generate(hCrypto, mode, expo, &secp256r1Spec));
+    TEST_SUCCESS(do_generate(hCrypto, mode, keepLocal, &secp256r1Spec));
 
     TEST_FINISH();
 }
@@ -314,11 +314,11 @@ static void
 test_OS_CryptoKey_generate_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Empty crypto handle
     TEST_INVAL_HANDLE(OS_CryptoKey_generate(NULL, hCrypto, &aes128Spec));
@@ -345,7 +345,7 @@ static OS_Error_t
 do_makePublic(
     OS_Crypto_Handle_t         hCrypto,
     const OS_Crypto_Mode_t     mode,
-    const bool                 expo,
+    const bool                 keepLocal,
     const OS_CryptoKey_Spec_t* spec)
 {
     OS_Error_t err;
@@ -353,17 +353,17 @@ do_makePublic(
     OS_CryptoKey_Data_t expData;
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hPrvKey, hCrypto, spec));
-    TEST_LOCACTION_EXP(mode, expo, hPrvKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hPrvKey);
     if ((err = OS_CryptoKey_makePublic(&hPubKey, hCrypto, hPrvKey,
                                        &spec->key.attribs)) != OS_SUCCESS)
     {
         return err;
     }
 
-    if (expo)
+    if (keepLocal)
     {
         TEST_SUCCESS(OS_CryptoKey_export(hPubKey, &expData));
-        TEST_LOCACTION_EXP(mode, expo, hPubKey);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hPubKey);
         switch (spec->key.type)
         {
         case OS_CryptoKey_TYPE_RSA_PRV:
@@ -399,21 +399,21 @@ static void
 test_OS_CryptoKey_makePublic_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Make DH pubkey, with privkey from bit spec
-    TEST_SUCCESS(do_makePublic(hCrypto, mode, expo, &dh64bSpec));
+    TEST_SUCCESS(do_makePublic(hCrypto, mode, keepLocal, &dh64bSpec));
 
     // Make DH pubkey, with privkey from param spec
-    TEST_SUCCESS(do_makePublic(hCrypto, mode, expo, &dh101pSpec));
+    TEST_SUCCESS(do_makePublic(hCrypto, mode, keepLocal, &dh101pSpec));
 
     // Make RSA pubkey
-    TEST_SUCCESS(do_makePublic(hCrypto, mode, expo, &rsa128Spec));
+    TEST_SUCCESS(do_makePublic(hCrypto, mode, keepLocal, &rsa128Spec));
 
     // Make SECP256r1 pubkey
-    TEST_SUCCESS(do_makePublic(hCrypto, mode, expo, &secp256r1Spec));
+    TEST_SUCCESS(do_makePublic(hCrypto, mode, keepLocal, &secp256r1Spec));
 
     TEST_FINISH();
 }
@@ -422,11 +422,11 @@ static void
 test_OS_CryptoKey_makePublic_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPrvKey, hPubKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hPrvKey, hCrypto, &dh64bSpec));
 
@@ -450,7 +450,7 @@ test_OS_CryptoKey_makePublic_neg(
 
     // Try making "public" from a symmetric key
     TEST_SUCCESS(OS_CryptoKey_generate(&hPrvKey, hCrypto, &aes128Spec));
-    TEST_LOCACTION_EXP(mode, expo, hPrvKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hPrvKey);
     TEST_INVAL_PARAM(OS_CryptoKey_makePublic(&hPubKey, hCrypto, hPrvKey,
                                              NULL));
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
@@ -462,22 +462,22 @@ static void
 test_OS_CryptoKey_getParams_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     size_t n;
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_DhParams_t dhParams;
     OS_CryptoKey_Data_t expData;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Generate params for DH
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &dh101pSpec));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
     n = sizeof(dhParams);
     TEST_SUCCESS(OS_CryptoKey_getParams(hKey, &dhParams, &n));
     TEST_TRUE(n == sizeof(dhParams));
-    if (expo)
+    if (keepLocal)
     {
         TEST_SUCCESS(OS_CryptoKey_export(hKey, &expData));
         TEST_TRUE(!memcmp(&expData.data.dh.prv.params, &dhParams, n));
@@ -495,16 +495,16 @@ static void
 test_OS_CryptoKey_getParams_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     size_t n;
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_DhParams_t dhParams;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &dh64bSpec));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     // Empty key handle
     n = sizeof(dhParams);
@@ -529,12 +529,12 @@ static void
 test_OS_CryptoKey_loadParams_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     size_t n;
     OS_CryptoKey_EccParams_t eccParams;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Load SECP192r1
     n = sizeof(eccParams);
@@ -562,12 +562,12 @@ static void
 test_OS_CryptoKey_loadParams_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     size_t n;
     OS_CryptoKey_EccParams_t eccParams;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Empty handle
     n = sizeof(eccParams);
@@ -601,12 +601,12 @@ static void
 test_OS_CryptoKey_getAttribs_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_Attrib_t attribs;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aes128Data));
 
@@ -625,12 +625,12 @@ static void
 test_OS_CryptoKey_getAttribs_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoKey_Attrib_t attribs;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aes128Data));
 
@@ -649,14 +649,14 @@ static void
 test_OS_CryptoKey_free_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
     TEST_FINISH();
@@ -666,14 +666,14 @@ static void
 test_OS_CryptoKey_free_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     // Empty key handle
     TEST_INVAL_HANDLE(OS_CryptoKey_free(NULL));
@@ -687,16 +687,16 @@ static void
 test_OS_CryptoKey_getParams_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     static unsigned char paramBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t paramLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &dh101pSpec));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     // Should be OK and give the correct length
     paramLen = OS_DATAPORT_DEFAULT_SIZE;
@@ -721,12 +721,12 @@ static void
 test_OS_CryptoKey_loadParams_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     static unsigned char paramBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t paramLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Should be OK
     paramLen = OS_DATAPORT_DEFAULT_SIZE;
@@ -755,49 +755,49 @@ void test_OS_CryptoKey(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool expo = true;
+    bool keepLocal = true;
 
-    keyData_setExportable(keyDataList, expo);
-    keySpec_setExportable(keySpecList, expo);
+    keyData_setLocality(keyDataList, keepLocal);
+    keySpec_setLocality(keySpecList, keepLocal);
 
-    test_OS_CryptoKey_import_pos(hCrypto, mode, expo);
-    test_OS_CryptoKey_import_neg(hCrypto, mode, expo);
+    test_OS_CryptoKey_import_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_import_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_export_pos(hCrypto, mode, expo);
-    test_OS_CryptoKey_export_neg(hCrypto, mode, expo);
+    test_OS_CryptoKey_export_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_export_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_generate_pos(hCrypto, mode, expo);
-    test_OS_CryptoKey_generate_neg(hCrypto, mode, expo);
+    test_OS_CryptoKey_generate_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_generate_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_makePublic_pos(hCrypto, mode, expo);
-    test_OS_CryptoKey_makePublic_neg(hCrypto, mode, expo);
+    test_OS_CryptoKey_makePublic_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_makePublic_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_getParams_pos(hCrypto, mode, expo);
-    test_OS_CryptoKey_getParams_neg(hCrypto, mode, expo);
+    test_OS_CryptoKey_getParams_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_getParams_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_loadParams_pos(hCrypto, mode, expo);
-    test_OS_CryptoKey_loadParams_neg(hCrypto, mode, expo);
+    test_OS_CryptoKey_loadParams_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_loadParams_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_getAttribs_pos(hCrypto, mode, expo);
-    test_OS_CryptoKey_getAttribs_neg(hCrypto, mode, expo);
+    test_OS_CryptoKey_getAttribs_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_getAttribs_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_free_pos(hCrypto, mode, expo);
-    test_OS_CryptoKey_free_neg(hCrypto, mode, expo);
+    test_OS_CryptoKey_free_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_free_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_getParams_buffer(hCrypto, mode, expo);
-    test_OS_CryptoKey_loadParams_buffer(hCrypto, mode, expo);
+    test_OS_CryptoKey_getParams_buffer(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_loadParams_buffer(hCrypto, mode, keepLocal);
 
-    // Make all used keys NON-EXPORTABLE and re-run parts of the tests
+    // Make all used keys remote and re-run parts of the tests
     if (mode == OS_Crypto_MODE_CLIENT)
     {
-        expo = false;
-        keyData_setExportable(keyDataList, expo);
-        keySpec_setExportable(keySpecList, expo);
+        keepLocal = false;
+        keyData_setLocality(keyDataList, keepLocal);
+        keySpec_setLocality(keySpecList, keepLocal);
 
-        test_OS_CryptoKey_import_pos(hCrypto, mode, expo);
-        test_OS_CryptoKey_generate_pos(hCrypto, mode, expo);
-        test_OS_CryptoKey_makePublic_pos(hCrypto, mode, expo);
-        test_OS_CryptoKey_getParams_pos(hCrypto, mode, expo);
-        test_OS_CryptoKey_loadParams_pos(hCrypto, mode, expo);
+        test_OS_CryptoKey_import_pos(hCrypto, mode, keepLocal);
+        test_OS_CryptoKey_generate_pos(hCrypto, mode, keepLocal);
+        test_OS_CryptoKey_makePublic_pos(hCrypto, mode, keepLocal);
+        test_OS_CryptoKey_getParams_pos(hCrypto, mode, keepLocal);
+        test_OS_CryptoKey_loadParams_pos(hCrypto, mode, keepLocal);
     }
 }

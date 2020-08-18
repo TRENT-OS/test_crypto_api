@@ -9,20 +9,20 @@
 
 #include <camkes.h>
 
-// Test location of object pointer based on exportable flag and api mode
-#define TEST_LOCACTION_EXP(m, e, o) {                   \
+// Test location of object pointer based on location
+#define TEST_LOCACTION_FLAG(m, l, o) {                   \
     intptr_t p = (intptr_t) OS_Crypto_getProxyPtr(o);   \
     if(m == OS_Crypto_MODE_LIBRARY_ONLY ||              \
-       (m == OS_Crypto_MODE_CLIENT && e)) {             \
+       (m == OS_Crypto_MODE_CLIENT && l)) {             \
         TEST_TRUE(!testServer_rpc_hasObject(p));        \
     } else if(m == OS_Crypto_MODE_CLIENT_ONLY ||        \
-              (m == OS_Crypto_MODE_CLIENT && !e)) {     \
+              (m == OS_Crypto_MODE_CLIENT && !l)) {     \
         TEST_TRUE(testServer_rpc_hasObject(p));         \
     }                                                   \
 }
 
 // Test location of object pointer based on api mode only (used with objects
-// which have no key attached and are thus independent of their exportability)
+// which have no key attached and are thus independent of key's locality)
 #define TEST_LOCACTION(m, o) {                          \
     intptr_t p = (intptr_t) OS_Crypto_getProxyPtr(o);   \
     if(m == OS_Crypto_MODE_LIBRARY_ONLY ||              \

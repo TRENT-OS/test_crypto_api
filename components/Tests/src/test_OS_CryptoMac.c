@@ -34,7 +34,7 @@ static macTestVector md5Vectors[NUM_MD5_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_MAC,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.mac = {
                 .bytes = {0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61},
                 .len = 16
@@ -52,7 +52,7 @@ static macTestVector md5Vectors[NUM_MD5_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_MAC,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.mac = {
                 .bytes = {0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61},
                 .len = 16
@@ -70,7 +70,7 @@ static macTestVector md5Vectors[NUM_MD5_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_MAC,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.mac = {
                 .bytes = {0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61},
                 .len = 70
@@ -95,7 +95,7 @@ static macTestVector sha256Vectors[NUM_SHA256_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_MAC,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.mac = {
                 .bytes = {0xcf, 0xd4, 0xa4, 0x49, 0x10, 0xc9, 0xe5, 0x67, 0x50, 0x7a, 0xbb, 0x6c, 0xed, 0xe4, 0xfe, 0x60, 0x1a, 0x7a, 0x27, 0x65, 0xc9, 0x75, 0x5a, 0xa2, 0xcf, 0x6b, 0xa4, 0x81, 0x42, 0x23, 0x81, 0x1a, 0x26, 0xa8, 0xa1, 0xef, 0x49, 0x9c, 0xeb, 0xd9},
                 .len = 40
@@ -113,7 +113,7 @@ static macTestVector sha256Vectors[NUM_SHA256_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_MAC,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.mac = {
                 .bytes = {0x54, 0x48, 0x99, 0x8f, 0x9d, 0x8f, 0x98, 0x53, 0x4a, 0xdd, 0xf0, 0xc8, 0xba, 0x63, 0x1c, 0x49, 0x6b, 0xf8, 0xa8, 0x00, 0x6c, 0xbb, 0x46, 0xad, 0x15, 0xfa, 0x1f, 0xa2, 0xf5, 0x53, 0x67, 0x12, 0x0c, 0x19, 0x34, 0x8c, 0x3a, 0xfa, 0x90, 0xc3},
                 .len = 40
@@ -131,7 +131,7 @@ static macTestVector sha256Vectors[NUM_SHA256_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_MAC,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.mac = {
                 .bytes = {0x9d, 0xa0, 0xc1, 0x14, 0x68, 0x2f, 0x82, 0xc1, 0xd1, 0xe9, 0xb5, 0x44, 0x30, 0x58, 0x0b, 0x9c, 0x56, 0x94, 0x89, 0xca, 0x16, 0xb9, 0x2e, 0xe1, 0x04, 0x98, 0xd5, 0x5d, 0x7c, 0xad, 0x5d, 0xb5, 0xe6, 0x52, 0x06, 0x34, 0x39, 0x31, 0x1e, 0x04},
                 .len = 40
@@ -188,21 +188,21 @@ static void
 test_OS_CryptoMac_do_HMAC_MD5(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
     {
         TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &md5Vectors[i].key));
-        TEST_LOCACTION_EXP(mode, expo, hKey);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
         TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                        OS_CryptoMac_ALG_HMAC_MD5));
-        TEST_LOCACTION_EXP(mode, expo, hMac);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
 
         TEST_SUCCESS(do_mac(hMac, &md5Vectors[i]));
 
@@ -217,23 +217,23 @@ static void
 test_OS_CryptoMac_do_HMAC_SHA256(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
     {
         TEST_SUCCESS(
             OS_CryptoKey_import(&hKey, hCrypto, &sha256Vectors[i].key));
 
-        TEST_LOCACTION_EXP(mode, expo, hKey);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
         TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                        OS_CryptoMac_ALG_HMAC_SHA256));
-        TEST_LOCACTION_EXP(mode, expo, hMac);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
 
         TEST_SUCCESS(do_mac(hMac, &sha256Vectors[i]));
 
@@ -248,19 +248,19 @@ static void
 test_OS_CryptoMac_process_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_EXP(mode, expo, hMac);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
 
     // Test with empty handle
     TEST_INVAL_HANDLE(OS_CryptoMac_process(NULL, vec->msg.bytes, vec->msg.len));
@@ -281,7 +281,7 @@ static void
 test_OS_CryptoMac_finalize_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
@@ -289,13 +289,13 @@ test_OS_CryptoMac_finalize_neg(
     char mac[64];
     size_t macSize = sizeof(mac);
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_EXP(mode, expo, hMac);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
 
     // Finalize without updating
     TEST_ABORTED(OS_CryptoMac_finalize(hMac, mac, &macSize));
@@ -327,7 +327,7 @@ static void
 test_OS_CryptoMac_process_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
@@ -335,13 +335,13 @@ test_OS_CryptoMac_process_buffer(
     static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_EXP(mode, expo, hMac);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
 
     // Should go OK
     inLen = OS_DATAPORT_DEFAULT_SIZE;
@@ -361,7 +361,7 @@ static void
 test_OS_CryptoMac_finalize_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
@@ -370,14 +370,14 @@ test_OS_CryptoMac_finalize_buffer(
            outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_EXP(mode, expo, hMac);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
     inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
     // Should be OK, as we are below the dataport limit
@@ -387,7 +387,7 @@ test_OS_CryptoMac_finalize_buffer(
 
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_EXP(mode, expo, hMac);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
     inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
     // Should fail because out buffer is potentially too big
@@ -397,7 +397,7 @@ test_OS_CryptoMac_finalize_buffer(
 
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_EXP(mode, expo, hMac);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
     inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
     // This should fail but give us the expected buffer size
@@ -415,21 +415,21 @@ static void
 test_OS_CryptoMac_init_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     // Test HMAC_MD5
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_EXP(mode, expo, hMac);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
     TEST_SUCCESS(OS_CryptoMac_free(hMac));
 
     // Test HMAC_SHA256
@@ -446,16 +446,16 @@ static void
 test_OS_CryptoMac_init_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     // Empty mac handle
     TEST_INVAL_HANDLE(OS_CryptoMac_init(NULL, hCrypto, hKey,
@@ -481,20 +481,20 @@ static void
 test_OS_CryptoMac_free_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoMac_Handle_t hMac;
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
-    TEST_LOCACTION_EXP(mode, expo, hKey);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_EXP(mode, expo, hMac);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
     TEST_SUCCESS(OS_CryptoMac_free(hMac));
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
@@ -506,9 +506,9 @@ static void
 test_OS_CryptoMac_free_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     // Empty handle
     TEST_INVAL_HANDLE(OS_CryptoMac_free(NULL));
@@ -521,36 +521,36 @@ test_OS_CryptoMac(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool expo = true;
+    bool keepLocal = true;
 
-    keyData_setExportable(testKeyDataList, expo);
+    keyData_setLocality(testKeyDataList, keepLocal);
 
-    test_OS_CryptoMac_init_pos(hCrypto, mode, expo);
-    test_OS_CryptoMac_init_neg(hCrypto, mode, expo);
+    test_OS_CryptoMac_init_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoMac_init_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoMac_free_pos(hCrypto, mode, expo);
-    test_OS_CryptoMac_free_neg(hCrypto, mode, expo);
+    test_OS_CryptoMac_free_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoMac_free_neg(hCrypto, mode, keepLocal);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_OS_CryptoMac_process_neg(hCrypto, mode, expo);
-    test_OS_CryptoMac_finalize_neg(hCrypto, mode, expo);
+    test_OS_CryptoMac_process_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoMac_finalize_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoMac_process_buffer(hCrypto, mode, expo);
-    test_OS_CryptoMac_finalize_buffer(hCrypto, mode, expo);
+    test_OS_CryptoMac_process_buffer(hCrypto, mode, keepLocal);
+    test_OS_CryptoMac_finalize_buffer(hCrypto, mode, keepLocal);
 
     // Test vectors
-    test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, expo);
-    test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, expo);
+    test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, keepLocal);
+    test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, keepLocal);
 
     if (mode == OS_Crypto_MODE_CLIENT)
     {
-        expo = false;
+        keepLocal = false;
 
-        keyData_setExportable(testKeyDataList, expo);
+        keyData_setLocality(testKeyDataList, keepLocal);
 
         // Test vectors
-        test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, expo);
-        test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, expo);
+        test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, keepLocal);
+        test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, keepLocal);
     }
 }

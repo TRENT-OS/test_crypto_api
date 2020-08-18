@@ -18,7 +18,7 @@
 static OS_CryptoKey_Data_t dh101PrvData =
 {
     .type = OS_CryptoKey_TYPE_DH_PRV,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.dh.prv = {
         .params = {
             .pBytes = {0x12, 0xdf, 0x4d, 0x76, 0x89, 0xdf, 0xf4, 0xc9, 0x9d, 0x9a, 0xe5, 0x7d, 0x07},
@@ -33,7 +33,7 @@ static OS_CryptoKey_Data_t dh101PrvData =
 static OS_CryptoKey_Data_t dh101PubData =
 {
     .type = OS_CryptoKey_TYPE_DH_PUB,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.dh.pub = {
         .params = {
             .pBytes  = {0x12, 0xdf, 0x4d, 0x76, 0x89, 0xdf, 0xf4, 0xc9, 0x9d, 0x9a, 0xe5, 0x7d, 0x07},
@@ -48,7 +48,7 @@ static OS_CryptoKey_Data_t dh101PubData =
 static OS_CryptoKey_Data_t rsa1024PrvData =
 {
     .type = OS_CryptoKey_TYPE_RSA_PRV,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.rsa.prv = {
         .dBytes = {
             0x35, 0xe7, 0x4c, 0x80, 0x45, 0x9c, 0x4e, 0x69, 0x83, 0x2c, 0x62, 0xac, 0x26, 0x2d, 0x58, 0xac,
@@ -84,7 +84,7 @@ static OS_CryptoKey_Data_t rsa1024PrvData =
 static OS_CryptoKey_Data_t rsa1024PubData =
 {
     .type = OS_CryptoKey_TYPE_RSA_PUB,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.rsa.pub = {
         .nBytes = {
             0x92, 0x22, 0xa2, 0x1b, 0x01, 0x61, 0xff, 0xc3, 0xdd, 0xc0, 0x4f, 0x8e, 0x91, 0xf1, 0xcc, 0x1f,
@@ -106,7 +106,7 @@ static OS_CryptoKey_Data_t rsa1024PubData =
 static OS_CryptoKey_Data_t rsaSmallData =
 {
     .type = OS_CryptoKey_TYPE_RSA_PRV,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.rsa.prv = {
         .dBytes = {
             0xc7, 0xec, 0x25, 0xbb, 0x4b
@@ -129,7 +129,7 @@ static OS_CryptoKey_Data_t rsaSmallData =
 static OS_CryptoKey_Data_t rsaLargeData =
 {
     .type = OS_CryptoKey_TYPE_RSA_PRV,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.rsa.prv = {
         .dBytes = {
             0xc7, 0xec, 0x25, 0xbb, 0x4b
@@ -152,7 +152,7 @@ static OS_CryptoKey_Data_t rsaLargeData =
 static OS_CryptoKey_Data_t secp256r1PrvData =
 {
     .type = OS_CryptoKey_TYPE_SECP256R1_PRV,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.secp256r1.prv = {
         .dBytes = {
             0xc6, 0xef, 0x9c, 0x5d, 0x78, 0xae, 0x01, 0x2a, 0x01, 0x11, 0x64, 0xac, 0xb3, 0x97, 0xce, 0x20,
@@ -164,7 +164,7 @@ static OS_CryptoKey_Data_t secp256r1PrvData =
 static OS_CryptoKey_Data_t secp256r1PubData =
 {
     .type = OS_CryptoKey_TYPE_SECP256R1_PUB,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.secp256r1.pub = {
         .qxBytes = {
             0xda, 0xd0, 0xb6, 0x53, 0x94, 0x22, 0x1c, 0xf9, 0xb0, 0x51, 0xe1, 0xfe, 0xca, 0x57, 0x87, 0xd0,
@@ -181,7 +181,7 @@ static OS_CryptoKey_Data_t secp256r1PubData =
 static OS_CryptoKey_Data_t aes128Data =
 {
     .type = OS_CryptoKey_TYPE_AES,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.aes = {
         .bytes = "0123456789abcdef",
         .len = 16
@@ -190,7 +190,7 @@ static OS_CryptoKey_Data_t aes128Data =
 static OS_CryptoKey_Data_t aes192Data =
 {
     .type = OS_CryptoKey_TYPE_AES,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.aes = {
         .bytes = "0123456789abcdef01234567",
         .len = 24
@@ -199,7 +199,7 @@ static OS_CryptoKey_Data_t aes192Data =
 static OS_CryptoKey_Data_t aes256Data =
 {
     .type = OS_CryptoKey_TYPE_AES,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.aes = {
         .bytes = "0123456789abcdef0123456789abcdef",
         .len = 32
@@ -208,7 +208,7 @@ static OS_CryptoKey_Data_t aes256Data =
 static OS_CryptoKey_Data_t aes120Data =
 {
     .type = OS_CryptoKey_TYPE_AES,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.aes = {
         .bytes = "0123456789abcde",
         .len = 15
@@ -217,7 +217,7 @@ static OS_CryptoKey_Data_t aes120Data =
 static OS_CryptoKey_Data_t macData =
 {
     .type = OS_CryptoKey_TYPE_MAC,
-    .attribs.exportable = true,
+    .attribs.keepLocal = true,
     .data.mac = {
         .bytes = "0123456789abcde",
         .len = 15
@@ -249,7 +249,7 @@ static OS_CryptoKey_Spec_t aes128Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_AES,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 128
     }
 };
@@ -258,7 +258,7 @@ static OS_CryptoKey_Spec_t aes192Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_AES,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 192
     }
 };
@@ -267,7 +267,7 @@ static OS_CryptoKey_Spec_t aes256Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_AES,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 256
     }
 };
@@ -276,7 +276,7 @@ static OS_CryptoKey_Spec_t aes120Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_AES,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 120
     }
 };
@@ -285,7 +285,7 @@ static OS_CryptoKey_Spec_t macSpec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_MAC,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 4096
     }
 };
@@ -294,7 +294,7 @@ static OS_CryptoKey_Spec_t dh64bSpec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_DH_PRV,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 64
     }
 };
@@ -303,7 +303,7 @@ static OS_CryptoKey_Spec_t dh101pSpec =
     .type = OS_CryptoKey_SPECTYPE_PARAMS,
     .key = {
         .type = OS_CryptoKey_TYPE_DH_PRV,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.dh = {
             .pBytes = {0x12, 0xdf, 0x4d, 0x76, 0x89, 0xdf, 0xf4, 0xc9, 0x9d, 0x9a, 0xe5, 0x7d, 0x07},
             .pLen   = 13,
@@ -317,7 +317,7 @@ static OS_CryptoKey_Spec_t dh63bSpec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_DH_PRV,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 63
     }
 };
@@ -325,7 +325,7 @@ static OS_CryptoKey_Spec_t dh64pSpec =
 {
     .type = OS_CryptoKey_SPECTYPE_PARAMS,
     .key = {
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .type = OS_CryptoKey_TYPE_DH_PRV,
     }
 };
@@ -334,7 +334,7 @@ static OS_CryptoKey_Spec_t rsa128Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_RSA_PRV,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 128
     }
 };
@@ -343,7 +343,7 @@ static OS_CryptoKey_Spec_t secp256r1Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_SECP256R1_PRV,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
     }
 };
 static OS_CryptoKey_Spec_t rsa127Spec =
@@ -351,7 +351,7 @@ static OS_CryptoKey_Spec_t rsa127Spec =
     .type = OS_CryptoKey_SPECTYPE_BITS,
     .key = {
         .type = OS_CryptoKey_TYPE_RSA_PRV,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .params.bits = 127
     }
 };
@@ -376,9 +376,9 @@ static OS_CryptoKey_Spec_t* keySpecList[] =
 #pragma GCC diagnostic pop
 
 INLINE void
-keyData_setExportable(
+keyData_setLocality(
     OS_CryptoKey_Data_t* dataList[],
-    bool                 exp)
+    bool                 keepLocal)
 {
     OS_CryptoKey_Data_t* pData;
     size_t i;
@@ -386,14 +386,14 @@ keyData_setExportable(
     i = 0;
     while ((pData = dataList[i++]) != NULL)
     {
-        pData->attribs.exportable = exp;
+        pData->attribs.keepLocal = keepLocal;
     }
 }
 
 INLINE void
-keySpec_setExportable(
+keySpec_setLocality(
     OS_CryptoKey_Spec_t* specList[],
-    bool                 exp)
+    bool                 keepLocal)
 {
     OS_CryptoKey_Spec_t* pSpec;
     size_t i;
@@ -401,6 +401,6 @@ keySpec_setExportable(
     i = 0;
     while ((pSpec = specList[i++]) != NULL)
     {
-        pSpec->key.attribs.exportable = exp;
+        pSpec->key.attribs.keepLocal = keepLocal;
     }
 }

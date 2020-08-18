@@ -89,7 +89,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_MD5,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xbf, 0x29, 0x65, 0x80, 0x0e, 0xb3, 0x82, 0xdc, 0x98, 0x24, 0x0e, 0xfb, 0xa9, 0xfd, 0x5b, 0xa0,
@@ -107,7 +107,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x15, 0xd1, 0x0c, 0x27, 0xf6, 0xc5, 0x8e, 0xf8, 0x4d, 0x16, 0xc4, 0x6c, 0xfd, 0x64, 0x10, 0x6a,
@@ -152,7 +152,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_MD5,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xbd, 0x9d, 0xba, 0x0e, 0x9a, 0x89, 0x0e, 0x20, 0x3b, 0x00, 0xab, 0x46, 0xa2, 0x41, 0xf1, 0x33,
@@ -169,7 +169,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x1e, 0x9f, 0xb1, 0x33, 0x77, 0x98, 0xe8, 0x0b, 0xa3, 0x8b, 0xdd, 0x9d, 0xa8, 0x49, 0xff, 0x23,
@@ -215,7 +215,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_NONE,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xbf, 0x29, 0x65, 0x80, 0x0e, 0xb3, 0x82, 0xdc, 0x98, 0x24, 0x0e, 0xfb, 0xa9, 0xfd, 0x5b, 0xa0,
@@ -232,7 +232,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x15, 0xd1, 0x0c, 0x27, 0xf6, 0xc5, 0x8e, 0xf8, 0x4d, 0x16, 0xc4, 0x6c, 0xfd, 0x64, 0x10, 0x6a,
@@ -278,7 +278,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_NONE,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xa1, 0xc0, 0xfc, 0x4d, 0xaf, 0xef, 0x81, 0x07, 0xd4, 0x3a, 0x43, 0x49, 0x89, 0x54, 0x07, 0x28,
@@ -295,7 +295,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x20, 0x03, 0xee, 0x0c, 0x44, 0x5b, 0xdf, 0xca, 0x98, 0x67, 0x75, 0xc4, 0xfa, 0xd0, 0xee, 0x5f,
@@ -345,7 +345,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_SHA256,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xb0, 0x66, 0x33, 0x2c, 0xc3, 0x92, 0x61, 0x1b, 0x67, 0x20, 0xd4, 0xac, 0x3e, 0xda, 0x64, 0x56,
@@ -366,7 +366,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x05, 0xba, 0x95, 0x4e, 0xb9, 0x72, 0xf3, 0x7b, 0xe8, 0xc3, 0x6d, 0xc7, 0x6d, 0x4a, 0xce, 0xf2,
@@ -424,7 +424,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_SHA256,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xd0, 0xf8, 0xd6, 0xe1, 0xf7, 0xfe, 0xab, 0x8f, 0xd2, 0x62, 0x86, 0x53, 0xc0, 0x0f, 0x07, 0x93,
@@ -445,7 +445,7 @@ static TestVector pkcs1V15Vectors[NUM_PKCS1_V15_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x01, 0x04, 0xcd, 0x8b, 0x61, 0x79, 0xa0, 0xdd, 0x7d, 0x21, 0x94, 0xd5, 0x10, 0xb1, 0x22, 0x10,
@@ -505,7 +505,7 @@ static TestVector pkcs1V21Vectors[NUM_PKCS1_V21_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_MD5,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xbf, 0x54, 0x54, 0xf8, 0x2c, 0xa9, 0xfc, 0x2b, 0xb5, 0xaa, 0x87, 0x41, 0x43, 0x8a, 0xeb, 0x53,
@@ -521,7 +521,7 @@ static TestVector pkcs1V21Vectors[NUM_PKCS1_V21_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x50, 0x45, 0x49, 0xd6, 0xcb, 0x2a, 0x4f, 0xf5, 0x68, 0xa4, 0xd0, 0x55, 0x25, 0xc8, 0xb9, 0x3d,
@@ -565,7 +565,7 @@ static TestVector pkcs1V21Vectors[NUM_PKCS1_V21_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_MD5,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xa7, 0x8a, 0xb6, 0x4a, 0x7e, 0x1d, 0xff, 0xbf, 0x6a, 0x32, 0xfc, 0xf7, 0x10, 0x18, 0x25, 0x5a,
@@ -582,7 +582,7 @@ static TestVector pkcs1V21Vectors[NUM_PKCS1_V21_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x01, 0xf1, 0x45, 0xef, 0x73, 0x7f, 0xe0, 0x8a, 0x5f, 0xc3, 0xab, 0x3d, 0x7d, 0x66, 0x72, 0x44,
@@ -631,7 +631,7 @@ static TestVector pkcs1V21Vectors[NUM_PKCS1_V21_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_MD5,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0xd9, 0x6f, 0xe4, 0xf1, 0xad, 0xff, 0xc3, 0x32, 0xc3, 0x9e, 0xde, 0xcc, 0xac, 0x5d, 0xae, 0x33,
@@ -652,7 +652,7 @@ static TestVector pkcs1V21Vectors[NUM_PKCS1_V21_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0xe8, 0x5a, 0x29, 0xf6, 0x19, 0x06, 0x42, 0xe7, 0xc6, 0xaf, 0x76, 0x56, 0x0f, 0x78, 0x0c, 0x2e,
@@ -706,7 +706,7 @@ static TestVector pkcs1V21Vectors[NUM_PKCS1_V21_VECTORS] =
         .hashType = OS_CryptoDigest_ALG_SHA256,
         .pubKey = {
             .type = OS_CryptoKey_TYPE_RSA_PUB,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.pub = {
                 .nBytes = {
                     0x98, 0x91, 0x18, 0x4b, 0x61, 0xd6, 0x6e, 0x2a, 0x76, 0x5e, 0xfe, 0x84, 0xce, 0x40, 0xe9, 0x4b,
@@ -723,7 +723,7 @@ static TestVector pkcs1V21Vectors[NUM_PKCS1_V21_VECTORS] =
         },
         .prvKey = {
             .type = OS_CryptoKey_TYPE_RSA_PRV,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.rsa.prv = {
                 .dBytes = {
                     0x25, 0xb9, 0x72, 0xe5, 0x68, 0xda, 0xc9, 0xc0, 0xcc, 0x26, 0x2f, 0x0f, 0x0d, 0xa4, 0xf5, 0x4a,
@@ -809,7 +809,7 @@ static OS_Error_t
 do_RSA_verify(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo,
+    const bool             keepLocal,
     OS_CryptoKey_Handle_t  hPubKey,
     int                    sigType,
     int                    hashType,
@@ -821,7 +821,7 @@ do_RSA_verify(
 
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
                                          sigType, hashType));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     if ((err = OS_CryptoSignature_verify(hSig, hash->bytes, hash->len,
                                          sig->bytes, sig->len)))
@@ -838,18 +838,18 @@ static void
 test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     TestVector* vec;
     OS_CryptoKey_Handle_t hPubKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_VECTORS; i++)
     {
         vec = &pkcs1V15Vectors[i];
         TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &vec->pubKey));
-        TEST_SUCCESS(do_RSA_verify(hCrypto, mode, expo, hPubKey,
+        TEST_SUCCESS(do_RSA_verify(hCrypto, mode, keepLocal, hPubKey,
                                    OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                    vec->hashType, &vec->hash, &vec->sig));
         TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
@@ -862,18 +862,18 @@ static void
 test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     TestVector* vec;
     OS_CryptoKey_Handle_t hPubKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V21_VECTORS; i++)
     {
         vec = &pkcs1V21Vectors[i];
         TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &vec->pubKey));
-        TEST_SUCCESS(do_RSA_verify(hCrypto, mode, expo, hPubKey,
+        TEST_SUCCESS(do_RSA_verify(hCrypto, mode, keepLocal, hPubKey,
                                    OS_CryptoSignature_ALG_RSA_PKCS1_V21,
                                    vec->hashType, &vec->hash, &vec->sig));
         TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
@@ -886,7 +886,7 @@ static OS_Error_t
 do_RSA_sign(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo,
+    const bool             keepLocal,
     OS_CryptoKey_Handle_t  hPrvKey,
     int                    sigType,
     int                    hashType,
@@ -900,7 +900,7 @@ do_RSA_sign(
 
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, NULL,
                                          sigType, hashType));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     if ((err = OS_CryptoSignature_sign(hSig, hash->bytes, hash->len, buf,
                                        &bufLen)))
@@ -918,18 +918,18 @@ static void
 test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPrvKey;
     TestVector* vec;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_VECTORS; i++)
     {
         vec = &pkcs1V15Vectors[i];
         TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &vec->prvKey));
-        TEST_SUCCESS(do_RSA_sign(hCrypto, mode, expo, hPrvKey,
+        TEST_SUCCESS(do_RSA_sign(hCrypto, mode, keepLocal, hPrvKey,
                                  OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                  vec->hashType, &vec->hash, &vec->sig));
         TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
@@ -942,7 +942,7 @@ static OS_Error_t
 do_RSA_rnd(
     OS_Crypto_Handle_t       hCrypto,
     const OS_Crypto_Mode_t   mode,
-    const bool               expo,
+    const bool               keepLocal,
     OS_CryptoSignature_Alg_t sigType,
     size_t                   keyBits,
     OS_CryptoDigest_Alg_t    hashType,
@@ -960,7 +960,7 @@ do_RSA_rnd(
     };
 
     rsaSpec.key.params.bits = keyBits;
-    rsaSpec.key.attribs.exportable = expo;
+    rsaSpec.key.attribs.keepLocal = keepLocal;
 
     // Generate random key pair and hash
     TEST_SUCCESS(OS_CryptoKey_generate(&hPrvKey, hCrypto, &rsaSpec));
@@ -972,7 +972,7 @@ do_RSA_rnd(
     // types of padding
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, hPubKey,
                                          sigType, hashType));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     // Sign
     TEST_SUCCESS(OS_CryptoSignature_sign(hSig, hash, hashBytes, sig, &sigLen));
@@ -995,13 +995,13 @@ static void
 test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_RND_TESTS; i++)
     {
-        TEST_SUCCESS(do_RSA_rnd(hCrypto, mode, expo,
+        TEST_SUCCESS(do_RSA_rnd(hCrypto, mode, keepLocal,
                                 OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                 pkcs1V15RndParams[i].keyBits,
                                 pkcs1V15RndParams[i].hashType,
@@ -1015,13 +1015,13 @@ static void
 test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V21_RND_TESTS; i++)
     {
-        TEST_SUCCESS(do_RSA_rnd(hCrypto, mode, expo,
+        TEST_SUCCESS(do_RSA_rnd(hCrypto, mode, keepLocal,
                                 OS_CryptoSignature_ALG_RSA_PKCS1_V21,
                                 pkcs1V21RndParams[i].keyBits,
                                 pkcs1V21RndParams[i].hashType,
@@ -1035,14 +1035,14 @@ static void
 test_OS_CryptoSignature_sign_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPrvKey, hPubKey;
     OS_CryptoSignature_Handle_t hSig;
     char signature[256], msgData[] = "test";
     size_t signatureSize = sizeof(signature);
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
@@ -1050,7 +1050,7 @@ test_OS_CryptoSignature_sign_neg(
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, NULL,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     // Use signature handle
     TEST_INVAL_HANDLE(OS_CryptoSignature_sign(NULL, msgData, strlen(msgData),
@@ -1083,7 +1083,7 @@ test_OS_CryptoSignature_sign_neg(
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
     TEST_ABORTED(OS_CryptoSignature_sign(hSig, msgData, strlen(msgData),
                                          signature, &signatureSize));
 
@@ -1098,21 +1098,21 @@ static void
 test_OS_CryptoSignature_verify_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
     char msgData[] = "test";
     uint8_t sig[1024];
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     // Use signature handle
     TEST_INVAL_HANDLE(OS_CryptoSignature_verify(NULL, msgData, strlen(msgData),
@@ -1140,7 +1140,7 @@ test_OS_CryptoSignature_verify_neg(
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, NULL,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
     TEST_ABORTED(OS_CryptoSignature_verify(hSig, msgData, strlen(msgData), sig,
                                            sizeof(sig)));
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
@@ -1155,12 +1155,12 @@ static void
 test_OS_CryptoSignature_init_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
@@ -1169,21 +1169,21 @@ test_OS_CryptoSignature_init_pos(
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, NULL,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
 
     // Init just with pub key
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
 
     // Use both keys
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, hPubKey,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
 
     TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
@@ -1196,12 +1196,12 @@ static void
 test_OS_CryptoSignature_init_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hPubKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
@@ -1250,18 +1250,18 @@ static void
 test_OS_CryptoSignature_free_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
 
@@ -1274,18 +1274,18 @@ static void
 test_OS_CryptoSignature_free_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     // Empty sig handle
     TEST_INVAL_HANDLE(OS_CryptoSignature_free(NULL));
@@ -1300,7 +1300,7 @@ static void
 test_OS_CryptoSignature_sign_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
@@ -1308,13 +1308,13 @@ test_OS_CryptoSignature_sign_buffer(
                         sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, NULL,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     // Should go through but then return ABORTED because crypto fails
     hashLen = OS_DATAPORT_DEFAULT_SIZE;
@@ -1353,7 +1353,7 @@ static void
 test_OS_CryptoSignature_verify_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey;
     OS_CryptoSignature_Handle_t hSig;
@@ -1361,13 +1361,13 @@ test_OS_CryptoSignature_verify_buffer(
                         sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
                                          OS_CryptoSignature_ALG_RSA_PKCS1_V15,
                                          OS_CryptoDigest_ALG_NONE));
-    TEST_LOCACTION_EXP(mode, expo, hSig);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
 
     // Should go through but fail with ABORTED because crypto fails
     sigLen = (rsa1024PrvData.data.rsa.prv.pLen + rsa1024PrvData.data.rsa.prv.qLen);
@@ -1391,21 +1391,21 @@ static void
 test_OS_CryptoSignature_key_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
-    // Test with both keys having different exportable attributes
-    rsa1024PrvData.attribs.exportable = false;
-    rsa1024PubData.attribs.exportable = true;
+    // Test with both keys having different locality attributes
+    rsa1024PrvData.attribs.keepLocal = false;
+    rsa1024PubData.attribs.keepLocal = true;
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
-    TEST_LOCACTION_EXP(mode, false, hPrvKey);
+    TEST_LOCACTION_FLAG(mode, false, hPrvKey);
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
-    TEST_LOCACTION_EXP(mode, true, hPubKey);
+    TEST_LOCACTION_FLAG(mode, true, hPubKey);
 
     // Should fail due to different key localities
     TEST_INVAL_HANDLE(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, hPubKey,
@@ -1423,57 +1423,57 @@ test_OS_CryptoSignature(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool expo = true;
+    bool keepLocal = true;
 
-    keyData_setExportable(keyDataList, expo);
-    keySpec_setExportable(keySpecList, expo);
+    keyData_setLocality(keyDataList, keepLocal);
+    keySpec_setLocality(keySpecList, keepLocal);
 
-    test_OS_CryptoSignature_init_pos(hCrypto, mode, expo);
-    test_OS_CryptoSignature_init_neg(hCrypto, mode, expo);
+    test_OS_CryptoSignature_init_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoSignature_init_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoSignature_free_pos(hCrypto, mode, expo);
-    test_OS_CryptoSignature_free_neg(hCrypto, mode, expo);
+    test_OS_CryptoSignature_free_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoSignature_free_neg(hCrypto, mode, keepLocal);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_OS_CryptoSignature_sign_neg(hCrypto, mode, expo);
-    test_OS_CryptoSignature_verify_neg(hCrypto, mode, expo);
+    test_OS_CryptoSignature_sign_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoSignature_verify_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoSignature_sign_buffer(hCrypto, mode, expo);
-    test_OS_CryptoSignature_verify_buffer(hCrypto, mode, expo);
+    test_OS_CryptoSignature_sign_buffer(hCrypto, mode, keepLocal);
+    test_OS_CryptoSignature_verify_buffer(hCrypto, mode, keepLocal);
 
     // Test vectors
-    test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, expo);
+    test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, keepLocal);
     test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(hCrypto, mode,
-                                                    expo);
+                                                    keepLocal);
     // We cannot do fixed test vectors for PKCS#1 V2.1 because the resulting
     // signatures are probablistic and we currently do not support providing
     // a fixed value as randomness during signing
     test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(hCrypto, mode,
-                                                    expo);
+                                                    keepLocal);
 
     // Generate random vectors and sign/verify with them
-    test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, expo);
-    test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, expo);
+    test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, keepLocal);
+    test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, keepLocal);
 
-    // Make all used keys NON-EXPORTABLE and re-run parts of the tests
+    // Make all used keys remote and re-run parts of the tests
     if (mode == OS_Crypto_MODE_CLIENT)
     {
-        expo = false;
+        keepLocal = false;
 
-        keyData_setExportable(keyDataList, expo);
-        keyData_setExportable(testKeyDataList, expo);
-        keySpec_setExportable(keySpecList, expo);
+        keyData_setLocality(keyDataList, keepLocal);
+        keyData_setLocality(testKeyDataList, keepLocal);
+        keySpec_setLocality(keySpecList, keepLocal);
 
-        test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, expo);
+        test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, keepLocal);
         test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(hCrypto, mode,
-                                                        expo);
+                                                        keepLocal);
         test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(hCrypto, mode,
-                                                        expo);
+                                                        keepLocal);
 
-        test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, expo);
-        test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, expo);
+        test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, keepLocal);
+        test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, keepLocal);
 
-        test_OS_CryptoSignature_key_neg(hCrypto, mode, expo);
+        test_OS_CryptoSignature_key_neg(hCrypto, mode, keepLocal);
     }
 }

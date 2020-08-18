@@ -124,7 +124,7 @@ testServer_rpc_loadKey(
     static OS_CryptoKey_Data_t aesKey =
     {
         .type = OS_CryptoKey_TYPE_AES,
-        .attribs.exportable = true,
+        .attribs.keepLocal = true,
         .data.aes = {
             .len   = 24,
             .bytes = {

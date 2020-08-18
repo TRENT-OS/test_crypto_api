@@ -39,7 +39,7 @@ static TestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_AES,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.aes = {
                 .len   = 16,
                 .bytes = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c},
@@ -66,7 +66,7 @@ static TestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_AES,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.aes = {
                 .len   = 24,
                 .bytes = {
@@ -87,7 +87,7 @@ static TestVector aesEcbVectors[NUM_AES_ECB_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_AES,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.aes = {
                 .len   = 32,
                 .bytes =
@@ -116,7 +116,7 @@ static TestVector aesCbcVectors[NUM_AES_CBC_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_AES,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.aes = {
                 .len   = 16,
                 .bytes = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c},
@@ -156,7 +156,7 @@ static TestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_AES,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.aes = {
                 .len   = 32,
                 .bytes = {
@@ -188,7 +188,7 @@ static TestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
     {
         .key = {
             .type = OS_CryptoKey_TYPE_AES,
-            .attribs.exportable = true,
+            .attribs.keepLocal = true,
             .data.aes = {
 
                 .len   = 32,
@@ -241,7 +241,7 @@ static OS_Error_t
 do_AES_ECB(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo,
+    const bool             keepLocal,
     OS_CryptoKey_Handle_t  hKey,
     int                    algo,
     const ByteVector*      din,
@@ -252,7 +252,7 @@ do_AES_ECB(
     size_t n = sizeof(buf);
 
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey, algo, NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, din->bytes, din->len, buf,
                                          &n));
     TEST_TRUE(n == dout->len);
@@ -266,17 +266,17 @@ static void
 test_OS_CryptoCipher_do_AES_ECB_enc(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
         TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesEcbVectors[i].key));
-        TEST_SUCCESS(do_AES_ECB(hCrypto, mode, expo, hKey,
+        TEST_SUCCESS(do_AES_ECB(hCrypto, mode, keepLocal, hKey,
                                 OS_CryptoCipher_ALG_AES_ECB_ENC,
                                 &aesEcbVectors[i].pt,
                                 &aesEcbVectors[i].ct));
@@ -290,17 +290,17 @@ static void
 test_OS_CryptoCipher_do_AES_ECB_dec(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
         TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesEcbVectors[i].key));
-        TEST_SUCCESS(do_AES_ECB(hCrypto, mode, expo, hKey,
+        TEST_SUCCESS(do_AES_ECB(hCrypto, mode, keepLocal, hKey,
                                 OS_CryptoCipher_ALG_AES_ECB_DEC,
                                 &aesEcbVectors[i].ct,
                                 &aesEcbVectors[i].pt));
@@ -314,14 +314,14 @@ static void
 test_OS_CryptoCipher_do_AES_ECB_rnd(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
     uint8_t pt[16], ct[16], tmp[16];
     size_t len;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -334,7 +334,7 @@ test_OS_CryptoCipher_do_AES_ECB_rnd(
         TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                           OS_CryptoCipher_ALG_AES_ECB_ENC,
                                           NULL, 0));
-        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
         TEST_SUCCESS(OS_CryptoCipher_process(hCipher, pt, sizeof(pt), ct, &len));
         TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
@@ -343,7 +343,7 @@ test_OS_CryptoCipher_do_AES_ECB_rnd(
         TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                           OS_CryptoCipher_ALG_AES_ECB_DEC,
                                           NULL, 0));
-        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
         TEST_SUCCESS(OS_CryptoCipher_process(hCipher, ct, sizeof(ct), tmp, &len));
         TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
         // Check decryption result
@@ -359,7 +359,7 @@ static OS_Error_t
 do_AES_CBC(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo,
+    const bool             keepLocal,
     OS_CryptoKey_Handle_t  hKey,
     int                    algo,
     const ByteVector*      iv,
@@ -372,7 +372,7 @@ do_AES_CBC(
 
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey, algo, iv->bytes,
                                       iv->len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, din->bytes, din->len, buf,
                                          &n));
     TEST_TRUE(n == dout->len);
@@ -386,17 +386,17 @@ static void
 test_OS_CryptoCipher_do_AES_CBC_enc(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
         TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesCbcVectors[i].key));
-        TEST_SUCCESS(do_AES_CBC(hCrypto, mode, expo, hKey,
+        TEST_SUCCESS(do_AES_CBC(hCrypto, mode, keepLocal, hKey,
                                 OS_CryptoCipher_ALG_AES_CBC_ENC,
                                 &aesCbcVectors[i].iv,
                                 &aesCbcVectors[i].pt,
@@ -411,17 +411,17 @@ static void
 test_OS_CryptoCipher_do_AES_CBC_dec(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
         TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesCbcVectors[i].key));
-        TEST_SUCCESS(do_AES_CBC(hCrypto, mode, expo, hKey,
+        TEST_SUCCESS(do_AES_CBC(hCrypto, mode, keepLocal, hKey,
                                 OS_CryptoCipher_ALG_AES_CBC_DEC,
                                 &aesCbcVectors[i].iv,
                                 &aesCbcVectors[i].ct,
@@ -436,14 +436,14 @@ static void
 test_OS_CryptoCipher_do_AES_CBC_rnd(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
     uint8_t pt[16], ct[16], tmp[16], iv[16];
     size_t len;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -457,7 +457,7 @@ test_OS_CryptoCipher_do_AES_CBC_rnd(
         TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                           OS_CryptoCipher_ALG_AES_CBC_ENC,
                                           iv, sizeof(iv)));
-        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
         TEST_SUCCESS(OS_CryptoCipher_process(hCipher, pt, sizeof(pt), ct, &len));
         TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
@@ -466,7 +466,7 @@ test_OS_CryptoCipher_do_AES_CBC_rnd(
         TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                           OS_CryptoCipher_ALG_AES_CBC_DEC,
                                           iv, sizeof(iv)));
-        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
         TEST_SUCCESS(OS_CryptoCipher_process(hCipher, ct, sizeof(ct), tmp, &len));
         TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
         // Check decryption result
@@ -482,7 +482,7 @@ static OS_Error_t
 do_AES_GCM(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo,
+    const bool             keepLocal,
     OS_CryptoKey_Handle_t  hKey,
     int                    algo,
     const ByteVector*      iv,
@@ -498,7 +498,7 @@ do_AES_GCM(
 
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey, algo, iv->bytes,
                                       iv->len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
     if (ad->len > 0)
     {
@@ -540,17 +540,17 @@ static void
 test_OS_CryptoCipher_do_AES_GCM_enc(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
         TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesGcmVectors[i].key));
-        TEST_SUCCESS(do_AES_GCM(hCrypto, mode, expo, hKey,
+        TEST_SUCCESS(do_AES_GCM(hCrypto, mode, keepLocal, hKey,
                                 OS_CryptoCipher_ALG_AES_GCM_ENC,
                                 &aesGcmVectors[i].iv,
                                 &aesGcmVectors[i].ad,
@@ -567,17 +567,17 @@ static void
 test_OS_CryptoCipher_do_AES_GCM_dec_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
         TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesGcmVectors[i].key));
-        TEST_SUCCESS(do_AES_GCM(hCrypto, mode, expo, hKey,
+        TEST_SUCCESS(do_AES_GCM(hCrypto, mode, keepLocal, hKey,
                                 OS_CryptoCipher_ALG_AES_GCM_DEC,
                                 &aesGcmVectors[i].iv,
                                 &aesGcmVectors[i].ad,
@@ -594,13 +594,13 @@ static void
 test_OS_CryptoCipher_do_AES_GCM_dec_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     const TestVector* vec = &aesGcmVectors[0];
     ByteVector brokenTag;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
 
@@ -610,7 +610,7 @@ test_OS_CryptoCipher_do_AES_GCM_dec_neg(
     brokenTag.bytes[0] ^= 0xff;
 
     // Check manipulated TAG is detected
-    TEST_ABORTED(do_AES_GCM(hCrypto, mode, expo, hKey,
+    TEST_ABORTED(do_AES_GCM(hCrypto, mode, keepLocal, hKey,
                             OS_CryptoCipher_ALG_AES_GCM_DEC,
                             &vec->iv, &vec->ad, &vec->ct, &vec->pt, &brokenTag));
 
@@ -623,14 +623,14 @@ static void
 test_OS_CryptoCipher_do_AES_GCM_rnd(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
     uint8_t pt[16], ct[16], tmp[16], iv[12], tag[16], ad[16];
     size_t len;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -645,7 +645,7 @@ test_OS_CryptoCipher_do_AES_GCM_rnd(
         TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                           OS_CryptoCipher_ALG_AES_GCM_ENC,
                                           iv, sizeof(iv)));
-        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
         TEST_SUCCESS(OS_CryptoCipher_start(hCipher, ad, sizeof(ad)));
         TEST_SUCCESS(OS_CryptoCipher_process(hCipher, pt, sizeof(pt), ct, &len));
         len = sizeof(tag);
@@ -657,7 +657,7 @@ test_OS_CryptoCipher_do_AES_GCM_rnd(
         TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                           OS_CryptoCipher_ALG_AES_GCM_DEC,
                                           iv, sizeof(iv)));
-        TEST_LOCACTION_EXP(mode, expo, hCipher);
+        TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
         TEST_SUCCESS(OS_CryptoCipher_start(hCipher, ad, sizeof(ad)));
         len = sizeof(tmp);
         TEST_SUCCESS(OS_CryptoCipher_process(hCipher, ct, sizeof(ct), tmp, &len));
@@ -676,13 +676,13 @@ static void
 test_OS_CryptoCipher_init_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
     const ByteVector* iv;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -691,14 +691,14 @@ test_OS_CryptoCipher_init_pos(
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_GCM_ENC,
                                       iv->bytes, iv->len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
     // Test GCM dec
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_GCM_DEC,
                                       iv->bytes, iv->len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
     // Test CBC enc
@@ -706,28 +706,28 @@ test_OS_CryptoCipher_init_pos(
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_CBC_ENC,
                                       iv->bytes, iv->len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
     // Test CBC dec
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_CBC_DEC,
                                       iv->bytes, iv->len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
     // Test ECB enc
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_ENC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
     // Test ECB dec
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_DEC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
@@ -739,13 +739,13 @@ static void
 test_OS_CryptoCipher_init_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey, hPubKey;
     const ByteVector* iv;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &secp256r1PubData));
@@ -806,18 +806,18 @@ static void
 test_OS_CryptoCipher_free_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_DEC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
     // Simply free
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
@@ -831,18 +831,18 @@ static void
 test_OS_CryptoCipher_free_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_DEC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
     // Test with empty handle
     TEST_INVAL_HANDLE(OS_CryptoCipher_free(NULL));
@@ -857,12 +857,12 @@ static void
 test_OS_CryptoCipher_start_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -870,7 +870,7 @@ test_OS_CryptoCipher_start_neg(
                                       OS_CryptoCipher_ALG_AES_GCM_ENC,
                                       aesGcmVectors[0].iv.bytes,
                                       aesGcmVectors[0].iv.len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
     // Start without crypto handle
     TEST_INVAL_HANDLE(OS_CryptoCipher_start(NULL, NULL, 0));
@@ -884,7 +884,7 @@ test_OS_CryptoCipher_start_neg(
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_ENC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_ABORTED(OS_CryptoCipher_start(hCipher, NULL, 0));
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
@@ -897,14 +897,14 @@ static void
 test_OS_CryptoCipher_process_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -912,7 +912,7 @@ test_OS_CryptoCipher_process_neg(
                                       OS_CryptoCipher_ALG_AES_GCM_ENC,
                                       aesGcmVectors[0].iv.bytes,
                                       aesGcmVectors[0].iv.len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
     // Process without calling start for GCM
     TEST_ABORTED(OS_CryptoCipher_process(hCipher, buf, 16, buf, &n));
@@ -946,7 +946,7 @@ test_OS_CryptoCipher_process_neg(
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_ENC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_INVAL_PARAM(OS_CryptoCipher_process(hCipher, buf, 18, buf, &n));
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
@@ -955,7 +955,7 @@ test_OS_CryptoCipher_process_neg(
                                       OS_CryptoCipher_ALG_AES_CBC_ENC,
                                       aesCbcVectors[0].iv.bytes,
                                       aesCbcVectors[0].iv.len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_INVAL_PARAM(OS_CryptoCipher_process(hCipher, buf, 18, buf, &n));
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
@@ -968,14 +968,14 @@ static void
 test_OS_CryptoCipher_finalize_neg(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -983,7 +983,7 @@ test_OS_CryptoCipher_finalize_neg(
                                       OS_CryptoCipher_ALG_AES_GCM_ENC,
                                       aesGcmVectors[0].iv.bytes,
                                       aesGcmVectors[0].iv.len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
     // Finalize without calling start+Process
     TEST_ABORTED(OS_CryptoCipher_finalize(hCipher, buf, &n));
@@ -1010,7 +1010,7 @@ test_OS_CryptoCipher_finalize_neg(
                                       OS_CryptoCipher_ALG_AES_GCM_DEC,
                                       aesGcmVectors[0].iv.bytes,
                                       aesGcmVectors[0].iv.len));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_start(hCipher, NULL, 0));
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, buf, 16, buf, &n));
     TEST_INVAL_PARAM(OS_CryptoCipher_finalize(hCipher, NULL, &n));
@@ -1025,7 +1025,7 @@ test_OS_CryptoCipher_finalize_neg(
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_ENC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     n = sizeof(buf);
     TEST_NOT_SUPP(OS_CryptoCipher_finalize(hCipher, buf, &n));
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
@@ -1039,14 +1039,14 @@ static void
 test_OS_CryptoCipher_init_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
     static unsigned char ivBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t ivLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -1055,7 +1055,7 @@ test_OS_CryptoCipher_init_buffer(
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_CBC_DEC,
                                       ivBuf, ivLen));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
     // Should fail with OS_ERROR_INVALID_PARAMETER beacause it is way too large
@@ -1081,20 +1081,20 @@ static void
 test_OS_CryptoCipher_start_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
     static unsigned char ivBuf[16], inputBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_GCM_ENC,
                                       ivBuf, 12));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
     // Should be OK
     inLen = OS_DATAPORT_DEFAULT_SIZE;
@@ -1113,7 +1113,7 @@ static void
 test_OS_CryptoCipher_process_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
@@ -1121,13 +1121,13 @@ test_OS_CryptoCipher_process_buffer(
                          outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_DEC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
     // This should go OK
     inLen = outLen = OS_DATAPORT_DEFAULT_SIZE;
@@ -1162,7 +1162,7 @@ test_OS_CryptoCipher_process_buffer(
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_ECB_DEC,
                                       NULL, 0));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     // Compute with same buffer used for input and output
     memcpy(inBuf, aesEcbVectors[0].ct.bytes, aesEcbVectors[0].ct.len);
     outLen = aesEcbVectors[0].pt.len;
@@ -1181,7 +1181,7 @@ static void
 test_OS_CryptoCipher_finalize_buffer(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
-    const bool             expo)
+    const bool             keepLocal)
 {
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
@@ -1189,14 +1189,14 @@ test_OS_CryptoCipher_finalize_buffer(
     static unsigned char tagBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t tagLen;
 
-    TEST_START(mode, expo);
+    TEST_START(mode, keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_GCM_ENC,
                                       iv, 12));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_start(hCipher, NULL, 0));
     tagLen = sizeof(outBuf);
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, inBuf, 16, outBuf, &tagLen));
@@ -1211,7 +1211,7 @@ test_OS_CryptoCipher_finalize_buffer(
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_GCM_ENC,
                                       iv, 12));
-    TEST_LOCACTION_EXP(mode, expo, hCipher);
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_start(hCipher, NULL, 0));
     tagLen = sizeof(outBuf);
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, inBuf, 16, outBuf, &tagLen));
@@ -1241,61 +1241,61 @@ test_OS_CryptoCipher(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool expo = true;
+    bool keepLocal = true;
 
-    keyData_setExportable(keyDataList, expo);
-    keyData_setExportable(testKeyDataList, expo);
-    keySpec_setExportable(keySpecList, expo);
+    keyData_setLocality(keyDataList, keepLocal);
+    keyData_setLocality(testKeyDataList, keepLocal);
+    keySpec_setLocality(keySpecList, keepLocal);
 
-    test_OS_CryptoCipher_init_pos(hCrypto, mode, expo);
-    test_OS_CryptoCipher_init_neg(hCrypto, mode, expo);
+    test_OS_CryptoCipher_init_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_init_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoCipher_free_pos(hCrypto, mode, expo);
-    test_OS_CryptoCipher_free_neg(hCrypto, mode, expo);
+    test_OS_CryptoCipher_free_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_free_neg(hCrypto, mode, keepLocal);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_OS_CryptoCipher_start_neg(hCrypto, mode, expo);
-    test_OS_CryptoCipher_process_neg(hCrypto, mode, expo);
-    test_OS_CryptoCipher_finalize_neg(hCrypto, mode, expo);
+    test_OS_CryptoCipher_start_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_process_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_finalize_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoCipher_init_buffer(hCrypto, mode, expo);
-    test_OS_CryptoCipher_start_buffer(hCrypto, mode, expo);
-    test_OS_CryptoCipher_process_buffer(hCrypto, mode, expo);
-    test_OS_CryptoCipher_finalize_buffer(hCrypto, mode, expo);
+    test_OS_CryptoCipher_init_buffer(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_start_buffer(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_process_buffer(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_finalize_buffer(hCrypto, mode, keepLocal);
 
     // Test vectors
-    test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, expo);
-    test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, expo);
-    test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, expo);
-    test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, expo);
-    test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, expo);
-    test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, expo);
-    test_OS_CryptoCipher_do_AES_GCM_dec_neg(hCrypto, mode, expo);
+    test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_GCM_dec_neg(hCrypto, mode, keepLocal);
 
     // Random values
-    test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, expo);
-    test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, expo);
-    test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, expo);
+    test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, keepLocal);
 
-    // Make all used keys NON-EXPORTABLE and re-run parts of the tests
+    // Make all used keys remote and re-run parts of the tests
     if (mode == OS_Crypto_MODE_CLIENT)
     {
-        expo = false;
+        keepLocal = false;
 
-        keyData_setExportable(keyDataList, expo);
-        keyData_setExportable(testKeyDataList, expo);
-        keySpec_setExportable(keySpecList, expo);
+        keyData_setLocality(keyDataList, keepLocal);
+        keyData_setLocality(testKeyDataList, keepLocal);
+        keySpec_setLocality(keySpecList, keepLocal);
 
-        test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, expo);
-        test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, expo);
-        test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, expo);
-        test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, expo);
-        test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, expo);
-        test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, expo);
+        test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, keepLocal);
 
-        test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, expo);
-        test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, expo);
-        test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, expo);
+        test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, keepLocal);
     }
 }
