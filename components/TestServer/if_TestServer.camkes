@@ -2,8 +2,12 @@
  * Copyright (C) 2020, Hensoldt Cyber GmbH
  */
 
+#include <if_OS_Crypto.camkes.h>
+
 procedure if_TestServer {
-    include "OS_Error.h";
+    include "OS_Crypto.h";
+
+    IF_OS_CRYPTO_CAMKES
 
     OS_Error_t
     openSession(
@@ -15,7 +19,7 @@ procedure if_TestServer {
 
     OS_Error_t
     loadKey(
-        out intptr_t ptr
+        out OS_CryptoKey_Handle_t ptr
     );
 
     int hasObject (

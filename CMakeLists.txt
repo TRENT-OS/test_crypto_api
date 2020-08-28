@@ -30,7 +30,7 @@ DeclareCAmkESComponent(
     LIBS
         os_core_api
         os_libs
-        os_crypto_with_rpc_client
+        os_crypto
 )
 
 DeclareCAmkESComponent(
@@ -43,7 +43,7 @@ DeclareCAmkESComponent(
     LIBS
         os_core_api
         os_libs
-        os_crypto_with_rpc_server
+        os_crypto
 )
 
 DeclareCAmkESComponent_EntropySource(

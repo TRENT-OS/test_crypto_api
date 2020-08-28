@@ -18,12 +18,9 @@ assembly {
         component   TestServer          rpcServer;
 
         connection seL4SharedData shared(
-            from    unitTests.crypto_port,
-            to      rpcServer.crypto_port);
-        connection seL4RPCCall call_0(
-            from    unitTests.crypto_rpc,
-            to      rpcServer.crypto_rpc);
-        connection seL4RPCCall call_1(
+            from    unitTests.testServer_port,
+            to      rpcServer.testServer_port);
+        connection seL4RPCCall call(
             from    unitTests.testServer_rpc,
             to      rpcServer.testServer_rpc);
 
