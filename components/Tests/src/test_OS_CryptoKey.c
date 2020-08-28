@@ -84,11 +84,11 @@ test_OS_CryptoKey_import_neg(
 
     TEST_START(mode, expo);
 
-    // Empty key
-    TEST_INVAL_PARAM(OS_CryptoKey_import(NULL, hCrypto, &aes128Data));
+    // Empty key handle
+    TEST_INVAL_HANDLE(OS_CryptoKey_import(NULL, hCrypto, &aes128Data));
 
-    // Empty crypto context
-    TEST_INVAL_PARAM(OS_CryptoKey_import(&hKey, NULL, &aes128Data));
+    // Empty crypto handle
+    TEST_INVAL_HANDLE(OS_CryptoKey_import(&hKey, NULL, &aes128Data));
 
     // Empty key data
     TEST_INVAL_PARAM(OS_CryptoKey_import(&hKey, hCrypto, NULL));
@@ -194,8 +194,8 @@ test_OS_CryptoKey_export_neg(
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aes128Data));
 
-    // Empty key
-    TEST_INVAL_PARAM(OS_CryptoKey_export(NULL, &expData));
+    // Empty key handle
+    TEST_INVAL_HANDLE(OS_CryptoKey_export(NULL, &expData));
 
     // Empty export data buffer
     TEST_INVAL_PARAM(OS_CryptoKey_export(hKey, NULL));
@@ -321,10 +321,10 @@ test_OS_CryptoKey_generate_neg(
     TEST_START(mode, expo);
 
     // Empty crypto handle
-    TEST_INVAL_PARAM(OS_CryptoKey_generate(NULL, hCrypto, &aes128Spec));
+    TEST_INVAL_HANDLE(OS_CryptoKey_generate(NULL, hCrypto, &aes128Spec));
 
     // Empty key handle
-    TEST_INVAL_PARAM(OS_CryptoKey_generate(&hKey, NULL, &aes128Spec));
+    TEST_INVAL_HANDLE(OS_CryptoKey_generate(&hKey, NULL, &aes128Spec));
 
     // Empty key spec
     TEST_INVAL_PARAM(OS_CryptoKey_generate(&hKey, hCrypto, NULL));
@@ -431,12 +431,12 @@ test_OS_CryptoKey_makePublic_neg(
     TEST_SUCCESS(OS_CryptoKey_generate(&hPrvKey, hCrypto, &dh64bSpec));
 
     // Empty target handle
-    TEST_INVAL_PARAM(OS_CryptoKey_makePublic(NULL, hCrypto, hPrvKey,
-                                             &dh64bSpec.key.attribs));
+    TEST_INVAL_HANDLE(OS_CryptoKey_makePublic(NULL, hCrypto, hPrvKey,
+                                              &dh64bSpec.key.attribs));
 
     // Empty crypto handle
-    TEST_INVAL_PARAM(OS_CryptoKey_makePublic(&hPubKey, NULL, hPrvKey,
-                                             &dh64bSpec.key.attribs));
+    TEST_INVAL_HANDLE(OS_CryptoKey_makePublic(&hPubKey, NULL, hPrvKey,
+                                              &dh64bSpec.key.attribs));
 
     // Empty private handle
     TEST_INVAL_HANDLE(OS_CryptoKey_makePublic(&hPubKey, hCrypto, NULL,
@@ -508,7 +508,7 @@ test_OS_CryptoKey_getParams_neg(
 
     // Empty key handle
     n = sizeof(dhParams);
-    TEST_INVAL_PARAM(OS_CryptoKey_getParams(NULL, &dhParams, &n));
+    TEST_INVAL_HANDLE(OS_CryptoKey_getParams(NULL, &dhParams, &n));
 
     // Empty buffer
     TEST_INVAL_PARAM(OS_CryptoKey_getParams(hKey, NULL, &n));
@@ -569,11 +569,11 @@ test_OS_CryptoKey_loadParams_neg(
 
     TEST_START(mode, expo);
 
-    // Empty context
+    // Empty handle
     n = sizeof(eccParams);
-    TEST_INVAL_PARAM(OS_CryptoKey_loadParams(NULL,
-                                             OS_CryptoKey_PARAM_ECC_SECP192R1,
-                                             &eccParams, &n));
+    TEST_INVAL_HANDLE(OS_CryptoKey_loadParams(NULL,
+                                              OS_CryptoKey_PARAM_ECC_SECP192R1,
+                                              &eccParams, &n));
 
     // Wrong param name
     TEST_NOT_SUPP(OS_CryptoKey_loadParams(hCrypto, 666, &eccParams, &n));
@@ -634,8 +634,8 @@ test_OS_CryptoKey_getAttribs_neg(
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aes128Data));
 
-    // Empty key object
-    TEST_INVAL_PARAM(OS_CryptoKey_getAttribs(NULL, &attribs));
+    // Empty key handle
+    TEST_INVAL_HANDLE(OS_CryptoKey_getAttribs(NULL, &attribs));
 
     // Empty attrib buffer
     TEST_INVAL_PARAM(OS_CryptoKey_getAttribs(hKey, NULL));
@@ -675,8 +675,8 @@ test_OS_CryptoKey_free_neg(
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_LOCACTION_EXP(mode, expo, hKey);
 
-    // Empty key
-    TEST_INVAL_PARAM(OS_CryptoKey_free(NULL));
+    // Empty key handle
+    TEST_INVAL_HANDLE(OS_CryptoKey_free(NULL));
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 

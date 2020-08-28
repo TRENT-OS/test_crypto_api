@@ -33,8 +33,8 @@ test_OS_CryptoRng_getBytes_neg(
 
     TEST_START(mode);
 
-    // Empty context
-    TEST_INVAL_PARAM(OS_CryptoRng_getBytes(NULL, 0, data, sizeof(data)));
+    // Empty crypto handle
+    TEST_INVAL_HANDLE(OS_CryptoRng_getBytes(NULL, 0, data, sizeof(data)));
 
     // Invalid flag
     TEST_NOT_SUPP(OS_CryptoRng_getBytes(hCrypto, 666, data, sizeof(data)));
@@ -71,8 +71,8 @@ test_OS_CryptoRng_reSeed_neg(
 
     TEST_START(mode);
 
-    // Empty context
-    TEST_INVAL_PARAM(OS_CryptoRng_reseed(NULL, seed, sizeof(seed)));
+    // Empty crypt handle
+    TEST_INVAL_HANDLE(OS_CryptoRng_reseed(NULL, seed, sizeof(seed)));
 
     // Empty buffer
     TEST_INVAL_PARAM(OS_CryptoRng_reseed(hCrypto, NULL, sizeof(seed)));

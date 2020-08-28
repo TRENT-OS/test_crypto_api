@@ -1052,9 +1052,9 @@ test_OS_CryptoSignature_sign_neg(
                                          OS_CryptoDigest_ALG_NONE));
     TEST_LOCACTION_EXP(mode, expo, hSig);
 
-    // Use empty context
-    TEST_INVAL_PARAM(OS_CryptoSignature_sign(NULL, msgData, strlen(msgData),
-                                             signature, &signatureSize));
+    // Use signature handle
+    TEST_INVAL_HANDLE(OS_CryptoSignature_sign(NULL, msgData, strlen(msgData),
+                                              signature, &signatureSize));
 
     // Use empty data
     TEST_INVAL_PARAM(OS_CryptoSignature_sign(hSig, NULL, strlen(msgData),
@@ -1114,9 +1114,9 @@ test_OS_CryptoSignature_verify_neg(
                                          OS_CryptoDigest_ALG_NONE));
     TEST_LOCACTION_EXP(mode, expo, hSig);
 
-    // Use empty context
-    TEST_INVAL_PARAM(OS_CryptoSignature_verify(NULL, msgData, strlen(msgData),
-                                               sig, sizeof(sig)));
+    // Use signature handle
+    TEST_INVAL_HANDLE(OS_CryptoSignature_verify(NULL, msgData, strlen(msgData),
+                                                sig, sizeof(sig)));
 
     // Use empty msg buffer
     TEST_INVAL_PARAM(OS_CryptoSignature_verify(hSig, NULL, strlen(msgData),
@@ -1206,20 +1206,20 @@ test_OS_CryptoSignature_init_neg(
     TEST_SUCCESS(OS_CryptoKey_generate(&hPubKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
 
-    // Use empty handle
-    TEST_INVAL_PARAM(OS_CryptoSignature_init(NULL, hCrypto, hPrvKey, NULL,
-                                             OS_CryptoSignature_ALG_RSA_PKCS1_V15,
-                                             OS_CryptoDigest_ALG_NONE));
+    // Use empty signature handle
+    TEST_INVAL_HANDLE(OS_CryptoSignature_init(NULL, hCrypto, hPrvKey, NULL,
+                                              OS_CryptoSignature_ALG_RSA_PKCS1_V15,
+                                              OS_CryptoDigest_ALG_NONE));
 
-    // Use empty context
-    TEST_INVAL_PARAM(OS_CryptoSignature_init(&hSig, NULL, hPrvKey, NULL,
-                                             OS_CryptoSignature_ALG_RSA_PKCS1_V15,
-                                             OS_CryptoDigest_ALG_NONE));
+    // Use empty crypto handle
+    TEST_INVAL_HANDLE(OS_CryptoSignature_init(&hSig, NULL, hPrvKey, NULL,
+                                              OS_CryptoSignature_ALG_RSA_PKCS1_V15,
+                                              OS_CryptoDigest_ALG_NONE));
 
-    // Use no keys
-    TEST_INVAL_PARAM(OS_CryptoSignature_init(&hSig, hCrypto, NULL, NULL,
-                                             OS_CryptoSignature_ALG_RSA_PKCS1_V15,
-                                             OS_CryptoDigest_ALG_NONE));
+    // Use empty key handles
+    TEST_INVAL_HANDLE(OS_CryptoSignature_init(&hSig, hCrypto, NULL, NULL,
+                                              OS_CryptoSignature_ALG_RSA_PKCS1_V15,
+                                              OS_CryptoDigest_ALG_NONE));
 
     // Use wrong type of key for prv
     TEST_INVAL_PARAM(OS_CryptoSignature_init(&hSig, hCrypto, hPubKey, NULL,
@@ -1287,8 +1287,8 @@ test_OS_CryptoSignature_free_neg(
                                          OS_CryptoDigest_ALG_NONE));
     TEST_LOCACTION_EXP(mode, expo, hSig);
 
-    // Empty context
-    TEST_INVAL_PARAM(OS_CryptoSignature_free(NULL));
+    // Empty sig handle
+    TEST_INVAL_HANDLE(OS_CryptoSignature_free(NULL));
 
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
     TEST_SUCCESS(OS_CryptoKey_free(hPubKey));

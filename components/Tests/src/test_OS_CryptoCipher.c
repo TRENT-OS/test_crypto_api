@@ -752,14 +752,14 @@ test_OS_CryptoCipher_init_neg(
 
     // Test empty cipher handle
     iv = &aesGcmVectors[0].iv;
-    TEST_INVAL_PARAM(OS_CryptoCipher_init(NULL, hCrypto, hKey,
-                                          OS_CryptoCipher_ALG_AES_GCM_ENC,
-                                          iv->bytes, iv->len));
+    TEST_INVAL_HANDLE(OS_CryptoCipher_init(NULL, hCrypto, hKey,
+                                           OS_CryptoCipher_ALG_AES_GCM_ENC,
+                                           iv->bytes, iv->len));
 
     // Test empty crypto handle
-    TEST_INVAL_PARAM(OS_CryptoCipher_init(&hCipher, NULL, hKey,
-                                          OS_CryptoCipher_ALG_AES_GCM_ENC,
-                                          iv->bytes, iv->len));
+    TEST_INVAL_HANDLE(OS_CryptoCipher_init(&hCipher, NULL, hKey,
+                                           OS_CryptoCipher_ALG_AES_GCM_ENC,
+                                           iv->bytes, iv->len));
 
     // Test empty key handle
     TEST_INVAL_HANDLE(OS_CryptoCipher_init(&hCipher, hCrypto, NULL,
@@ -845,7 +845,7 @@ test_OS_CryptoCipher_free_neg(
     TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // Test with empty handle
-    TEST_INVAL_PARAM(OS_CryptoCipher_free(NULL));
+    TEST_INVAL_HANDLE(OS_CryptoCipher_free(NULL));
 
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
@@ -873,7 +873,7 @@ test_OS_CryptoCipher_start_neg(
     TEST_LOCACTION_EXP(mode, expo, hCipher);
 
     // Start without crypto handle
-    TEST_INVAL_PARAM(OS_CryptoCipher_start(NULL, NULL, 0));
+    TEST_INVAL_HANDLE(OS_CryptoCipher_start(NULL, NULL, 0));
 
     // Start twice
     TEST_SUCCESS(OS_CryptoCipher_start(hCipher, NULL, 0));
@@ -917,9 +917,9 @@ test_OS_CryptoCipher_process_neg(
     // Process without calling start for GCM
     TEST_ABORTED(OS_CryptoCipher_process(hCipher, buf, 16, buf, &n));
 
-    // Process without context
+    // Process without handle
     TEST_SUCCESS(OS_CryptoCipher_start(hCipher, NULL, 0));
-    TEST_INVAL_PARAM(OS_CryptoCipher_process(NULL, buf, 16, buf, &n));
+    TEST_INVAL_HANDLE(OS_CryptoCipher_process(NULL, buf, 16, buf, &n));
 
     // Process with empty input buf
     TEST_INVAL_PARAM(OS_CryptoCipher_process(hCipher, NULL, 16, buf, &n));
@@ -994,8 +994,8 @@ test_OS_CryptoCipher_finalize_neg(
 
     TEST_SUCCESS(OS_CryptoCipher_process(hCipher, buf, 16, buf, &n));
 
-    // Finalize without context
-    TEST_INVAL_PARAM(OS_CryptoCipher_finalize(NULL, buf, &n));
+    // Finalize without handle
+    TEST_INVAL_HANDLE(OS_CryptoCipher_finalize(NULL, buf, &n));
 
     // Finalize without buffer in ENC mode (wants to write a tag)
     TEST_INVAL_PARAM(OS_CryptoCipher_finalize(hCipher, NULL, &n));
