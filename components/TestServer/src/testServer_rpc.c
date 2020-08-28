@@ -118,17 +118,16 @@ err:
 
 int
 testServer_rpc_hasObject(
-    CryptoLib_Object_ptr ptr)
+    intptr_t ptr)
 {
-    return (findObject(ptr) != -1) ? 1 : 0;
+    return (findObject((void*)ptr) != -1) ? 1 : 0;
 }
 
 OS_Error_t
 testServer_rpc_loadKey(
-    CryptoLib_Object_ptr* ptr)
+    intptr_t* hKey)
 {
     OS_Error_t err;
-    OS_CryptoKey_Handle_t hKey;
     static OS_CryptoKey_Data_t aesKey =
     {
         .type = OS_CryptoKey_TYPE_AES,
@@ -144,13 +143,13 @@ testServer_rpc_loadKey(
     };
 
     // Import key data into the Crypto API
-    if ((err = OS_CryptoKey_import(&hKey, hCrypto, &aesKey)) != OS_SUCCESS)
+    if ((err = OS_CryptoKey_import(
+                   (OS_CryptoKey_Handle_t*)hKey,
+                   hCrypto,
+                   &aesKey)) != OS_SUCCESS)
     {
         return err;
     }
-
-    // Send back only the pointer to the LIB Key object
-    *ptr = OS_Crypto_getLibObject(hKey);
 
     return OS_SUCCESS;
 }

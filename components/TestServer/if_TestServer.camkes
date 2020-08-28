@@ -3,7 +3,7 @@
  */
 
 procedure if_TestServer {
-    include "OS_Crypto.h";
+    include "OS_Error.h";
 
     OS_Error_t
     openSession(
@@ -15,10 +15,10 @@ procedure if_TestServer {
 
     OS_Error_t
     loadKey(
-        out CryptoLib_Object_ptr ptr
+        out intptr_t ptr
     );
 
     int hasObject (
-        in CryptoLib_Object_ptr ptr
+        in intptr_t ptr
     );
 };
