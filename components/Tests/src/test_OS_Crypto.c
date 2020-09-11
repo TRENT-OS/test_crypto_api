@@ -293,8 +293,6 @@ int run()
     test_OS_Crypto(hCrypto);
     test_OS_Crypto_createProxy_pos(hCrypto);
     test_OS_Crypto_createProxy_neg(hCrypto);
-    TEST_SUCCESS(OS_Crypto_free(hCrypto));
-    TEST_SUCCESS(testServer_rpc_closeSession());
 
     OS_Crypto_free(hCrypto);
     testServer_rpc_closeSession();
