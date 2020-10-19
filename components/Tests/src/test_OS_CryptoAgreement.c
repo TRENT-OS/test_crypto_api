@@ -506,7 +506,7 @@ test_OS_CryptoAgreement(
     test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, keepLocal);
 
     // Make all used keys remote and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_CLIENT)
+    if (mode == OS_Crypto_MODE_KEY_SWITCH)
     {
         keepLocal = false;
 

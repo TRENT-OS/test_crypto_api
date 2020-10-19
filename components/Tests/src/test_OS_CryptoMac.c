@@ -543,7 +543,7 @@ test_OS_CryptoMac(
     test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, keepLocal);
     test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, keepLocal);
 
-    if (mode == OS_Crypto_MODE_CLIENT)
+    if (mode == OS_Crypto_MODE_KEY_SWITCH)
     {
         keepLocal = false;
 

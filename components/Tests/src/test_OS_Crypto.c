@@ -43,21 +43,21 @@ void test_OS_CryptoSignature(
 // These are all the configurations of the Crypto API we want to test
 static OS_Crypto_Config_t cfgLib =
 {
-    .mode = OS_Crypto_MODE_LIBRARY_ONLY,
+    .mode = OS_Crypto_MODE_LIBRARY,
     .entropy = IF_OS_ENTROPY_ASSIGN(
         entropy_rpc,
         entropy_port),
 };
 static OS_Crypto_Config_t cfgRemote =
 {
-    .mode = OS_Crypto_MODE_CLIENT_ONLY,
+    .mode = OS_Crypto_MODE_CLIENT,
     .rpc = IF_OS_CRYPTO_ASSIGN(
         testServer_rpc,
         testServer_port),
 };
 static OS_Crypto_Config_t cfgClient =
 {
-    .mode = OS_Crypto_MODE_CLIENT,
+    .mode = OS_Crypto_MODE_KEY_SWITCH,
     .entropy = IF_OS_ENTROPY_ASSIGN(
         entropy_rpc,
         entropy_port),
@@ -77,14 +77,14 @@ test_OS_Crypto(
 
     switch (mode)
     {
-    case OS_Crypto_MODE_LIBRARY_ONLY:
-        strcpy(desc, "OS_Crypto_MODE_LIBRARY_ONLY");
+    case OS_Crypto_MODE_LIBRARY:
+        strcpy(desc, "OS_Crypto_MODE_LIBRARY");
+        break;
+    case OS_Crypto_MODE_KEY_SWITCH:
+        strcpy(desc, "OS_Crypto_MODE_KEY_SWITCH");
         break;
     case OS_Crypto_MODE_CLIENT:
         strcpy(desc, "OS_Crypto_MODE_CLIENT");
-        break;
-    case OS_Crypto_MODE_CLIENT_ONLY:
-        strcpy(desc, "OS_Crypto_MODE_CLIENT_ONLY");
         break;
     default:
         TEST_TRUE(1 == 0);

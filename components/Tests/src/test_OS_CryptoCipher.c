@@ -1279,7 +1279,7 @@ test_OS_CryptoCipher(
     test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, keepLocal);
 
     // Make all used keys remote and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_CLIENT)
+    if (mode == OS_Crypto_MODE_KEY_SWITCH)
     {
         keepLocal = false;
 

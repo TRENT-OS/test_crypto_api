@@ -77,7 +77,7 @@ my_free(
 
 static OS_Crypto_Config_t cfg =
 {
-    .mode = OS_Crypto_MODE_LIBRARY_ONLY,
+    .mode = OS_Crypto_MODE_LIBRARY,
     .memory = {
         .calloc = my_calloc,
         .free   = my_free,

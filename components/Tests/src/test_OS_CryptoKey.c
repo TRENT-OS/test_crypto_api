@@ -735,7 +735,7 @@ void test_OS_CryptoKey(
     test_OS_CryptoKey_loadParams_buffer(hCrypto, mode, keepLocal);
 
     // Make all used keys remote and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_CLIENT)
+    if (mode == OS_Crypto_MODE_KEY_SWITCH)
     {
         keepLocal = false;
         keyData_setLocality(keyDataList, keepLocal);
