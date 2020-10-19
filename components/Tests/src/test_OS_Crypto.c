@@ -51,7 +51,7 @@ static OS_Crypto_Config_t cfgLib =
 static OS_Crypto_Config_t cfgRemote =
 {
     .mode = OS_Crypto_MODE_CLIENT_ONLY,
-    .crypto = IF_OS_CRYPTO_ASSIGN(
+    .rpc = IF_OS_CRYPTO_ASSIGN(
         testServer_rpc,
         testServer_port),
 };
@@ -61,7 +61,7 @@ static OS_Crypto_Config_t cfgClient =
     .entropy = IF_OS_ENTROPY_ASSIGN(
         entropy_rpc,
         entropy_port),
-    .crypto = IF_OS_CRYPTO_ASSIGN(
+    .rpc = IF_OS_CRYPTO_ASSIGN(
         testServer_rpc,
         testServer_port)
 };
@@ -153,11 +153,11 @@ test_OS_Crypto_init_neg()
 
     // No dataport for CLIENT, ROUTER
     memcpy(&badCfg, &cfgRemote, sizeof(OS_Crypto_Config_t));
-    badCfg.crypto.dataport.io = NULL;
+    badCfg.rpc.dataport.io = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     memcpy(&badCfg, &cfgClient, sizeof(OS_Crypto_Config_t));
-    badCfg.crypto.dataport.io = NULL;
+    badCfg.rpc.dataport.io = NULL;
     TEST_INVAL_PARAM(OS_Crypto_init(&hCrypto, &badCfg));
 
     TEST_FINISH();
