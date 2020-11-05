@@ -10,12 +10,14 @@ import "components/Tests/test_OS_Crypto.camkes";
 import "components/TestServer/TestServer.camkes";
 
 #include "EntropySource/camkes/EntropySource.camkes"
-DECLARE_COMPONENT_EntropySource(EntropySource)
+EntropySource_COMPONENT_DECLARE(EntropySource)
 
 assembly {
     composition {
         component   test_OS_Crypto      unitTests;
         component   TestServer          rpcServer;
+        component   EntropySource       entropySource;
+        component   EntropySource       entropySource1;
 
         connection seL4SharedData shared(
             from    unitTests.testServer_port,
@@ -24,14 +26,12 @@ assembly {
             from    unitTests.testServer_rpc,
             to      rpcServer.testServer_rpc);
 
-         DECLARE_AND_CONNECT_INSTANCE_EntropySource(
-            EntropySource,
-            entropySource0,
+        EntropySource_INSTANCE_CONNECT_CLIENT(
+            entropySource,
             unitTests.entropy_rpc,
             unitTests.entropy_port)
 
-        DECLARE_AND_CONNECT_INSTANCE_EntropySource(
-            EntropySource,
+        EntropySource_INSTANCE_CONNECT_CLIENT(
             entropySource1,
             rpcServer.entropy_rpc,
             rpcServer.entropy_port)
