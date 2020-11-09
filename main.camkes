@@ -10,7 +10,7 @@ import "components/Tests/test_OS_Crypto.camkes";
 import "components/TestServer/TestServer.camkes";
 
 #include "EntropySource/camkes/EntropySource.camkes"
-EntropySource_COMPONENT_DECLARE(EntropySource)
+EntropySource_COMPONENT_DEFINE(EntropySource)
 
 assembly {
     composition {
