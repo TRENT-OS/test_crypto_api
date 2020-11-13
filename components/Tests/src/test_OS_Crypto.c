@@ -11,8 +11,9 @@
 
 #include "OS_Crypto.h"
 
-#include "TestMacros.h"
 #include "ObjectLocation.h"
+
+#include "LibMacros/Test.h"
 
 #include <camkes.h>
 #include <string.h>

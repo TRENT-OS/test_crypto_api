@@ -5,7 +5,8 @@
 #include "OS_Crypto.h"
 
 #include "ObjectLocation.h"
-#include "TestMacros.h"
+
+#include "LibMacros/Test.h"
 
 #include <string.h>
 

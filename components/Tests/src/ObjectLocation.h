@@ -5,7 +5,8 @@
 #pragma once
 
 #include "OS_Crypto.h"
-#include "TestMacros.h"
+
+#include "LibMacros/Test.h"
 
 #include <camkes.h>
 

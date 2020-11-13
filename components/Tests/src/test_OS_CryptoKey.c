@@ -6,7 +6,8 @@
 
 #include "ObjectLocation.h"
 #include "SharedKeys.h"
-#include "TestMacros.h"
+
+#include "LibMacros/Test.h"
 
 #include <string.h>
 
