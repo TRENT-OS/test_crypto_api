@@ -264,7 +264,7 @@ test_OS_CryptoMac_process_neg(
     TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
 
     // Test with empty handle
-    TEST_INVAL_HANDLE(OS_CryptoMac_process(NULL, vec->msg.bytes, vec->msg.len));
+    TEST_INVAL_PARAM(OS_CryptoMac_process(NULL, vec->msg.bytes, vec->msg.len));
 
     // Test with empty input
     TEST_INVAL_PARAM(OS_CryptoMac_process(hMac, NULL, vec->msg.len));
@@ -304,7 +304,7 @@ test_OS_CryptoMac_finalize_neg(
     TEST_SUCCESS(OS_CryptoMac_process(hMac, vec->msg.bytes, vec->msg.len));
 
     // Finalize without handle
-    TEST_INVAL_HANDLE(OS_CryptoMac_finalize(NULL, mac, &macSize));
+    TEST_INVAL_PARAM(OS_CryptoMac_finalize(NULL, mac, &macSize));
 
     // Finalize without output buffer
     TEST_INVAL_PARAM(OS_CryptoMac_finalize(hMac, NULL, &macSize));
@@ -459,16 +459,16 @@ test_OS_CryptoMac_init_neg(
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
     // Empty mac handle
-    TEST_INVAL_HANDLE(OS_CryptoMac_init(NULL, hCrypto, hKey,
-                                        OS_CryptoMac_ALG_HMAC_MD5));
+    TEST_INVAL_PARAM(OS_CryptoMac_init(NULL, hCrypto, hKey,
+                                       OS_CryptoMac_ALG_HMAC_MD5));
 
     // Empty crypto handle
-    TEST_INVAL_HANDLE(OS_CryptoMac_init(&hMac, NULL, hKey,
-                                        OS_CryptoMac_ALG_HMAC_MD5));
+    TEST_INVAL_PARAM(OS_CryptoMac_init(&hMac, NULL, hKey,
+                                       OS_CryptoMac_ALG_HMAC_MD5));
 
     // Empty key handle
-    TEST_INVAL_HANDLE(OS_CryptoMac_init(&hMac, hCrypto, NULL,
-                                        OS_CryptoMac_ALG_HMAC_MD5));
+    TEST_INVAL_PARAM(OS_CryptoMac_init(&hMac, hCrypto, NULL,
+                                       OS_CryptoMac_ALG_HMAC_MD5));
 
     // Incorrect algorithm
     TEST_NOT_SUPP(OS_CryptoMac_init(&hMac, hCrypto, hKey, 666));
@@ -512,7 +512,7 @@ test_OS_CryptoMac_free_neg(
     TEST_START(mode, keepLocal);
 
     // Empty handle
-    TEST_INVAL_HANDLE(OS_CryptoMac_free(NULL));
+    TEST_INVAL_PARAM(OS_CryptoMac_free(NULL));
 
     TEST_FINISH();
 }

@@ -76,16 +76,16 @@ test_OS_CryptoAgreement_init_neg(
     TEST_SUCCESS(OS_CryptoKey_import(&hEcKey, hCrypto, &secp256r1PubData));
 
     // Try without agreement handle
-    TEST_INVAL_HANDLE(OS_CryptoAgreement_init(NULL, hCrypto, hEcKey,
-                                              OS_CryptoAgreement_ALG_ECDH));
+    TEST_INVAL_PARAM(OS_CryptoAgreement_init(NULL, hCrypto, hEcKey,
+                                             OS_CryptoAgreement_ALG_ECDH));
 
     // Try without crypto handle
-    TEST_INVAL_HANDLE(OS_CryptoAgreement_init(&hAgree, NULL, hEcKey,
-                                              OS_CryptoAgreement_ALG_ECDH));
+    TEST_INVAL_PARAM(OS_CryptoAgreement_init(&hAgree, NULL, hEcKey,
+                                             OS_CryptoAgreement_ALG_ECDH));
 
     // Try with invalid key handle
-    TEST_INVAL_HANDLE(OS_CryptoAgreement_init(&hAgree, hCrypto, NULL,
-                                              OS_CryptoAgreement_ALG_ECDH));
+    TEST_INVAL_PARAM(OS_CryptoAgreement_init(&hAgree, hCrypto, NULL,
+                                             OS_CryptoAgreement_ALG_ECDH));
 
     // Try with invalid algorithm
     TEST_NOT_SUPP(OS_CryptoAgreement_init(&hAgree, hCrypto, hEcKey, 666));
@@ -323,16 +323,16 @@ test_OS_CryptoAgreement_agree_neg(
 
     // Try without agreement handle
     n = sizeof(clientShared);
-    TEST_INVAL_HANDLE(OS_CryptoAgreement_agree(NULL, hPubKey, clientShared,
-                                               &n));
+    TEST_INVAL_PARAM(OS_CryptoAgreement_agree(NULL, hPubKey, clientShared,
+                                              &n));
 
     // Try with private key
     TEST_INVAL_PARAM(OS_CryptoAgreement_agree(hAgree, hPrvKey, clientShared,
                                               &n));
 
     // Try with no key handle
-    TEST_INVAL_HANDLE(OS_CryptoAgreement_agree(hAgree, NULL, clientShared,
-                                               &n));
+    TEST_INVAL_PARAM(OS_CryptoAgreement_agree(hAgree, NULL, clientShared,
+                                              &n));
 
     // Try without buffer
     TEST_INVAL_PARAM(OS_CryptoAgreement_agree(hAgree, hPubKey, NULL, &n));
@@ -392,7 +392,7 @@ test_OS_CryptoAgreement_free_neg(
     TEST_LOCACTION_FLAG(mode, keepLocal, hAgree);
 
     // Empty handle
-    TEST_INVAL_HANDLE(OS_CryptoAgreement_free(NULL));
+    TEST_INVAL_PARAM(OS_CryptoAgreement_free(NULL));
 
     TEST_SUCCESS(OS_CryptoAgreement_free(hAgree));
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
@@ -467,7 +467,7 @@ test_OS_CryptoAgreement_key_neg(
 
     // Should fail, because objects are in different locations
     n = sizeof(clientShared);
-    TEST_INVAL_HANDLE(agreeOnKey(hCrypto, mode, keepLocal,
+    TEST_INVAL_PARAM(agreeOnKey(hCrypto, mode, keepLocal,
                                  hPrvKey, hPubKey,
                                  OS_CryptoAgreement_ALG_ECDH,
                                  clientShared, &n));

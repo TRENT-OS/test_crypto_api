@@ -276,13 +276,13 @@ test_OS_CryptoDigest_clone_neg(
                                          vec->msg.len));
 
     // Empty dst handle
-    TEST_INVAL_HANDLE(OS_CryptoDigest_clone(NULL, hCrypto, hSrc));
+    TEST_INVAL_PARAM(OS_CryptoDigest_clone(NULL, hCrypto, hSrc));
 
     // Empty crypto handle
-    TEST_INVAL_HANDLE(OS_CryptoDigest_clone(&hDst, NULL, hSrc));
+    TEST_INVAL_PARAM(OS_CryptoDigest_clone(&hDst, NULL, hSrc));
 
     // Empty src handle
-    TEST_INVAL_HANDLE(OS_CryptoDigest_clone(&hDst, hCrypto, NULL));
+    TEST_INVAL_PARAM(OS_CryptoDigest_clone(&hDst, hCrypto, NULL));
 
     TEST_SUCCESS(OS_CryptoDigest_free(hSrc));
 
@@ -323,12 +323,12 @@ test_OS_CryptoDigest_init_neg(
     TEST_START(mode);
 
     // Test with emtpy handle
-    TEST_INVAL_HANDLE(OS_CryptoDigest_init(NULL, hCrypto,
-                                           OS_CryptoDigest_ALG_MD5));
+    TEST_INVAL_PARAM(OS_CryptoDigest_init(NULL, hCrypto,
+                                          OS_CryptoDigest_ALG_MD5));
 
     // Test with emtpy hCrypto
-    TEST_INVAL_HANDLE(OS_CryptoDigest_init(&hDigest, NULL,
-                                           OS_CryptoDigest_ALG_MD5));
+    TEST_INVAL_PARAM(OS_CryptoDigest_init(&hDigest, NULL,
+                                          OS_CryptoDigest_ALG_MD5));
 
     // Test with invalid algo id
     TEST_NOT_SUPP(OS_CryptoDigest_init(&hDigest, hCrypto, 666));
@@ -367,7 +367,7 @@ test_OS_CryptoDigest_free_neg(
     TEST_LOCACTION(mode, hDigest);
 
     // Test empty hCrypto
-    TEST_INVAL_HANDLE(OS_CryptoDigest_free(NULL));
+    TEST_INVAL_PARAM(OS_CryptoDigest_free(NULL));
 
     TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
@@ -389,8 +389,8 @@ test_OS_CryptoDigest_process_neg(
     TEST_LOCACTION(mode, hDigest);
 
     // Test with empty handle
-    TEST_INVAL_HANDLE(OS_CryptoDigest_process(NULL, vec->msg.bytes,
-                                              vec->msg.len));
+    TEST_INVAL_PARAM(OS_CryptoDigest_process(NULL, vec->msg.bytes,
+                                             vec->msg.len));
 
     // Test with empty input
     TEST_INVAL_PARAM(OS_CryptoDigest_process(hDigest, NULL, vec->msg.len));
@@ -426,7 +426,7 @@ test_OS_CryptoDigest_finalize_neg(
                                          vec->msg.len));
 
     // Finalize without handle
-    TEST_INVAL_HANDLE(OS_CryptoDigest_finalize(NULL, digest, &digestSize));
+    TEST_INVAL_PARAM(OS_CryptoDigest_finalize(NULL, digest, &digestSize));
 
     // Finalize without output buffer
     TEST_INVAL_PARAM(OS_CryptoDigest_finalize(hDigest, NULL, &digestSize));

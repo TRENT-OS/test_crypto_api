@@ -217,10 +217,10 @@ test_OS_Crypto_createProxy_neg(
     TEST_SUCCESS(testServer_rpc_loadKey(&hRemoteKey));
 
     // Empty key
-    TEST_INVAL_HANDLE(OS_Crypto_createProxy(NULL, hCrypto, hRemoteKey, false));
+    TEST_INVAL_PARAM(OS_Crypto_createProxy(NULL, hCrypto, hRemoteKey, false));
 
     // Empty ctx
-    TEST_INVAL_HANDLE(OS_Crypto_createProxy(&hKey, NULL, hRemoteKey, false));
+    TEST_INVAL_PARAM(OS_Crypto_createProxy(&hKey, NULL, hRemoteKey, false));
 
     // Invalid remote pointer
     TEST_INVAL_PARAM(OS_Crypto_createProxy(&hKey, hCrypto, NULL, false));
