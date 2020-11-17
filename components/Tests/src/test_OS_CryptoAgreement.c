@@ -341,10 +341,11 @@ test_OS_CryptoAgreement_agree_neg(
     TEST_INVAL_PARAM(OS_CryptoAgreement_agree(hAgree, hPubKey, clientShared,
                                               NULL));
 
-    // Try with too small buffer
+    // Try with too small buffer; should give us the right size though
     n = 17;
     TEST_TOO_SMALL(OS_CryptoAgreement_agree(hAgree, hPubKey, clientShared,
                                             &n));
+    TEST_TRUE(n == 32);
 
     TEST_SUCCESS(OS_CryptoAgreement_free(hAgree));
 
@@ -401,7 +402,7 @@ test_OS_CryptoAgreement_free_neg(
 }
 
 static void
-test_OS_CryptoAgreement_agree_buffer(
+test_OS_CryptoAgreement_agree_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -428,16 +429,10 @@ test_OS_CryptoAgreement_agree_buffer(
                                           &sharedLen));
     TEST_TRUE(sharedLen == dh101PubData.data.dh.pub.params.pLen);
 
-    // Should fail because it is too small but give minimum size
-    sharedLen = 10;
-    TEST_TOO_SMALL(OS_CryptoAgreement_agree(hAgree, hPubKey, sharedBuf,
-                                            &sharedLen));
-    TEST_TRUE(sharedLen == dh101PubData.data.dh.pub.params.pLen);
-
     // Should fail because output buffer is too big
     sharedLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoAgreement_agree(hAgree, hPubKey, sharedBuf,
-                                               &sharedLen));
+    TEST_INVAL_PARAM(OS_CryptoAgreement_agree(hAgree, hPubKey, sharedBuf,
+                                              &sharedLen));
 
     TEST_SUCCESS(OS_CryptoAgreement_free(hAgree));
     TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
@@ -468,9 +463,9 @@ test_OS_CryptoAgreement_key_neg(
     // Should fail, because objects are in different locations
     n = sizeof(clientShared);
     TEST_INVAL_PARAM(agreeOnKey(hCrypto, mode, keepLocal,
-                                 hPrvKey, hPubKey,
-                                 OS_CryptoAgreement_ALG_ECDH,
-                                 clientShared, &n));
+                                hPrvKey, hPubKey,
+                                OS_CryptoAgreement_ALG_ECDH,
+                                clientShared, &n));
 
     TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
@@ -496,8 +491,6 @@ test_OS_CryptoAgreement(
     test_OS_CryptoAgreement_free_pos(hCrypto, mode, keepLocal);
     test_OS_CryptoAgreement_free_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoAgreement_agree_buffer(hCrypto, mode, keepLocal);
-
     // Test vectors
     test_OS_CryptoAgreement_do_DH(hCrypto, mode, keepLocal);
     test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, keepLocal);
@@ -506,20 +499,21 @@ test_OS_CryptoAgreement(
     test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, keepLocal);
     test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, keepLocal);
 
-    // Make all used keys remote and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_KEY_SWITCH)
+    switch (mode)
     {
-        keepLocal = false;
-
-        keyData_setLocality(keyDataList, keepLocal);
-        keySpec_setLocality(keySpecList, keepLocal);
-
-        test_OS_CryptoAgreement_do_DH(hCrypto, mode, keepLocal);
-        test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, keepLocal);
-
-        test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, keepLocal);
-        test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, keepLocal);
-
-        test_OS_CryptoAgreement_key_neg(hCrypto, mode, keepLocal);
+    case OS_Crypto_MODE_CLIENT:
+        test_OS_CryptoAgreement_agree_dataport(hCrypto, mode, keepLocal);
+        break;
+    case OS_Crypto_MODE_KEY_SWITCH:
+        keyData_setLocality(keyDataList, false);
+        keySpec_setLocality(keySpecList, false);
+        test_OS_CryptoAgreement_do_DH(hCrypto, mode, false);
+        test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, false);
+        test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, false);
+        test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, false);
+        test_OS_CryptoAgreement_key_neg(hCrypto, mode, false);
+        break;
+    default:
+        break;
     }
 }

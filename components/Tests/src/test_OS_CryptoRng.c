@@ -84,7 +84,7 @@ test_OS_CryptoRng_reSeed_neg(
 }
 
 static void
-test_OS_CryptoRng_reSeed_buffer(
+test_OS_CryptoRng_reSeed_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
@@ -100,13 +100,13 @@ test_OS_CryptoRng_reSeed_buffer(
 
     // Should fail as input is too big
     seedLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoRng_reseed(hCrypto, seedBuf, seedLen));
+    TEST_INVAL_PARAM(OS_CryptoRng_reseed(hCrypto, seedBuf, seedLen));
 
     TEST_FINISH();
 }
 
 static void
-test_OS_CryptoRng_getBytes_buffer(
+test_OS_CryptoRng_getBytes_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
@@ -122,7 +122,7 @@ test_OS_CryptoRng_getBytes_buffer(
 
     // Should fail as output is too big
     rngLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoRng_getBytes(hCrypto, 0, rngBuf, rngLen));
+    TEST_INVAL_PARAM(OS_CryptoRng_getBytes(hCrypto, 0, rngBuf, rngLen));
 
     TEST_FINISH();
 }
@@ -138,6 +138,13 @@ test_OS_CryptoRng(
     test_OS_CryptoRng_reSeed_pos(hCrypto, mode);
     test_OS_CryptoRng_reSeed_neg(hCrypto, mode);
 
-    test_OS_CryptoRng_reSeed_buffer(hCrypto, mode);
-    test_OS_CryptoRng_getBytes_buffer(hCrypto, mode);
+    switch (mode)
+    {
+    case OS_Crypto_MODE_CLIENT:
+        test_OS_CryptoRng_reSeed_dataport(hCrypto, mode);
+        test_OS_CryptoRng_getBytes_dataport(hCrypto, mode);
+        break;
+    default:
+        break;
+    }
 }

@@ -431,9 +431,10 @@ test_OS_CryptoDigest_finalize_neg(
     // Finalize without output buffer
     TEST_INVAL_PARAM(OS_CryptoDigest_finalize(hDigest, NULL, &digestSize));
 
-    // Finalize without sufficient space
+    // Finalize without sufficient space; should give the expected size though
     digestSize = 4;
     TEST_TOO_SMALL(OS_CryptoDigest_finalize(hDigest, digest, &digestSize));
+    TEST_TRUE(digestSize == OS_CryptoDigest_SIZE_MD5);
 
     // Finalize twice
     digestSize = sizeof(digest);
@@ -446,7 +447,7 @@ test_OS_CryptoDigest_finalize_neg(
 }
 
 static void
-test_OS_CryptoDigest_process_buffer(
+test_OS_CryptoDigest_process_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
@@ -466,7 +467,7 @@ test_OS_CryptoDigest_process_buffer(
 
     // Should fail due to internal buffers being limited
     inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoDigest_process(hDigest, inBuf, inLen));
+    TEST_INVAL_PARAM(OS_CryptoDigest_process(hDigest, inBuf, inLen));
 
     TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
@@ -474,13 +475,13 @@ test_OS_CryptoDigest_process_buffer(
 }
 
 static void
-test_OS_CryptoDigest_finalize_buffer(
+test_OS_CryptoDigest_finalize_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
     OS_CryptoDigest_Handle_t hDigest;
     static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE],
-                         outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
+           outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
     TEST_START(mode);
@@ -488,32 +489,23 @@ test_OS_CryptoDigest_finalize_buffer(
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
-    inLen = OS_DATAPORT_DEFAULT_SIZE;
-    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, inBuf, inLen));
+
     // Should be OK, as we are below the dataport limit
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
     outLen = OS_DATAPORT_DEFAULT_SIZE;
+    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, inBuf, inLen));
     TEST_SUCCESS(OS_CryptoDigest_finalize(hDigest, outBuf, &outLen));
-    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
+    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
     TEST_LOCACTION(mode, hDigest);
-    inLen = OS_DATAPORT_DEFAULT_SIZE;
-    TEST_SUCCESS(OS_CryptoDigest_process(hDigest, inBuf, inLen));
+
     // Should fail because out buffer is potentially too big
-    outLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoDigest_finalize(hDigest, outBuf, &outLen));
-    TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
-
-    TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
-                                      OS_CryptoDigest_ALG_MD5));
-    TEST_LOCACTION(mode, hDigest);
     inLen = OS_DATAPORT_DEFAULT_SIZE;
+    outLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     TEST_SUCCESS(OS_CryptoDigest_process(hDigest, inBuf, inLen));
-    // This should fail but give us the expected buffer size
-    outLen = 10;
-    TEST_TOO_SMALL(OS_CryptoDigest_finalize(hDigest, outBuf, &outLen));
-    TEST_TRUE(outLen == OS_CryptoDigest_SIZE_MD5);
+    TEST_INVAL_PARAM(OS_CryptoDigest_finalize(hDigest, outBuf, &outLen));
     TEST_SUCCESS(OS_CryptoDigest_free(hDigest));
 
     TEST_FINISH();
@@ -538,10 +530,17 @@ test_OS_CryptoDigest(
     test_OS_CryptoDigest_process_neg(hCrypto, mode);
     test_OS_CryptoDigest_finalize_neg(hCrypto, mode);
 
-    test_OS_CryptoDigest_process_buffer(hCrypto, mode);
-    test_OS_CryptoDigest_finalize_buffer(hCrypto, mode);
-
     // Test vectors
     test_OS_CryptoDigest_do_SHA256(hCrypto, mode);
     test_OS_CryptoDigest_do_MD5(hCrypto, mode);
+
+    switch (mode)
+    {
+    case OS_Crypto_MODE_CLIENT:
+        test_OS_CryptoDigest_process_dataport(hCrypto, mode);
+        test_OS_CryptoDigest_finalize_dataport(hCrypto, mode);
+        break;
+    default:
+        break;
+    }
 }

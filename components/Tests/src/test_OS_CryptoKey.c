@@ -464,9 +464,10 @@ test_OS_CryptoKey_getParams_neg(
     // Empty buffer len
     TEST_INVAL_PARAM(OS_CryptoKey_getParams(hKey, &dhParams, NULL));
 
-    // Too small buffer len
+    // Too small buffer len; should give correct buffer size though
     n = 17;
     TEST_TOO_SMALL(OS_CryptoKey_getParams(hKey, &dhParams, &n));
+    TEST_TRUE(n == sizeof(OS_CryptoKey_DhParams_t));
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
@@ -520,8 +521,8 @@ test_OS_CryptoKey_loadParams_neg(
     // Empty handle
     n = sizeof(eccParams);
     TEST_INVAL_PARAM(OS_CryptoKey_loadParams(NULL,
-                                              OS_CryptoKey_PARAM_ECC_SECP192R1,
-                                              &eccParams, &n));
+                                             OS_CryptoKey_PARAM_ECC_SECP192R1,
+                                             &eccParams, &n));
 
     // Wrong param name
     TEST_NOT_SUPP(OS_CryptoKey_loadParams(hCrypto, 666, &eccParams, &n));
@@ -541,6 +542,7 @@ test_OS_CryptoKey_loadParams_neg(
     TEST_TOO_SMALL(OS_CryptoKey_loadParams(hCrypto,
                                            OS_CryptoKey_PARAM_ECC_SECP192R1,
                                            &eccParams, &n));
+    TEST_TRUE(n == sizeof(OS_CryptoKey_EccParams_t));
 
     TEST_FINISH();
 }
@@ -632,7 +634,7 @@ test_OS_CryptoKey_free_neg(
 }
 
 static void
-test_OS_CryptoKey_getParams_buffer(
+test_OS_CryptoKey_getParams_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -651,14 +653,9 @@ test_OS_CryptoKey_getParams_buffer(
     TEST_SUCCESS(OS_CryptoKey_getParams(hKey, paramBuf, &paramLen));
     TEST_TRUE(paramLen == sizeof(OS_CryptoKey_DhParams_t));
 
-    // Should fail but give the correct length
-    paramLen = 10;
-    TEST_TOO_SMALL(OS_CryptoKey_getParams(hKey, paramBuf, &paramLen));
-    TEST_TRUE(paramLen == sizeof(OS_CryptoKey_DhParams_t));
-
     // Should fail due buffer being too big
     paramLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoKey_getParams(hKey, paramBuf, &paramLen));
+    TEST_INVAL_PARAM(OS_CryptoKey_getParams(hKey, paramBuf, &paramLen));
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
@@ -666,7 +663,7 @@ test_OS_CryptoKey_getParams_buffer(
 }
 
 static void
-test_OS_CryptoKey_loadParams_buffer(
+test_OS_CryptoKey_loadParams_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -683,18 +680,11 @@ test_OS_CryptoKey_loadParams_buffer(
                                          paramBuf, &paramLen));
     TEST_TRUE(paramLen == sizeof(OS_CryptoKey_EccParams_t));
 
-    // Should fail, but give the minimum size
-    paramLen = 10;
-    TEST_TOO_SMALL(OS_CryptoKey_loadParams(hCrypto,
-                                           OS_CryptoKey_PARAM_ECC_SECP192R1,
-                                           paramBuf, &paramLen));
-    TEST_TRUE(paramLen == sizeof(OS_CryptoKey_EccParams_t));
-
     // Should fail because buffer is too big
     paramLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoKey_loadParams(hCrypto,
-                                              OS_CryptoKey_PARAM_ECC_SECP192R1,
-                                              paramBuf, &paramLen));
+    TEST_INVAL_PARAM(OS_CryptoKey_loadParams(hCrypto,
+                                             OS_CryptoKey_PARAM_ECC_SECP192R1,
+                                             paramBuf, &paramLen));
 
     TEST_FINISH();
 }
@@ -732,20 +722,22 @@ void test_OS_CryptoKey(
     test_OS_CryptoKey_free_pos(hCrypto, mode, keepLocal);
     test_OS_CryptoKey_free_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoKey_getParams_buffer(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_loadParams_buffer(hCrypto, mode, keepLocal);
-
-    // Make all used keys remote and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_KEY_SWITCH)
+    switch (mode)
     {
-        keepLocal = false;
-        keyData_setLocality(keyDataList, keepLocal);
-        keySpec_setLocality(keySpecList, keepLocal);
-
-        test_OS_CryptoKey_import_pos(hCrypto, mode, keepLocal);
-        test_OS_CryptoKey_generate_pos(hCrypto, mode, keepLocal);
-        test_OS_CryptoKey_makePublic_pos(hCrypto, mode, keepLocal);
-        test_OS_CryptoKey_getParams_pos(hCrypto, mode, keepLocal);
-        test_OS_CryptoKey_loadParams_pos(hCrypto, mode, keepLocal);
+    case OS_Crypto_MODE_CLIENT:
+        test_OS_CryptoKey_getParams_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoKey_loadParams_dataport(hCrypto, mode, keepLocal);
+        break;
+    case OS_Crypto_MODE_KEY_SWITCH:
+        keyData_setLocality(keyDataList, false);
+        keySpec_setLocality(keySpecList, false);
+        test_OS_CryptoKey_import_pos(hCrypto, mode, false);
+        test_OS_CryptoKey_generate_pos(hCrypto, mode, false);
+        test_OS_CryptoKey_makePublic_pos(hCrypto, mode, false);
+        test_OS_CryptoKey_getParams_pos(hCrypto, mode, false);
+        test_OS_CryptoKey_loadParams_pos(hCrypto, mode, false);
+        break;
+    default:
+        break;
     }
 }

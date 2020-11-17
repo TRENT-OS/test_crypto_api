@@ -309,9 +309,10 @@ test_OS_CryptoMac_finalize_neg(
     // Finalize without output buffer
     TEST_INVAL_PARAM(OS_CryptoMac_finalize(hMac, NULL, &macSize));
 
-    // Finalize without sufficient space
+    // Finalize without sufficient space; but give us the right size
     macSize = 4;
     TEST_TOO_SMALL(OS_CryptoMac_finalize(hMac, mac, &macSize));
+    TEST_TRUE(macSize == OS_CryptoMac_SIZE_HMAC_MD5);
 
     // Finalize twice
     macSize = sizeof(mac);
@@ -325,7 +326,7 @@ test_OS_CryptoMac_finalize_neg(
 }
 
 static void
-test_OS_CryptoMac_process_buffer(
+test_OS_CryptoMac_process_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -350,7 +351,7 @@ test_OS_CryptoMac_process_buffer(
 
     // Should fail due to internal buffers being limited
     inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoMac_process(hMac, inBuf, inLen));
+    TEST_INVAL_PARAM(OS_CryptoMac_process(hMac, inBuf, inLen));
 
     TEST_SUCCESS(OS_CryptoMac_free(hMac));
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
@@ -359,7 +360,7 @@ test_OS_CryptoMac_process_buffer(
 }
 
 static void
-test_OS_CryptoMac_finalize_buffer(
+test_OS_CryptoMac_finalize_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -376,35 +377,24 @@ test_OS_CryptoMac_finalize_buffer(
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
 
+    // Should be OK, as we are below the dataport limit
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
+    outLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
     TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
-    inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
-    // Should be OK, as we are below the dataport limit
-    outLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_finalize(hMac, outBuf, &outLen));
     TEST_SUCCESS(OS_CryptoMac_free(hMac));
 
-    TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
-                                   OS_CryptoMac_ALG_HMAC_MD5));
-    TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
-    inLen = OS_DATAPORT_DEFAULT_SIZE;
-    TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
     // Should fail because out buffer is potentially too big
+    inLen = OS_DATAPORT_DEFAULT_SIZE;
     outLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoMac_finalize(hMac, outBuf, &outLen));
-    TEST_SUCCESS(OS_CryptoMac_free(hMac));
-
     TEST_SUCCESS(OS_CryptoMac_init(&hMac, hCrypto, hKey,
                                    OS_CryptoMac_ALG_HMAC_MD5));
     TEST_LOCACTION_FLAG(mode, keepLocal, hMac);
-    inLen = OS_DATAPORT_DEFAULT_SIZE;
     TEST_SUCCESS(OS_CryptoMac_process(hMac, inBuf, inLen));
-    // This should fail but give us the expected buffer size
-    outLen = 10;
-    TEST_TOO_SMALL(OS_CryptoMac_finalize(hMac, outBuf, &outLen));
-    TEST_TRUE(outLen == OS_CryptoMac_SIZE_HMAC_MD5);
+    TEST_INVAL_PARAM(OS_CryptoMac_finalize(hMac, outBuf, &outLen));
     TEST_SUCCESS(OS_CryptoMac_free(hMac));
 
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
@@ -537,21 +527,22 @@ test_OS_CryptoMac(
     test_OS_CryptoMac_process_neg(hCrypto, mode, keepLocal);
     test_OS_CryptoMac_finalize_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoMac_process_buffer(hCrypto, mode, keepLocal);
-    test_OS_CryptoMac_finalize_buffer(hCrypto, mode, keepLocal);
-
     // Test vectors
     test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, keepLocal);
     test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, keepLocal);
 
-    if (mode == OS_Crypto_MODE_KEY_SWITCH)
+    switch (mode)
     {
-        keepLocal = false;
-
-        keyData_setLocality(testKeyDataList, keepLocal);
-
-        // Test vectors
-        test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, keepLocal);
-        test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, keepLocal);
+    case OS_Crypto_MODE_CLIENT:
+        test_OS_CryptoMac_process_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoMac_finalize_dataport(hCrypto, mode, keepLocal);
+        break;
+    case OS_Crypto_MODE_KEY_SWITCH:
+        keyData_setLocality(testKeyDataList, false);
+        test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, false);
+        test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, false);
+        break;
+    default:
+        break;
     }
 }

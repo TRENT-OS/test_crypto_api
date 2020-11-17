@@ -1077,6 +1077,8 @@ test_OS_CryptoSignature_sign_neg(
     signatureSize = 10;
     TEST_TOO_SMALL(OS_CryptoSignature_sign(hSig, msgData, strlen(msgData),
                                            signature, &signatureSize));
+    TEST_TRUE(signatureSize == (rsa1024PrvData.data.rsa.prv.pLen +
+                                rsa1024PrvData.data.rsa.prv.qLen));
 
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
 
@@ -1298,7 +1300,7 @@ test_OS_CryptoSignature_free_neg(
 }
 
 static void
-test_OS_CryptoSignature_sign_buffer(
+test_OS_CryptoSignature_sign_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -1306,7 +1308,7 @@ test_OS_CryptoSignature_sign_buffer(
     OS_CryptoKey_Handle_t hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
     static unsigned int hashBuf[OS_DATAPORT_DEFAULT_SIZE + 1],
-                        sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
+           sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
     TEST_START(mode, keepLocal);
@@ -1326,23 +1328,14 @@ test_OS_CryptoSignature_sign_buffer(
     // Should fail because input is too long
     hashLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     sigLen = OS_DATAPORT_DEFAULT_SIZE;
-    TEST_INSUFF_SPACE(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, sigBuf,
-                                              &sigLen));
+    TEST_INVAL_PARAM(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, sigBuf,
+                                             &sigLen));
 
     // Should fail because output is too long
     hashLen = OS_DATAPORT_DEFAULT_SIZE;
     sigLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, sigBuf,
-                                              &sigLen));
-
-    // Should fail but give us the required output size which is the size of the
-    // modulus of the private key, e.g., |N| = |P| + |Q|
-    hashLen = OS_CryptoDigest_SIZE_MD5;
-    sigLen = 10;
-    TEST_TOO_SMALL(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, sigBuf,
-                                           &sigLen));
-    TEST_TRUE(sigLen == (rsa1024PrvData.data.rsa.prv.pLen +
-                         rsa1024PrvData.data.rsa.prv.qLen));
+    TEST_INVAL_PARAM(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, sigBuf,
+                                             &sigLen));
 
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
     TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
@@ -1351,7 +1344,50 @@ test_OS_CryptoSignature_sign_buffer(
 }
 
 static void
-test_OS_CryptoSignature_verify_buffer(
+test_OS_CryptoSignature_sign_buffer(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode,
+    const bool             keepLocal)
+{
+    OS_CryptoKey_Handle_t hPrvKey;
+    OS_CryptoSignature_Handle_t hSig;
+    static unsigned int hashBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
+    size_t hashLen, sigLen;
+
+    TEST_START(mode, keepLocal);
+
+    TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto,
+                                     &pkcs1V15Vectors[0].prvKey));
+    TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, NULL,
+                                         OS_CryptoSignature_ALG_RSA_PKCS1_V15,
+                                         pkcs1V15Vectors[0].hashType));
+    TEST_LOCACTION_FLAG(mode, keepLocal, hSig);
+
+    // Let input/output buffer be the same; this should work, as long as we
+    // are below the DATAPORT size (which is the size internally used to
+    // have a buffer where a copy of the input is kept).
+    hashLen = pkcs1V15Vectors[0].hash.len;
+    sigLen = OS_DATAPORT_DEFAULT_SIZE;
+    memcpy(hashBuf, pkcs1V15Vectors[0].hash.bytes, hashLen);
+    TEST_SUCCESS(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, hashBuf, &sigLen));
+    TEST_TRUE(sigLen == pkcs1V15Vectors[0].sig.len);
+    TEST_TRUE(!memcmp(hashBuf, pkcs1V15Vectors[0].sig.bytes, sigLen));
+
+    // This should fail as input is too big for internal buffer; which is set
+    // to the size of the dataport.
+    hashLen = OS_DATAPORT_DEFAULT_SIZE + 1;
+    sigLen = OS_DATAPORT_DEFAULT_SIZE;
+    TEST_INVAL_PARAM(OS_CryptoSignature_sign(hSig, hashBuf, hashLen, hashBuf,
+                                             &sigLen));
+
+    TEST_SUCCESS(OS_CryptoSignature_free(hSig));
+    TEST_SUCCESS(OS_CryptoKey_free(hPrvKey));
+
+    TEST_FINISH();
+}
+
+static void
+test_OS_CryptoSignature_verify_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -1359,7 +1395,7 @@ test_OS_CryptoSignature_verify_buffer(
     OS_CryptoKey_Handle_t hPubKey;
     OS_CryptoSignature_Handle_t hSig;
     static unsigned int hashBuf[OS_DATAPORT_DEFAULT_SIZE + 1],
-                        sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
+           sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
     TEST_START(mode, keepLocal);
@@ -1376,11 +1412,11 @@ test_OS_CryptoSignature_verify_buffer(
     TEST_ABORTED(OS_CryptoSignature_verify(hSig, hashBuf, hashLen, sigBuf,
                                            sigLen));
 
-    // Should fail because the total of both is too big for internal buffer
+    // Should fail because the total of both is too big for the dataport
     hashLen = 16;
     sigLen = OS_DATAPORT_DEFAULT_SIZE;
-    TEST_INSUFF_SPACE(OS_CryptoSignature_verify(hSig, hashBuf, hashLen, sigBuf,
-                                                sigLen));
+    TEST_INVAL_PARAM(OS_CryptoSignature_verify(hSig, hashBuf, hashLen, sigBuf,
+                                               sigLen));
 
     TEST_SUCCESS(OS_CryptoSignature_free(hSig));
     TEST_SUCCESS(OS_CryptoKey_free(hPubKey));
@@ -1440,9 +1476,6 @@ test_OS_CryptoSignature(
     test_OS_CryptoSignature_sign_neg(hCrypto, mode, keepLocal);
     test_OS_CryptoSignature_verify_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoSignature_sign_buffer(hCrypto, mode, keepLocal);
-    test_OS_CryptoSignature_verify_buffer(hCrypto, mode, keepLocal);
-
     // Test vectors
     test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, keepLocal);
     test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(hCrypto, mode,
@@ -1457,24 +1490,27 @@ test_OS_CryptoSignature(
     test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, keepLocal);
     test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, keepLocal);
 
-    // Make all used keys remote and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_KEY_SWITCH)
+    switch (mode)
     {
-        keepLocal = false;
-
-        keyData_setLocality(keyDataList, keepLocal);
-        keyData_setLocality(testKeyDataList, keepLocal);
-        keySpec_setLocality(keySpecList, keepLocal);
-
-        test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, keepLocal);
-        test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(hCrypto, mode,
-                                                        keepLocal);
-        test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(hCrypto, mode,
-                                                        keepLocal);
-
-        test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, keepLocal);
-        test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, keepLocal);
-
-        test_OS_CryptoSignature_key_neg(hCrypto, mode, keepLocal);
+    case OS_Crypto_MODE_LIBRARY:
+        test_OS_CryptoSignature_sign_buffer(hCrypto, mode, keepLocal);
+        break;
+    case OS_Crypto_MODE_CLIENT:
+        test_OS_CryptoSignature_sign_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoSignature_verify_dataport(hCrypto, mode, keepLocal);
+        break;
+    case OS_Crypto_MODE_KEY_SWITCH:
+        keyData_setLocality(keyDataList, false);
+        keyData_setLocality(testKeyDataList, false);
+        keySpec_setLocality(keySpecList, false);
+        test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, false);
+        test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(hCrypto, mode, false);
+        test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(hCrypto, mode, false);
+        test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, false);
+        test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, false);
+        test_OS_CryptoSignature_key_neg(hCrypto, mode, false);
+        break;
+    default:
+        break;
     }
 }

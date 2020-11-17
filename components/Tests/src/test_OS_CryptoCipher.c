@@ -931,9 +931,10 @@ test_OS_CryptoCipher_process_neg(
     // Process without output buffer
     TEST_INVAL_PARAM(OS_CryptoCipher_process(hCipher, buf, 16, NULL, &n));
 
-    // Process with too small output buffer
+    // Process with too small output buffer; should give right size though
     n = 3;
     TEST_TOO_SMALL(OS_CryptoCipher_process(hCipher, buf, 16, buf, &n));
+    TEST_TRUE(n == 16);
 
     // Process without with non-aligned block (which is ok for last call to Process in GCM mode)
     // but then adding another block via Process
@@ -1037,7 +1038,7 @@ test_OS_CryptoCipher_finalize_neg(
 }
 
 static void
-test_OS_CryptoCipher_init_buffer(
+test_OS_CryptoCipher_init_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -1079,7 +1080,7 @@ test_OS_CryptoCipher_init_buffer(
 }
 
 static void
-test_OS_CryptoCipher_start_buffer(
+test_OS_CryptoCipher_start_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -1103,7 +1104,7 @@ test_OS_CryptoCipher_start_buffer(
 
     // Should fail because input is too big
     inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoCipher_start(hCipher, inputBuf, inLen));
+    TEST_INVAL_PARAM(OS_CryptoCipher_start(hCipher, inputBuf, inLen));
 
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
 
@@ -1118,8 +1119,54 @@ test_OS_CryptoCipher_process_buffer(
 {
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
+    static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
+    size_t inLen, outLen;
+
+    TEST_START(mode, keepLocal);
+
+    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesEcbVectors[0].key));
+    TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
+    TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
+                                      OS_CryptoCipher_ALG_AES_ECB_DEC,
+                                      NULL, 0));
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
+
+    // Let input/output buffer be the same; this should work, as long as we
+    // are below the DATAPORT size (which is the size internally used to
+    // have a buffer where a copy of the input is kept).
+    memcpy(inBuf, aesEcbVectors[0].ct.bytes, aesEcbVectors[0].ct.len);
+    inLen = aesEcbVectors[0].pt.len;
+    outLen = OS_DATAPORT_DEFAULT_SIZE;
+    TEST_SUCCESS(OS_CryptoCipher_process(hCipher,
+                                         inBuf, inLen,
+                                         inBuf, &outLen));
+    TEST_TRUE(outLen == aesEcbVectors[0].pt.len);
+    TEST_TRUE(!memcmp(inBuf, aesEcbVectors[0].pt.bytes,
+                      aesEcbVectors[0].pt.len));
+
+    // This should fail as input is too big for internal buffer; which is set
+    // to the size of the dataport.
+    inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
+    outLen = OS_DATAPORT_DEFAULT_SIZE;
+    TEST_INVAL_PARAM(OS_CryptoCipher_process(hCipher, inBuf, inLen, inBuf,
+                                             &outLen));
+
+    TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
+    TEST_SUCCESS(OS_CryptoKey_free(hKey));
+
+    TEST_FINISH();
+}
+
+static void
+test_OS_CryptoCipher_process_dataport(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode,
+    const bool             keepLocal)
+{
+    OS_CryptoKey_Handle_t hKey;
+    OS_CryptoCipher_Handle_t hCipher;
     static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE + 1],
-                         outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
+           outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
     TEST_START(mode, keepLocal);
@@ -1139,39 +1186,15 @@ test_OS_CryptoCipher_process_buffer(
     // This should fail as input is too big
     inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     outLen = OS_DATAPORT_DEFAULT_SIZE;
-    TEST_INSUFF_SPACE(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
-                                              &outLen));
+    TEST_INVAL_PARAM(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
+                                             &outLen));
 
     // This should fail as output is too big
     inLen = OS_DATAPORT_DEFAULT_SIZE;
     outLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
-                                              &outLen));
+    TEST_INVAL_PARAM(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
+                                             &outLen));
 
-    // This should fail in the implementation file, but should give us the expected
-    // (= minimum) output buffer size
-    inLen = OS_DATAPORT_DEFAULT_SIZE;
-    outLen = 10;
-    TEST_TOO_SMALL(OS_CryptoCipher_process(hCipher, inBuf, inLen, outBuf,
-                                           &outLen));
-    TEST_TRUE(inLen == outLen);
-
-    TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
-    TEST_SUCCESS(OS_CryptoKey_free(hKey));
-
-    TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesEcbVectors[0].key));
-    TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
-                                      OS_CryptoCipher_ALG_AES_ECB_DEC,
-                                      NULL, 0));
-    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
-    // Compute with same buffer used for input and output
-    memcpy(inBuf, aesEcbVectors[0].ct.bytes, aesEcbVectors[0].ct.len);
-    outLen = aesEcbVectors[0].pt.len;
-    TEST_SUCCESS(OS_CryptoCipher_process(hCipher, inBuf,
-                                         aesEcbVectors[0].ct.len,
-                                         inBuf, &outLen));
-    TEST_TRUE(!memcmp(inBuf, aesEcbVectors[0].pt.bytes,
-                      aesEcbVectors[0].pt.len));
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
 
@@ -1179,7 +1202,7 @@ test_OS_CryptoCipher_process_buffer(
 }
 
 static void
-test_OS_CryptoCipher_finalize_buffer(
+test_OS_CryptoCipher_finalize_dataport(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
@@ -1219,7 +1242,7 @@ test_OS_CryptoCipher_finalize_buffer(
 
     // Should fail due to limited internal buffers
     tagLen = OS_DATAPORT_DEFAULT_SIZE + 1;
-    TEST_INSUFF_SPACE(OS_CryptoCipher_finalize(hCipher, tagBuf, &tagLen));
+    TEST_INVAL_PARAM(OS_CryptoCipher_finalize(hCipher, tagBuf, &tagLen));
 
     // Should fail (tags bust be at least 4 bytes) but give the minimum size
     tagLen = 3;
@@ -1260,11 +1283,6 @@ test_OS_CryptoCipher(
     test_OS_CryptoCipher_process_neg(hCrypto, mode, keepLocal);
     test_OS_CryptoCipher_finalize_neg(hCrypto, mode, keepLocal);
 
-    test_OS_CryptoCipher_init_buffer(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_start_buffer(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_process_buffer(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_finalize_buffer(hCrypto, mode, keepLocal);
-
     // Test vectors
     test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, keepLocal);
     test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, keepLocal);
@@ -1279,24 +1297,32 @@ test_OS_CryptoCipher(
     test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, keepLocal);
     test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, keepLocal);
 
-    // Make all used keys remote and re-run parts of the tests
-    if (mode == OS_Crypto_MODE_KEY_SWITCH)
+    switch (mode)
     {
-        keepLocal = false;
-
-        keyData_setLocality(keyDataList, keepLocal);
-        keyData_setLocality(testKeyDataList, keepLocal);
-        keySpec_setLocality(keySpecList, keepLocal);
-
-        test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, keepLocal);
-
-        test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, keepLocal);
+    case OS_Crypto_MODE_LIBRARY:
+        test_OS_CryptoCipher_process_buffer(hCrypto, mode, keepLocal);
+        break;
+    case OS_Crypto_MODE_CLIENT:
+        test_OS_CryptoCipher_init_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_start_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_process_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_finalize_dataport(hCrypto, mode, keepLocal);
+        break;
+    case OS_Crypto_MODE_KEY_SWITCH:
+        keyData_setLocality(keyDataList, false);
+        keyData_setLocality(testKeyDataList, false);
+        keySpec_setLocality(keySpecList, false);
+        test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, false);
+        break;
+    default:
+        break;
     }
 }
