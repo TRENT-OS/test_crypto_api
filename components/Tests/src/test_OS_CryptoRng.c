@@ -36,9 +36,6 @@ test_OS_CryptoRng_getBytes_neg(
     // Empty crypto handle
     TEST_INVAL_PARAM(OS_CryptoRng_getBytes(NULL, 0, data, sizeof(data)));
 
-    // Invalid flag
-    TEST_NOT_SUPP(OS_CryptoRng_getBytes(hCrypto, 666, data, sizeof(data)));
-
     // Empty buffer
     TEST_INVAL_PARAM(OS_CryptoRng_getBytes(hCrypto, 0, NULL, sizeof(data)));
 
