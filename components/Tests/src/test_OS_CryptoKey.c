@@ -693,40 +693,38 @@ void test_OS_CryptoKey(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool keepLocal = true;
+    keyData_setLocality(keyDataList, true);
+    keySpec_setLocality(keySpecList, true);
 
-    keyData_setLocality(keyDataList, keepLocal);
-    keySpec_setLocality(keySpecList, keepLocal);
+    test_OS_CryptoKey_import_pos(hCrypto, mode, true);
+    test_OS_CryptoKey_import_neg(hCrypto, mode, true);
 
-    test_OS_CryptoKey_import_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_import_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_export_pos(hCrypto, mode, true);
+    test_OS_CryptoKey_export_neg(hCrypto, mode, true);
 
-    test_OS_CryptoKey_export_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_export_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_generate_pos(hCrypto, mode, true);
+    test_OS_CryptoKey_generate_neg(hCrypto, mode, true);
 
-    test_OS_CryptoKey_generate_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_generate_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_makePublic_pos(hCrypto, mode, true);
+    test_OS_CryptoKey_makePublic_neg(hCrypto, mode, true);
 
-    test_OS_CryptoKey_makePublic_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_makePublic_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_getParams_pos(hCrypto, mode, true);
+    test_OS_CryptoKey_getParams_neg(hCrypto, mode, true);
 
-    test_OS_CryptoKey_getParams_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_getParams_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_loadParams_pos(hCrypto, mode, true);
+    test_OS_CryptoKey_loadParams_neg(hCrypto, mode, true);
 
-    test_OS_CryptoKey_loadParams_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_loadParams_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_getAttribs_pos(hCrypto, mode, true);
+    test_OS_CryptoKey_getAttribs_neg(hCrypto, mode, true);
 
-    test_OS_CryptoKey_getAttribs_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_getAttribs_neg(hCrypto, mode, keepLocal);
-
-    test_OS_CryptoKey_free_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoKey_free_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoKey_free_pos(hCrypto, mode, true);
+    test_OS_CryptoKey_free_neg(hCrypto, mode, true);
 
     switch (mode)
     {
     case OS_Crypto_MODE_CLIENT:
-        test_OS_CryptoKey_getParams_dataport(hCrypto, mode, keepLocal);
-        test_OS_CryptoKey_loadParams_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoKey_getParams_dataport(hCrypto, mode, true);
+        test_OS_CryptoKey_loadParams_dataport(hCrypto, mode, true);
         break;
     case OS_Crypto_MODE_KEY_SWITCH:
         keyData_setLocality(keyDataList, false);

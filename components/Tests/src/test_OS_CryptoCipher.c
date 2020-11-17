@@ -1265,48 +1265,46 @@ test_OS_CryptoCipher(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool keepLocal = true;
+    keyData_setLocality(keyDataList, true);
+    keyData_setLocality(testKeyDataList, true);
+    keySpec_setLocality(keySpecList, true);
 
-    keyData_setLocality(keyDataList, keepLocal);
-    keyData_setLocality(testKeyDataList, keepLocal);
-    keySpec_setLocality(keySpecList, keepLocal);
+    test_OS_CryptoCipher_init_pos(hCrypto, mode, true);
+    test_OS_CryptoCipher_init_neg(hCrypto, mode, true);
 
-    test_OS_CryptoCipher_init_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_init_neg(hCrypto, mode, keepLocal);
-
-    test_OS_CryptoCipher_free_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_free_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_free_pos(hCrypto, mode, true);
+    test_OS_CryptoCipher_free_neg(hCrypto, mode, true);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_OS_CryptoCipher_start_neg(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_process_neg(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_finalize_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_start_neg(hCrypto, mode, true);
+    test_OS_CryptoCipher_process_neg(hCrypto, mode, true);
+    test_OS_CryptoCipher_finalize_neg(hCrypto, mode, true);
 
     // Test vectors
-    test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_do_AES_GCM_dec_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_ECB_enc(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_GCM_dec_neg(hCrypto, mode, true);
 
     // Random values
-    test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, keepLocal);
-    test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, keepLocal);
+    test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, true);
 
     switch (mode)
     {
     case OS_Crypto_MODE_LIBRARY:
-        test_OS_CryptoCipher_process_buffer(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_process_buffer(hCrypto, mode, true);
         break;
     case OS_Crypto_MODE_CLIENT:
-        test_OS_CryptoCipher_init_dataport(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_start_dataport(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_process_dataport(hCrypto, mode, keepLocal);
-        test_OS_CryptoCipher_finalize_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoCipher_init_dataport(hCrypto, mode, true);
+        test_OS_CryptoCipher_start_dataport(hCrypto, mode, true);
+        test_OS_CryptoCipher_process_dataport(hCrypto, mode, true);
+        test_OS_CryptoCipher_finalize_dataport(hCrypto, mode, true);
         break;
     case OS_Crypto_MODE_KEY_SWITCH:
         keyData_setLocality(keyDataList, false);

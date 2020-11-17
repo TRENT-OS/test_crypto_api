@@ -478,31 +478,29 @@ test_OS_CryptoAgreement(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool keepLocal = true;
+    keyData_setLocality(keyDataList, true);
+    keySpec_setLocality(keySpecList, true);
 
-    keyData_setLocality(keyDataList, keepLocal);
-    keySpec_setLocality(keySpecList, keepLocal);
+    test_OS_CryptoAgreement_init_pos(hCrypto, mode, true);
+    test_OS_CryptoAgreement_init_neg(hCrypto, mode, true);
 
-    test_OS_CryptoAgreement_init_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoAgreement_init_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoAgreement_agree_neg(hCrypto, mode, true);
 
-    test_OS_CryptoAgreement_agree_neg(hCrypto, mode, keepLocal);
-
-    test_OS_CryptoAgreement_free_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoAgreement_free_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoAgreement_free_pos(hCrypto, mode, true);
+    test_OS_CryptoAgreement_free_neg(hCrypto, mode, true);
 
     // Test vectors
-    test_OS_CryptoAgreement_do_DH(hCrypto, mode, keepLocal);
-    test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, keepLocal);
+    test_OS_CryptoAgreement_do_DH(hCrypto, mode, true);
+    test_OS_CryptoAgreement_do_ECDH(hCrypto, mode, true);
 
     // Test with randomly generated values for multiple iterations
-    test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, keepLocal);
-    test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, keepLocal);
+    test_OS_CryptoAgreement_do_DH_rnd(hCrypto, mode, true);
+    test_OS_CryptoAgreement_do_ECDH_rnd(hCrypto, mode, true);
 
     switch (mode)
     {
     case OS_Crypto_MODE_CLIENT:
-        test_OS_CryptoAgreement_agree_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoAgreement_agree_dataport(hCrypto, mode, true);
         break;
     case OS_Crypto_MODE_KEY_SWITCH:
         keyData_setLocality(keyDataList, false);

@@ -512,30 +512,28 @@ test_OS_CryptoMac(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool keepLocal = true;
+    keyData_setLocality(testKeyDataList, true);
 
-    keyData_setLocality(testKeyDataList, keepLocal);
+    test_OS_CryptoMac_init_pos(hCrypto, mode, true);
+    test_OS_CryptoMac_init_neg(hCrypto, mode, true);
 
-    test_OS_CryptoMac_init_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoMac_init_neg(hCrypto, mode, keepLocal);
-
-    test_OS_CryptoMac_free_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoMac_free_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoMac_free_pos(hCrypto, mode, true);
+    test_OS_CryptoMac_free_neg(hCrypto, mode, true);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_OS_CryptoMac_process_neg(hCrypto, mode, keepLocal);
-    test_OS_CryptoMac_finalize_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoMac_process_neg(hCrypto, mode, true);
+    test_OS_CryptoMac_finalize_neg(hCrypto, mode, true);
 
     // Test vectors
-    test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, keepLocal);
-    test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, keepLocal);
+    test_OS_CryptoMac_do_HMAC_MD5(hCrypto, mode, true);
+    test_OS_CryptoMac_do_HMAC_SHA256(hCrypto, mode, true);
 
     switch (mode)
     {
     case OS_Crypto_MODE_CLIENT:
-        test_OS_CryptoMac_process_dataport(hCrypto, mode, keepLocal);
-        test_OS_CryptoMac_finalize_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoMac_process_dataport(hCrypto, mode, true);
+        test_OS_CryptoMac_finalize_dataport(hCrypto, mode, true);
         break;
     case OS_Crypto_MODE_KEY_SWITCH:
         keyData_setLocality(testKeyDataList, false);

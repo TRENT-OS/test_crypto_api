@@ -1460,44 +1460,40 @@ test_OS_CryptoSignature(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    bool keepLocal = true;
+    keyData_setLocality(keyDataList, true);
+    keySpec_setLocality(keySpecList, true);
 
-    keyData_setLocality(keyDataList, keepLocal);
-    keySpec_setLocality(keySpecList, keepLocal);
+    test_OS_CryptoSignature_init_pos(hCrypto, mode, true);
+    test_OS_CryptoSignature_init_neg(hCrypto, mode, true);
 
-    test_OS_CryptoSignature_init_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoSignature_init_neg(hCrypto, mode, keepLocal);
-
-    test_OS_CryptoSignature_free_pos(hCrypto, mode, keepLocal);
-    test_OS_CryptoSignature_free_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoSignature_free_pos(hCrypto, mode, true);
+    test_OS_CryptoSignature_free_neg(hCrypto, mode, true);
 
     // Test only failures separately, as computing ref. values is sufficient
     // proof of correct funtioning
-    test_OS_CryptoSignature_sign_neg(hCrypto, mode, keepLocal);
-    test_OS_CryptoSignature_verify_neg(hCrypto, mode, keepLocal);
+    test_OS_CryptoSignature_sign_neg(hCrypto, mode, true);
+    test_OS_CryptoSignature_verify_neg(hCrypto, mode, true);
 
     // Test vectors
-    test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, keepLocal);
-    test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(hCrypto, mode,
-                                                    keepLocal);
+    test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(hCrypto, mode, true);
+    test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(hCrypto, mode, true);
     // We cannot do fixed test vectors for PKCS#1 V2.1 because the resulting
     // signatures are probablistic and we currently do not support providing
     // a fixed value as randomness during signing
-    test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(hCrypto, mode,
-                                                    keepLocal);
+    test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(hCrypto, mode, true);
 
     // Generate random vectors and sign/verify with them
-    test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, keepLocal);
-    test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, keepLocal);
+    test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(hCrypto, mode, true);
+    test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(hCrypto, mode, true);
 
     switch (mode)
     {
     case OS_Crypto_MODE_LIBRARY:
-        test_OS_CryptoSignature_sign_buffer(hCrypto, mode, keepLocal);
+        test_OS_CryptoSignature_sign_buffer(hCrypto, mode, true);
         break;
     case OS_Crypto_MODE_CLIENT:
-        test_OS_CryptoSignature_sign_dataport(hCrypto, mode, keepLocal);
-        test_OS_CryptoSignature_verify_dataport(hCrypto, mode, keepLocal);
+        test_OS_CryptoSignature_sign_dataport(hCrypto, mode, true);
+        test_OS_CryptoSignature_verify_dataport(hCrypto, mode, true);
         break;
     case OS_Crypto_MODE_KEY_SWITCH:
         keyData_setLocality(keyDataList, false);
