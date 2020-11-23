@@ -844,7 +844,7 @@ test_OS_CryptoSignature_do_RSA_PKCS1_V15_verify(
     TestVector* vec;
     OS_CryptoKey_Handle_t hPubKey;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_VECTORS; i++)
     {
@@ -868,7 +868,7 @@ test_OS_CryptoSignature_do_RSA_PKCS1_V21_verify(
     TestVector* vec;
     OS_CryptoKey_Handle_t hPubKey;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V21_VECTORS; i++)
     {
@@ -924,7 +924,7 @@ test_OS_CryptoSignature_do_RSA_PKCS1_V15_sign(
     OS_CryptoKey_Handle_t hPrvKey;
     TestVector* vec;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_VECTORS; i++)
     {
@@ -998,7 +998,7 @@ test_OS_CryptoSignature_do_RSA_PKCS1_V15_rnd(
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
 {
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V15_RND_TESTS; i++)
     {
@@ -1018,7 +1018,7 @@ test_OS_CryptoSignature_do_RSA_PKCS1_V21_rnd(
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
 {
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (size_t i = 0; i < NUM_PKCS1_V21_RND_TESTS; i++)
     {
@@ -1043,7 +1043,7 @@ test_OS_CryptoSignature_sign_neg(
     char signature[256], msgData[] = "test";
     size_t signatureSize = sizeof(signature);
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
@@ -1108,7 +1108,7 @@ test_OS_CryptoSignature_verify_neg(
     char msgData[] = "test";
     uint8_t sig[1024];
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
@@ -1163,7 +1163,7 @@ test_OS_CryptoSignature_init_pos(
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
@@ -1204,7 +1204,7 @@ test_OS_CryptoSignature_init_neg(
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hPubKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
@@ -1258,7 +1258,7 @@ test_OS_CryptoSignature_free_pos(
     OS_CryptoKey_Handle_t hPubKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
@@ -1282,7 +1282,7 @@ test_OS_CryptoSignature_free_neg(
     OS_CryptoKey_Handle_t hPubKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
@@ -1311,7 +1311,7 @@ test_OS_CryptoSignature_sign_dataport(
            sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto, &rsa1024PrvData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, hPrvKey, NULL,
@@ -1354,7 +1354,7 @@ test_OS_CryptoSignature_sign_buffer(
     static unsigned int hashBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPrvKey, hCrypto,
                                      &pkcs1V15Vectors[0].prvKey));
@@ -1398,7 +1398,7 @@ test_OS_CryptoSignature_verify_dataport(
            sigBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t hashLen, sigLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &rsa1024PubData));
     TEST_SUCCESS(OS_CryptoSignature_init(&hSig, hCrypto, NULL, hPubKey,
@@ -1433,7 +1433,7 @@ test_OS_CryptoSignature_key_neg(
     OS_CryptoKey_Handle_t hPubKey, hPrvKey;
     OS_CryptoSignature_Handle_t hSig;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     // Test with both keys having different locality attributes
     rsa1024PrvData.attribs.keepLocal = false;

@@ -272,7 +272,7 @@ test_OS_CryptoCipher_do_AES_ECB_enc(
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
@@ -296,7 +296,7 @@ test_OS_CryptoCipher_do_AES_ECB_dec(
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (i = 0; i < NUM_AES_ECB_TESTS; i++)
     {
@@ -322,7 +322,7 @@ test_OS_CryptoCipher_do_AES_ECB_rnd(
     uint8_t pt[16], ct[16], tmp[16];
     size_t len;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -392,7 +392,7 @@ test_OS_CryptoCipher_do_AES_CBC_enc(
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
@@ -417,7 +417,7 @@ test_OS_CryptoCipher_do_AES_CBC_dec(
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (i = 0; i < NUM_AES_CBC_TESTS; i++)
     {
@@ -444,7 +444,7 @@ test_OS_CryptoCipher_do_AES_CBC_rnd(
     uint8_t pt[16], ct[16], tmp[16], iv[16];
     size_t len;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -546,7 +546,7 @@ test_OS_CryptoCipher_do_AES_GCM_enc(
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
@@ -573,7 +573,7 @@ test_OS_CryptoCipher_do_AES_GCM_dec_pos(
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (i = 0; i < NUM_AES_GCM_TESTS; i++)
     {
@@ -601,7 +601,7 @@ test_OS_CryptoCipher_do_AES_GCM_dec_neg(
     const TestVector* vec = &aesGcmVectors[0];
     ByteVector brokenTag;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
 
@@ -631,7 +631,7 @@ test_OS_CryptoCipher_do_AES_GCM_rnd(
     uint8_t pt[16], ct[16], tmp[16], iv[12], tag[16], ad[16];
     size_t len;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
     {
@@ -683,7 +683,7 @@ test_OS_CryptoCipher_init_pos(
     OS_CryptoKey_Handle_t hKey;
     const ByteVector* iv;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -746,7 +746,7 @@ test_OS_CryptoCipher_init_neg(
     OS_CryptoKey_Handle_t hKey, hPubKey;
     const ByteVector* iv;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoKey_import(&hPubKey, hCrypto, &secp256r1PubData));
@@ -812,7 +812,7 @@ test_OS_CryptoCipher_free_pos(
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
@@ -837,7 +837,7 @@ test_OS_CryptoCipher_free_neg(
     OS_CryptoCipher_Handle_t hCipher;
     OS_CryptoKey_Handle_t hKey;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
@@ -863,7 +863,7 @@ test_OS_CryptoCipher_start_neg(
     OS_CryptoKey_Handle_t hKey;
     OS_CryptoCipher_Handle_t hCipher;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -905,7 +905,7 @@ test_OS_CryptoCipher_process_neg(
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -977,7 +977,7 @@ test_OS_CryptoCipher_finalize_neg(
     unsigned char buf[128];
     size_t n = sizeof(buf);
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -1048,7 +1048,7 @@ test_OS_CryptoCipher_init_dataport(
     static unsigned char ivBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t ivLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 
@@ -1090,7 +1090,7 @@ test_OS_CryptoCipher_start_dataport(
     static unsigned char ivBuf[16], inputBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
@@ -1122,7 +1122,7 @@ test_OS_CryptoCipher_process_buffer(
     static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesEcbVectors[0].key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
@@ -1169,7 +1169,7 @@ test_OS_CryptoCipher_process_dataport(
            outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
@@ -1213,7 +1213,7 @@ test_OS_CryptoCipher_finalize_dataport(
     static unsigned char tagBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t tagLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
 

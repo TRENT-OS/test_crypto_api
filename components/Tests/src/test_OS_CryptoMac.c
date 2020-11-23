@@ -195,7 +195,7 @@ test_OS_CryptoMac_do_HMAC_MD5(
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (i = 0; i < NUM_MD5_TESTS; i++)
     {
@@ -224,7 +224,7 @@ test_OS_CryptoMac_do_HMAC_SHA256(
     OS_CryptoKey_Handle_t hKey;
     size_t i;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     for (i = 0; i < NUM_SHA256_TESTS; i++)
     {
@@ -255,7 +255,7 @@ test_OS_CryptoMac_process_neg(
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
@@ -290,7 +290,7 @@ test_OS_CryptoMac_finalize_neg(
     char mac[64];
     size_t macSize = sizeof(mac);
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
@@ -337,7 +337,7 @@ test_OS_CryptoMac_process_dataport(
     static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
@@ -372,7 +372,7 @@ test_OS_CryptoMac_finalize_dataport(
            outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
@@ -412,7 +412,7 @@ test_OS_CryptoMac_init_pos(
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
@@ -443,7 +443,7 @@ test_OS_CryptoMac_init_neg(
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
@@ -478,7 +478,7 @@ test_OS_CryptoMac_free_pos(
     OS_CryptoKey_Handle_t hKey;
     const macTestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &vec->key));
     TEST_LOCACTION_FLAG(mode, keepLocal, hKey);
@@ -499,7 +499,7 @@ test_OS_CryptoMac_free_neg(
     const OS_Crypto_Mode_t mode,
     const bool             keepLocal)
 {
-    TEST_START(mode, keepLocal);
+    TEST_START("i", mode, "i", keepLocal);
 
     // Empty handle
     TEST_INVAL_PARAM(OS_CryptoMac_free(NULL));

@@ -17,7 +17,7 @@ test_OS_CryptoRng_getBytes_pos(
 {
     char data[16];
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoRng_getBytes(hCrypto,  0, data, sizeof(data)));
 
@@ -31,7 +31,7 @@ test_OS_CryptoRng_getBytes_neg(
 {
     char data[16];
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     // Empty crypto handle
     TEST_INVAL_PARAM(OS_CryptoRng_getBytes(NULL, 0, data, sizeof(data)));
@@ -52,7 +52,7 @@ test_OS_CryptoRng_reSeed_pos(
 {
     char seed[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoRng_reseed(hCrypto, seed, sizeof(seed)));
 
@@ -66,7 +66,7 @@ test_OS_CryptoRng_reSeed_neg(
 {
     char seed[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     // Empty crypt handle
     TEST_INVAL_PARAM(OS_CryptoRng_reseed(NULL, seed, sizeof(seed)));
@@ -88,7 +88,7 @@ test_OS_CryptoRng_reSeed_dataport(
     static unsigned char seedBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t seedLen;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     // Should go through, but will fail with aborted as RNG can only accept
     // limited amount of inputs per reseed
@@ -110,7 +110,7 @@ test_OS_CryptoRng_getBytes_dataport(
     static unsigned char rngBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t rngLen;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     // Should go through, but will fail with aborted as RNG can only provide a
     // limited amount of bytes per call

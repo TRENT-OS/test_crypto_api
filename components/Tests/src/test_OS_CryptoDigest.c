@@ -163,7 +163,7 @@ test_OS_CryptoDigest_do_MD5(
     OS_CryptoDigest_Handle_t hDigest;
     size_t i;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
@@ -187,7 +187,7 @@ test_OS_CryptoDigest_do_SHA256(
     OS_CryptoDigest_Handle_t hDigest;
     size_t i;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_SHA256));
@@ -248,7 +248,7 @@ test_OS_CryptoDigest_clone_pos(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode)
 {
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(do_clone(hCrypto, mode,
                           OS_CryptoDigest_ALG_MD5, &md5Vectors[0]));
@@ -266,7 +266,7 @@ test_OS_CryptoDigest_clone_neg(
     const TestVector* vec = &md5Vectors[0];
     OS_CryptoDigest_Handle_t hDst, hSrc;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     // Create digest object and process something
     TEST_SUCCESS(OS_CryptoDigest_init(&hSrc, hCrypto,
@@ -296,7 +296,7 @@ test_OS_CryptoDigest_init_pos(
 {
     OS_CryptoDigest_Handle_t hDigest;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     // Test MD5
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
@@ -320,7 +320,7 @@ test_OS_CryptoDigest_init_neg(
 {
     OS_CryptoDigest_Handle_t hDigest;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     // Test with emtpy handle
     TEST_INVAL_PARAM(OS_CryptoDigest_init(NULL, hCrypto,
@@ -343,7 +343,7 @@ test_OS_CryptoDigest_free_pos(
 {
     OS_CryptoDigest_Handle_t hDigest;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
@@ -360,7 +360,7 @@ test_OS_CryptoDigest_free_neg(
 {
     OS_CryptoDigest_Handle_t hDigest;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
@@ -382,7 +382,7 @@ test_OS_CryptoDigest_process_neg(
     OS_CryptoDigest_Handle_t hDigest;
     const TestVector* vec = &md5Vectors[0];
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
@@ -413,7 +413,7 @@ test_OS_CryptoDigest_finalize_neg(
     char digest[64];
     size_t digestSize = sizeof(digest);
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
@@ -455,7 +455,7 @@ test_OS_CryptoDigest_process_dataport(
     static unsigned char inBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
@@ -484,7 +484,7 @@ test_OS_CryptoDigest_finalize_dataport(
            outBuf[OS_DATAPORT_DEFAULT_SIZE + 1];
     size_t inLen, outLen;
 
-    TEST_START(mode);
+    TEST_START("i", mode);
 
     TEST_SUCCESS(OS_CryptoDigest_init(&hDigest, hCrypto,
                                       OS_CryptoDigest_ALG_MD5));
