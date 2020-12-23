@@ -5,7 +5,7 @@
 #pragma once
 
 #include "OS_Crypto.h"
-#include "compiler.h"
+#include "lib_compiler/compiler.h"
 
 /*
  * This header defines all the key data/spec we use for the tests in one place.

@@ -29,7 +29,8 @@ DeclareCAmkESComponent(
         -Werror
     LIBS
         os_core_api
-        os_libs
+        lib_compiler
+        lib_macros
         os_crypto
 )
 
@@ -42,7 +43,8 @@ DeclareCAmkESComponent(
         -Werror
     LIBS
         os_core_api
-        os_libs
+        lib_debug
+        lib_util
         os_crypto
 )
 

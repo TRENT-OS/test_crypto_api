@@ -4,8 +4,8 @@
 
 #include "OS_Crypto.h"
 
-#include "LibDebug/Debug.h"
-#include "LibUtil/PointerVector.h"
+#include "lib_debug/Debug.h"
+#include "lib_util/PointerVector.h"
 
 #include <string.h>
 #include <camkes.h>

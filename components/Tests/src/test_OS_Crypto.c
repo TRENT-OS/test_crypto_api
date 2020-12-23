@@ -13,7 +13,7 @@
 
 #include "ObjectLocation.h"
 
-#include "LibMacros/Test.h"
+#include "lib_macros/Test.h"
 
 #include <camkes.h>
 #include <string.h>
