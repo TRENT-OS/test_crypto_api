@@ -44,7 +44,7 @@ DeclareCAmkESComponent(
     LIBS
         os_core_api
         lib_debug
-        lib_util
+        lib_utils
         os_crypto
 )
 

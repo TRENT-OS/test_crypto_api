@@ -5,7 +5,7 @@
 #include "OS_Crypto.h"
 
 #include "lib_debug/Debug.h"
-#include "lib_util/PointerVector.h"
+#include "lib_utils/PointerVector.h"
 
 #include <string.h>
 #include <camkes.h>
