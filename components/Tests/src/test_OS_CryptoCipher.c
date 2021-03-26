@@ -348,7 +348,7 @@ test_OS_CryptoCipher_do_AES_ECB_rnd(
         TEST_SUCCESS(OS_CryptoCipher_process(hCipher, ct, sizeof(ct), tmp, &len));
         TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
         // Check decryption result
-        Debug_ASSERT(!memcmp(tmp, pt, len));
+        ASSERT_EQ_INT(0, memcmp(tmp, pt, len));
 
         TEST_SUCCESS(OS_CryptoKey_free(hKey));
     }
@@ -471,7 +471,7 @@ test_OS_CryptoCipher_do_AES_CBC_rnd(
         TEST_SUCCESS(OS_CryptoCipher_process(hCipher, ct, sizeof(ct), tmp, &len));
         TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
         // Check decryption result
-        Debug_ASSERT(!memcmp(tmp, pt, len));
+        ASSERT_EQ_INT(0, memcmp(tmp, pt, len));
 
         TEST_SUCCESS(OS_CryptoKey_free(hKey));
     }
@@ -665,7 +665,7 @@ test_OS_CryptoCipher_do_AES_GCM_rnd(
         TEST_SUCCESS(OS_CryptoCipher_finalize(hCipher, tag, &len));
         TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
         // Check decryption result
-        Debug_ASSERT(!memcmp(tmp, pt, len));
+        ASSERT_EQ_INT(0, memcmp(tmp, pt, len));
 
         TEST_SUCCESS(OS_CryptoKey_free(hKey));
     }
