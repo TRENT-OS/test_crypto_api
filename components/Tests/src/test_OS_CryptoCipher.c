@@ -151,6 +151,85 @@ static TestVector aesCbcVectors[NUM_AES_CBC_TESTS] =
 
 // -----------------------------------------------------------------------------
 
+#define NUM_AES_CTR_TESTS 2
+static TestVector aesCtrVectors[NUM_AES_CTR_TESTS] =
+{
+    {
+        .key = {
+            .type = OS_CryptoKey_TYPE_AES,
+            .attribs.keepLocal = true,
+            .data.aes = {
+                .len   = 16,
+                .bytes = {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab,
+                          0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c},
+            },
+        },
+        .pt =
+        {
+            .len = 64,
+            .bytes = {
+                0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a,
+                0xae, 0x2d, 0x8a, 0x57, 0x1e, 0x03, 0xac, 0x9c, 0x9e, 0xb7, 0x6f, 0xac, 0x45, 0xaf, 0x8e, 0x51,
+                0x30, 0xc8, 0x1c, 0x46, 0xa3, 0x5c, 0xe4, 0x11, 0xe5, 0xfb, 0xc1, 0x19, 0x1a, 0x0a, 0x52, 0xef,
+                0xf6, 0x9f, 0x24, 0x45, 0xdf, 0x4f, 0x9b, 0x17, 0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10
+            },
+        },
+        .ct =
+        {
+            .len = 64,
+            .bytes = {
+                0x87, 0x4d, 0x61, 0x91, 0xb6, 0x20, 0xe3, 0x26, 0x1b, 0xef, 0x68, 0x64, 0x99, 0x0d, 0xb6, 0xce,
+                0x98, 0x06, 0xf6, 0x6b, 0x79, 0x70, 0xfd, 0xff, 0x86, 0x17, 0x18, 0x7b, 0xb9, 0xff, 0xfd, 0xff,
+                0x5a, 0xe4, 0xdf, 0x3e, 0xdb, 0xd5, 0xd3, 0x5e, 0x5b, 0x4f, 0x09, 0x02, 0x0d, 0xb0, 0x3e, 0xab,
+                0x1e, 0x03, 0x1d, 0xda, 0x2f, 0xbe, 0x03, 0xd1, 0x79, 0x21, 0x70, 0xa0, 0xf3, 0x00, 0x9c, 0xee
+            },
+        },
+        .iv = {
+            .len = 16,
+            .bytes = {0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff},
+        }
+    },
+    {
+        .key = {
+            .type = OS_CryptoKey_TYPE_AES,
+            .attribs.keepLocal = true,
+            .data.aes = {
+                .len   = 32,
+                .bytes = {0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b,
+                          0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81, 0x1f, 0x35, 
+                          0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10,
+                          0xa3, 0x09, 0x14, 0xdf, 0xf4},
+            },
+        },
+        .pt =
+        {
+            .len = 64,
+            .bytes = {
+                0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a,
+                0xae, 0x2d, 0x8a, 0x57, 0x1e, 0x03, 0xac, 0x9c, 0x9e, 0xb7, 0x6f, 0xac, 0x45, 0xaf, 0x8e, 0x51,
+                0x30, 0xc8, 0x1c, 0x46, 0xa3, 0x5c, 0xe4, 0x11, 0xe5, 0xfb, 0xc1, 0x19, 0x1a, 0x0a, 0x52, 0xef,
+                0xf6, 0x9f, 0x24, 0x45, 0xdf, 0x4f, 0x9b, 0x17, 0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10
+            },
+        },
+        .ct =
+        {
+            .len = 64,
+            .bytes = {
+                0x60, 0x1e, 0xc3, 0x13, 0x77, 0x57, 0x89, 0xa5, 0xb7, 0xa7, 0xf5, 0x04, 0xbb, 0xf3, 0xd2, 0x28,
+                0xf4, 0x43, 0xe3, 0xca, 0x4d, 0x62, 0xb5, 0x9a, 0xca, 0x84, 0xe9, 0x90, 0xca, 0xca, 0xf5, 0xc5,
+                0x2b, 0x09, 0x30, 0xda, 0xa2, 0x3d, 0xe9, 0x4c, 0xe8, 0x70, 0x17, 0xba, 0x2d, 0x84, 0x98, 0x8d,
+                0xdf, 0xc9, 0xc5, 0x8d, 0xb6, 0x7a, 0xad, 0xa6, 0x13, 0xc2, 0xdd, 0x08, 0x45, 0x79, 0x41, 0xa6
+            },
+        },
+        .iv = {
+            .len = 16,
+            .bytes = {0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff},
+        }
+    }
+};
+
+// -----------------------------------------------------------------------------
+
 #define NUM_AES_GCM_TESTS 2
 static TestVector aesGcmVectors[NUM_AES_GCM_TESTS] =
 {
@@ -231,6 +310,8 @@ static OS_CryptoKey_Data_t* testKeyDataList[] =
     &aesEcbVectors[1].key,
     &aesEcbVectors[2].key,
     &aesCbcVectors[0].key,
+    &aesCtrVectors[0].key,
+    &aesCtrVectors[1].key,
     &aesGcmVectors[0].key,
     &aesGcmVectors[1].key,
     NULL
@@ -480,6 +561,129 @@ test_OS_CryptoCipher_do_AES_CBC_rnd(
 }
 
 static OS_Error_t
+do_AES_CTR(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode,
+    const bool             keepLocal,
+    OS_CryptoKey_Handle_t  hKey,
+    int                    algo,
+    const ByteVector*      iv,
+    const ByteVector*      din,
+    const ByteVector*      dout)
+{
+    OS_CryptoCipher_Handle_t hCipher;
+    unsigned char buf[128];
+    size_t n = sizeof(buf);
+
+    TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey, algo, iv->bytes,
+                                      iv->len));
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
+    TEST_SUCCESS(OS_CryptoCipher_process(hCipher, din->bytes, din->len, buf,
+                                         &n));
+    TEST_TRUE(n == dout->len);
+    TEST_TRUE(!memcmp(buf, dout->bytes, n));
+    TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
+
+    return OS_SUCCESS;
+}
+
+static void
+test_OS_CryptoCipher_do_AES_CTR_enc(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode,
+    const bool             keepLocal)
+{
+    OS_CryptoKey_Handle_t hKey;
+    size_t i;
+
+    TEST_START("i", mode, "i", keepLocal);
+
+    for (i = 0; i < NUM_AES_CTR_TESTS; i++)
+    {
+        TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesCtrVectors[i].key));
+        TEST_SUCCESS(do_AES_CTR(hCrypto, mode, keepLocal, hKey,
+                                OS_CryptoCipher_ALG_AES_CTR_ENC,
+                                &aesCtrVectors[i].iv,
+                                &aesCtrVectors[i].pt,
+                                &aesCtrVectors[i].ct));
+        TEST_SUCCESS(OS_CryptoKey_free(hKey));
+    }
+
+    TEST_FINISH();
+}
+
+static void
+test_OS_CryptoCipher_do_AES_CTR_dec(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode,
+    const bool             keepLocal)
+{
+    OS_CryptoKey_Handle_t hKey;
+    size_t i;
+
+    TEST_START("i", mode, "i", keepLocal);
+
+    for (i = 0; i < NUM_AES_CTR_TESTS; i++)
+    {
+        TEST_SUCCESS(OS_CryptoKey_import(&hKey, hCrypto, &aesCtrVectors[i].key));
+        TEST_SUCCESS(do_AES_CTR(hCrypto, mode, keepLocal, hKey,
+                                OS_CryptoCipher_ALG_AES_CTR_DEC,
+                                &aesCtrVectors[i].iv,
+                                &aesCtrVectors[i].ct,
+                                &aesCtrVectors[i].pt));
+        TEST_SUCCESS(OS_CryptoKey_free(hKey));
+    }
+
+    TEST_FINISH();
+}
+
+static void
+test_OS_CryptoCipher_do_AES_CTR_rnd(
+    OS_Crypto_Handle_t     hCrypto,
+    const OS_Crypto_Mode_t mode,
+    const bool             keepLocal)
+{
+    OS_CryptoCipher_Handle_t hCipher;
+    OS_CryptoKey_Handle_t hKey;
+    uint8_t pt[32], ct[32], tmp[32], iv[16];
+    size_t len;
+
+    TEST_START("i", mode, "i", keepLocal);
+
+    for (size_t i = 0; i < NUM_RAND_ITERATIONS; i++)
+    {
+        // Generate random key, IV, PT
+        TEST_SUCCESS(OS_CryptoKey_generate(&hKey, hCrypto, &aes128Spec));
+        TEST_SUCCESS(OS_CryptoRng_getBytes(hCrypto, 0, pt, sizeof(pt)));
+        TEST_SUCCESS(OS_CryptoRng_getBytes(hCrypto, 0, iv, sizeof(iv)));
+
+        // Encrypt
+        len = sizeof(ct);
+        TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
+                                          OS_CryptoCipher_ALG_AES_CTR_ENC,
+                                          iv, sizeof(iv)));
+        TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
+        TEST_SUCCESS(OS_CryptoCipher_process(hCipher, pt, sizeof(pt), ct, &len));
+        TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
+
+        // Decrypt
+        len = sizeof(tmp);
+        TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
+                                          OS_CryptoCipher_ALG_AES_CTR_DEC,
+                                          iv, sizeof(iv)));
+        TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
+        TEST_SUCCESS(OS_CryptoCipher_process(hCipher, ct, sizeof(ct), tmp, &len));
+        TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
+        // Check decryption result
+        Debug_ASSERT(!memcmp(tmp, pt, len));
+
+        TEST_SUCCESS(OS_CryptoKey_free(hKey));
+    }
+
+    TEST_FINISH();
+}
+
+static OS_Error_t
 do_AES_GCM(
     OS_Crypto_Handle_t     hCrypto,
     const OS_Crypto_Mode_t mode,
@@ -713,6 +917,21 @@ test_OS_CryptoCipher_init_pos(
     // Test CBC dec
     TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
                                       OS_CryptoCipher_ALG_AES_CBC_DEC,
+                                      iv->bytes, iv->len));
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
+    TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
+
+    // Test CTR enc
+    iv = &aesCtrVectors[0].iv;
+    TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
+                                      OS_CryptoCipher_ALG_AES_CTR_ENC,
+                                      iv->bytes, iv->len));
+    TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
+    TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
+
+    // Test CTR dec
+    TEST_SUCCESS(OS_CryptoCipher_init(&hCipher, hCrypto, hKey,
+                                      OS_CryptoCipher_ALG_AES_CTR_DEC,
                                       iv->bytes, iv->len));
     TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
@@ -1287,12 +1506,15 @@ test_OS_CryptoCipher(
     test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, true);
     test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, true);
     test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_CTR_enc(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_CTR_dec(hCrypto, mode, true);
     test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, true);
     test_OS_CryptoCipher_do_AES_GCM_dec_neg(hCrypto, mode, true);
 
     // Random values
     test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, true);
     test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, true);
+    test_OS_CryptoCipher_do_AES_CTR_rnd(hCrypto, mode, true);
     test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, true);
 
     switch (mode)
@@ -1314,10 +1536,13 @@ test_OS_CryptoCipher(
         test_OS_CryptoCipher_do_AES_ECB_dec(hCrypto, mode, false);
         test_OS_CryptoCipher_do_AES_CBC_enc(hCrypto, mode, false);
         test_OS_CryptoCipher_do_AES_CBC_dec(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_CTR_enc(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_CTR_dec(hCrypto, mode, false);
         test_OS_CryptoCipher_do_AES_GCM_enc(hCrypto, mode, false);
         test_OS_CryptoCipher_do_AES_GCM_dec_pos(hCrypto, mode, false);
         test_OS_CryptoCipher_do_AES_ECB_rnd(hCrypto, mode, false);
         test_OS_CryptoCipher_do_AES_CBC_rnd(hCrypto, mode, false);
+        test_OS_CryptoCipher_do_AES_CTR_rnd(hCrypto, mode, false);
         test_OS_CryptoCipher_do_AES_GCM_rnd(hCrypto, mode, false);
         break;
     default:
