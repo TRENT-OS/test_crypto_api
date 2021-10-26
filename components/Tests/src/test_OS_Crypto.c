@@ -6,7 +6,7 @@
  *
  * @brief top level test for the crypto API and the key store API
  *
- * Copyright (C) 2019, Hensoldt Cyber GmbH
+ * Copyright (C) 2019, HENSOLDT Cyber GmbH
  */
 
 #include "OS_Crypto.h"
