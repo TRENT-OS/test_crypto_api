@@ -25,7 +25,7 @@ findObject(
 
     for (i = 0; i < PointerVector_getSize(&myObjects); i++)
     {
-        if (ptr == PointerVector_getElementAt(&myObjects, i))
+        if ((Pointer) ptr == PointerVector_getElementAt(&myObjects, i))
         {
             return i;
         }
@@ -43,7 +43,7 @@ my_calloc(
 
     if ((ptr = calloc(n, size)) != NULL)
     {
-        if (!PointerVector_pushBack(&myObjects, ptr))
+        if (!PointerVector_pushBack(&myObjects, (Pointer) ptr))
         {
             Debug_LOG_TRACE("Could not add object to list.");
             free(ptr);
