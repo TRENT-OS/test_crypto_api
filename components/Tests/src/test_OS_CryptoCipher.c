@@ -1354,9 +1354,8 @@ test_OS_CryptoCipher_process_buffer(
                                       NULL, 0));
     TEST_LOCACTION_FLAG(mode, keepLocal, hCipher);
 
-    // Let input/output buffer be the same; this should work, as long as we
-    // are below the DATAPORT size (which is the size internally used to
-    // have a buffer where a copy of the input is kept).
+    // Let input/output buffer be the same; this should work, since the library
+    // creates an internal copy of the input buffer content to operate on.
     memcpy(inBuf, aesEcbVectors[0].ct.bytes, aesEcbVectors[0].ct.len);
     inLen = aesEcbVectors[0].pt.len;
     outLen = OS_DATAPORT_DEFAULT_SIZE;
@@ -1367,12 +1366,11 @@ test_OS_CryptoCipher_process_buffer(
     TEST_TRUE(!memcmp(inBuf, aesEcbVectors[0].pt.bytes,
                       aesEcbVectors[0].pt.len));
 
-    // This should fail as input is too big for internal buffer; which is set
-    // to the size of the dataport.
+    // This should fail as the input is too big for the output buffer.
     inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     outLen = OS_DATAPORT_DEFAULT_SIZE;
-    TEST_INVAL_PARAM(OS_CryptoCipher_process(hCipher, inBuf, inLen, inBuf,
-                                             &outLen));
+    TEST_TOO_SMALL(OS_CryptoCipher_process(hCipher, inBuf, inLen, inBuf,
+                                           &outLen));
 
     TEST_SUCCESS(OS_CryptoCipher_free(hCipher));
     TEST_SUCCESS(OS_CryptoKey_free(hKey));
