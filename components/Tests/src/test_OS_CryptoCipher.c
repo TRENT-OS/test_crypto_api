@@ -1366,6 +1366,26 @@ test_OS_CryptoCipher_process_buffer(
     TEST_TRUE(!memcmp(inBuf, aesEcbVectors[0].pt.bytes,
                       aesEcbVectors[0].pt.len));
 
+    // Verify that input sizes larger than the internal buffer of the library
+    // (OS_DATAPORT_DEFAULT_SIZE) get processed successfully.
+    static unsigned char largeInBuf[OS_DATAPORT_DEFAULT_SIZE * 2];
+
+    memcpy(&largeInBuf[0], aesEcbVectors[0].ct.bytes, aesEcbVectors[0].ct.len);
+    memcpy(&largeInBuf[OS_DATAPORT_DEFAULT_SIZE], aesEcbVectors[0].ct.bytes,
+           aesEcbVectors[0].ct.len);
+
+    inLen = sizeof(largeInBuf);
+    outLen = inLen;
+    TEST_SUCCESS(OS_CryptoCipher_process(hCipher,
+                                         largeInBuf, inLen,
+                                         largeInBuf, &outLen));
+    TEST_TRUE(outLen == inLen);
+    TEST_TRUE(!memcmp(&largeInBuf[0], aesEcbVectors[0].pt.bytes,
+                      aesEcbVectors[0].pt.len));
+    TEST_TRUE(!memcmp(&largeInBuf[OS_DATAPORT_DEFAULT_SIZE],
+                      aesEcbVectors[0].pt.bytes,
+                      aesEcbVectors[0].pt.len));
+
     // This should fail as the input is too big for the output buffer.
     inLen = OS_DATAPORT_DEFAULT_SIZE + 1;
     outLen = OS_DATAPORT_DEFAULT_SIZE;
