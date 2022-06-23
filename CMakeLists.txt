@@ -1,13 +1,16 @@
 #
 # Test Crypto API
 #
-# Copyright (C) 2019-2020, HENSOLDT Cyber GmbH
+# Copyright (C) 2019-2022, HENSOLDT Cyber GmbH
 #
 
 cmake_minimum_required(VERSION 3.7.2)
 
-os_set_config_file(config.h)
-
+#-------------------------------------------------------------------------------
+# use the SDK
+find_package("os-sdk" REQUIRED)
+os_sdk_set_defaults()
+os_sdk_setup(CONFIG_FILE "config.h" CONFIG_PROJECT "system_config")
 
 
 #-------------------------------------------------------------------------------
@@ -52,5 +55,4 @@ EntropySource_DeclareCAmkESComponent(
     EntropySource
 )
 
-DeclareAndCreateCamkESSystem(main.camkes)
-GenerateSimulateScript()
+os_sdk_create_CAmkES_system("main.camkes")
